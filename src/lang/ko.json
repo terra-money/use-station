@@ -1,0 +1,442 @@
+{
+  "Common": {
+    "Coin": "코인",
+
+    "All": "전체",
+    "Type": "유형",
+    "Change": "변화",
+    "Time": "시간",
+    "Weight": "가중치",
+
+    "Copy": "복사",
+    "Copied": "복사 완료",
+
+    "Account": {
+      "Address": "주소",
+      "Available": "사용 가능"
+    },
+
+    "Tx": {
+      "Tx": "트랜잭션",
+      "Height": "블록 넘버",
+      "Amount": "액수",
+      "Memo": "메모",
+      "Fee": "수수료",
+      "Tx fee": "수수료",
+      "Log": "로그"
+    },
+
+    "Form": {
+      "Optional": "선택사항",
+      "Next": "다음",
+      "Confirm": "확인",
+      "Ok": "확인",
+      "Cancel": "취소",
+      "Loading...": "가져오는 중...",
+      "Retry": "재시도"
+    },
+
+    "Error": {
+      "Oops! Something went wrong": "문제가 발생했습니다",
+      "You have encountered an error": "오류가 발생했습니다",
+      "Station ran into an error": "오류가 발생했습니다",
+
+      "No internet connection": "인터넷에 연결되어 있지 않습니다",
+      "Please check your internet connection and retry again": "인터넷 연결 상태를 확인하고 다시 시도해주세요"
+    },
+
+    "Loading": {
+      "Data is loading...": "데이터를 로드하는 중...",
+      "Please wait a moment": "잠시만 기다려주세요"
+    },
+
+    "Validate": {
+      "{{label}} is required": "{{label}}을(를) 입력해주세요",
+      "{{label}} are required": "{{label}}을(를) 입력해주세요",
+      "{{label}} is too long": "{{label}}이(가) 너무 깁니다",
+      "{{label}} is invalid": "잘못된 {{label}}입니다",
+      "{{label}} already exists": "{{label}}이(가) 이미 존재합니다",
+      "{{label}} doesn't exist": "{{label}}이(가) 존재하지 않습니다",
+      "{{label}} must be between {{min}} and {{max}}": "{{label}}은(는) {{min}} 이상 {{max}} 이하여야 합니다",
+      "{{label}} must be between {{min}} and {{max}} characters": "{{label}}은(는) {{min}}자 이상 {{max}}자 이하여야 합니다",
+      "{{label}} must be longer than {{min}} characters": "{{label}}는 {{min}}자보다 길어야 합니다",
+      "{{label}} must be within 6 decimal points": "{{label}}은(는) 소수점 6자리 이내여야 합니다",
+      "Password does not match": "비밀번호가 일치하지 않습니다",
+      "Insufficient balance": "잔액이 부족합니다",
+      "Invalid": "유효하지 않습니다"
+    }
+  },
+
+  "Auth": {
+    "Menu": {
+      "Recover": "복원하기",
+      "Sign up": "등록하기",
+      "Sign in": "로그인",
+      "Sign in with ledger": "렛저로 로그인",
+      "Sign in with address": "주소로 로그인",
+      "Sign out": "로그아웃"
+    },
+
+    "Common": {
+      "Welcome": "환영합니다",
+
+      "Sign in to your account, create a new account or recover an existing wallet using a seed phrase": "계정에 로그인하거나 새 계정을 만들거나 시드 문구를 사용하여 기존 지갑을 복구하세요",
+      "Create a new account or recover an existing wallet using a seed phrase": "새 계정을 만들거나 시드 문구를 사용하여 기존 지갑을 복구하세요",
+
+      "Just browsing?": "그냥 둘러보고 싶으세요?",
+      "Quickly glance through your address": "주소로 빠르게 훑어보세요",
+
+      "How can I create an account?": "계정은 어떻게 만드나요?",
+      "If you want to create an account, please download <0>Terra Station for Windows/MacOS</0>. We don't support creating an account for Terra Station web due to the security reasons.": "계정을 만들려면 <0>윈도우즈/맥용 테라 스테이션</0> 앱을 다운로드하세요. 보안상의 이유로 웹에선 계정 생성을 제한하고 있습니다.",
+
+      "Sign in required": "로그인 필요",
+      "This page shows data for a specific address. To access the page, please <0>sign in</0>.": "이 페이지는 특정 주소에 대한 데이터를 보여줍니다. 페이지에 액세스하려면 <0>로그인</0>하십시오.",
+      "Please sign in with account or ledger to execute": "수행하려면 계정이나 렛저로 로그인하세요"
+    },
+
+    "Form": {
+      "Password": "비밀번호",
+      "Must be at least 10 characters": "10자 이상이어야 합니다",
+      "Incorrect password": "잘못된 비밀번호입니다"
+    },
+
+    "SignUp": {
+      "Import with seed": "시드 문구로 계정 복구하기",
+      "Create an account": "계정 생성",
+
+      "Account name": "계정 이름",
+      "Enter 5-20 alphanumeric characters": "5자 이상 20자 이하의 영숫자를 입력하세요",
+      "Confirm password": "비밀번호 확인",
+      "Confirm your password": "비밀번호를 다시 입력하세요",
+      "Seed phrase": "시드 문구",
+
+      "What if I lost my seed phrase?": "시드 문구를 잃어버리면 어떻게 하나요?",
+      "We cannot recover your information for you. If you lose your seed phrase it's GONE FOREVER. Station doesn't store any data.": "시드 문구를 잃어버리면 해당 계정은 영원히 복구가 불가능합니다. 테라 스테이션은 어떠한 정보도 저장하고 있지 않습니다.",
+      "I have securely <0>WRITTEN DOWN MY SEED</0>. I understand that lost seeds cannot be recovered.": "<0>내 시드 문구를 확실하게 적어두었습니다.</0> 잃어버린 시드 문구는 복구할 수 없다는 것을 알고 있습니다.",
+
+      "Select address to recover": "복원할 주소 선택",
+      "Vested": "베스팅",
+      "Delegated": "위임",
+      "Undelegated": "위임 취소",
+      "No balance": "잔액 없음",
+      "Account recovered successfully!": "계정을 성공적으로 복원했습니다!",
+      "Welcome back to Terra Station.": "테라 스테이션에 돌아오신 것을 환영합니다.",
+
+      "Confirm your seed": "시드 확인하기",
+      "{{index}} word": "{{index}}번째 단어",
+      "Select or type": "선택하거나 입력하세요",
+      "Confirm and finish": "확인하고 끝내기",
+      "Account created!": "계정 생성!",
+      "Welcome aboard to Terra Station.": "테라 스테이션에 승선하신 것을 환영합니다.",
+      "Explore the Terra Network": "테라 네트워크 탐험하기"
+    },
+
+    "SignIn": {
+      "Select account": "계정 선택",
+      "Wallet address": "지갑 주소",
+      "Input your wallet address": "지갑 주소를 입력하세요",
+      "Please plug in your\nLedger Wallet": "렛저 디바이스를 연결하세요"
+    },
+
+    "Manage": {
+      "Manage accounts": "계정 관리",
+      "Delete accounts": "계정 삭제",
+      "Are you sure you want to delete this account? You can restore this account with your seed phrase anytime.": "이 계정을 삭제하시겠습니까? 시드 문구로 언제든지 계정을 복원할 수 있습니다.",
+      "Delete": "삭제",
+
+      "Recent addresses": "최근 주소들",
+      "Delete all": "모두 삭제"
+    }
+  },
+
+  "Page": {
+    "Menu": {
+      "Dashboard": "대시보드",
+      "Bank": "뱅크",
+      "Transactions": "트랜잭션",
+      "Staking": "스테이킹",
+      "Validator details": "검증인 세부 사항",
+      "Market": "마켓",
+      "Governance": "거버넌스",
+      "Proposal details": "제안 세부 사항"
+    },
+
+    "Dashboard": {
+      "Tax rate": "세율",
+      "Capped at {{cappedAt}}": "최대 {{cappedAt}}",
+      "Issuance": "발행량",
+      "Community pool": "커뮤니티 풀",
+      "Staking ratio": "위임 비율",
+      "{{staked}} staked": "{{staked}} 위임됨",
+      "Staked Luna / Total Luna": "위임된 루나 / 전체 루나"
+    },
+
+    "Chart": {
+      "Cumulative": "누적",
+      "Periodic": "일일",
+      "From genesis": "제네시스부터",
+      "Last day": "어제",
+      "{{d}} days": "{{d}}일간",
+      "/ year": "/년",
+
+      "Transaction volume": "거래량",
+      "The onchain transaction volume for the selected currency over the selected time period": "선택한 통화에 대한 선택한 기간 동안의 체인상 거래량입니다",
+      "Staking return": "스테이킹 수익",
+      "Annualized staking yield for Luna based on tax rewards, oracle rewards, gas and latest prices of Luna": "세금 보상, 오라클 보상, 가스 수수료 및 루나의 최신 가격을 기준으로 한 루나의 연간 스테이킹 수익율입니다",
+      "Tax rewards": "세금 보상",
+      "Tax rewards distributed over the selected time period": "선택한 기간 동안 분배된 세금 보상입니다",
+      "Total accounts": "계정 수",
+      "Number of total accounts with more than 1 non-trivial transaction in the selected period": "선택한 기간 동안 두 개 이상의 트랜잭션을 발생시킨 총 계정 수입니다"
+    },
+
+    "Bank": {
+      "My wallet": "내 지갑",
+
+      "Account empty": "빈 계정",
+      "This account doesn't hold any coins yet": "이 계정은 아직 코인을 보유하고 있지 않습니다",
+
+      "Available": "사용 가능",
+      "Hide small balances": "작은 잔액 숨기기",
+
+      "Vesting schedule": "베스팅 스케쥴",
+      "This displays your investment with Terra. Vested Luna can be delegated in the meantime.": "해당 계정의 베스팅 내역을 표시합니다. 베스팅 중인 루나도 위임할 수 있습니다.",
+
+      "Released": "지급 완료",
+      "Releasing": "지급 중",
+      "Release on": "지급 예정"
+    },
+
+    "Txs": {
+      "Send": "보냄",
+      "Receive": "받음",
+      "Staking": "스테이킹",
+      "Market": "마켓",
+      "Swap": "스왑",
+      "Governance": "거버넌스",
+
+      "No transaction history": "트랜잭션 내역 없음",
+      "Looks like you haven't made any transaction yet": "아직 트랜잭션이 없습니다"
+    },
+
+    "Staking": {
+      "Withdraw all rewards": "모든 보상 인출",
+      "Available for delegation": "위임 가능액",
+      "Delegated assets": "위임된 자산",
+      "Undelegated assets": "위임 취소 중인 자산",
+
+      "Validator": "검증인",
+      "Action": "구분",
+      "Delegated": "위임",
+      "Undelegated": "위임 취소",
+      "Rewards": "보상",
+      "Reward": "보상",
+      "Release time": "완료 시간",
+
+      "Rank": "순위",
+      "Moniker": "이름",
+
+      "Operator address": "운영 주소",
+      "Account address": "계정 주소",
+
+      "Voting power": "보팅 파워",
+      "Self-delegation": "자기 위임액",
+
+      "Commission": "수수료",
+      "Validator commission": "검증 수수료",
+      "Max commission rate": "최대 수수료율",
+      "Max daily commission change": "최대 일일 수수료 변경",
+      "Last commission change": "마지막 수수료 변경",
+      "Delegation return": "위임 수익",
+      "Uptime": "가동률",
+      "Last 10k blocks": "최근 1만 블록 내",
+
+      "My delegations": "내 위임",
+      "My rewards": "내 보상",
+
+      "Delegations": "위임",
+      "Event log": "이벤트 기록",
+      "Delegators": "위임자들",
+      "Claim log": "청구 기록",
+      "This validator has no claim history yet": "이 검증인은 아직 청구 내역이 없습니다"
+    },
+
+    "Market": {
+      "Luna price": "루나 가격",
+      "Chart is not available": "차트를 사용할 수 없습니다",
+
+      "1m": "1분",
+      "5m": "5분",
+      "15m": "15분",
+      "30m": "30분",
+      "1h": "1시간",
+      "1d": "1일",
+
+      "Terra exchange rate": "테라 환율",
+      "Swap coins": "환전"
+    },
+
+    "Governance": {
+      "Voting period": "투표 기간",
+      "Minimum deposit": "최소 보증금",
+      "Maximum deposit period": "최대 보증금 입금 기간",
+
+      "No proposals here yet. Be the first!": "아직 올라온 제안이 없습니다. 첫번째 제안자가 되어보세요!",
+      "Proposal": "제안",
+
+      "Deposit": "보증금",
+      "Voting": "투표하는 중",
+      "Passed": "통과됨",
+      "Rejected": "거부됨",
+
+      "Submitted by {{proposer}} at {{date}}": "{{proposer}}이(가) {{date}}에 제출함",
+      "Submitted by ": "제출: ",
+      "Submit time": "제출 시각",
+      "Ends in": "종료 시각",
+
+      "tax_rate": "세율",
+      "reward_weight": "보상 가중치",
+      "recipient": "수령인",
+      "changes": "변경할 내용",
+
+      "Min deposit completed": "최소 보증금 확보됨",
+      "Deposit end time": "보증금 입금 종료",
+      "Total": "합계",
+      "Depositor": "보증자",
+      "Depositors": "보증자들",
+      "No deposits yet": "아직 보증금이 지불되지 않았습니다",
+
+      "Vote": "투표",
+      "Voting end time": "투표 종료 시각",
+      "Most voted on": "최다 득표",
+      "Percent voting": "투표율",
+      "{{n}} of {{d}} has voted": "{{d}} 중 {{n}} 투표됨",
+      "No votes yet": "아직 투표가 없습니다",
+      "Voter": "투표자",
+      "Answer": "응답",
+
+      "Yes": "찬성",
+      "No": "반대",
+      "NoWithVeto": "반대 (거부권 행사)",
+      "No\nWithVeto": "반대\n(거부권 행사)",
+      "Abstain": "기권",
+
+      "Tallying procedure": "합산 절차",
+      "Quorum": "최소 투표참여율",
+      "Pass threshold": "통과 임계값",
+      "Veto threshold": "거부 임계값",
+
+      "New proposal": "제안하기"
+    }
+  },
+
+  "Post": {
+    "Confirm": {
+      "Simulating...": "시뮬레이션하는 중...",
+
+      "Recommended fee is {{fee}} or higher.\nTransactions with low fee might fail to proceed.": "수수료로 {{fee}} 이상을 추천합니다.\n수수료가 적으면 트랜잭션이 진행되지 않을 수 있습니다.",
+      "You don't have enough balance. Please adjust either the amount or the fee.": "잔액이 충분하지 않습니다. 액수나 수수료를 조정해주세요.",
+
+      "Confirm with ledger": "렛저로 승인하기",
+      "Please confirm in your\nLedger Wallet": "렛저 디바이스에서\n승인해주세요",
+
+      "Confirm with password": "비밀번호로 승인하기",
+      "Input your password to confirm": "비밀번호를 입력하세요",
+
+      "Success!": "성공!"
+    },
+
+    "Send": {
+      "Send {{unit}}": "{{unit}} 보내기",
+      "Send to": "받는 이",
+      "Input receiver's wallet address": "받는 이의 지갑 주소를 입력하세요",
+      "Input memo": "메모를 입력하세요",
+      "Tax": "세금",
+      "Tax ({{percent}}, Max {{max}})": "세금 ({{percent}}, 최대 {{max}})",
+      "Recent transactions": "최근 트랜잭션",
+
+      "Calculating tax...": "세금을 계산하는 중...",
+      "Send": "보내기",
+      "Sending...": "보내는 중...",
+      "Sent {{coin}} to {{address}}": "{{address}}에게 {{coin}}를 보냈습니다"
+    },
+
+    "Staking": {
+      "Source ({{length}})": "출처 ({{length}})",
+      "Delegate to": "위임할 주소",
+      "Undelegate from": "위임 취소할 주소",
+
+      "Delegate": "위임",
+      "Delegating...": "위임하는 중...",
+      "Delegated {{coin}} to {{moniker}}": "{{moniker}}에게 {{coin}}를 위임했습니다",
+
+      "Redelegate": "재위임",
+      "Redelegating...": "재위임하는 중...",
+      "Redelegated {{coin}} to {{moniker}}": "{{moniker}}에게 {{coin}}를 재위임했습니다",
+
+      "Undelegate": "위임 취소",
+      "Undelegating...": "위임 취소하는 중...",
+      "Undelegated {{coin}} from {{moniker}}": "{{moniker}}로부터 {{coin}}를 위임 취소했습니다",
+
+      "Withdraw": "보상 인출",
+      "Withdrawing...": "인출하는 중...",
+      "Withdrew to {{to}}": "{{to}}에게 보상을 인출했습니다",
+
+      "Undelegation takes 21 days to complete. You would not get rewards in the meantime.": "위임 해제를 완료하는 데 21일이 걸립니다. 그 동안에는 보상을 받지 못합니다.",
+      "Redelegation to the same validator will be prohibited for 21 days. Please make sure you input the right amount of luna to delegate.": "동일한 검증인에게 재위임은 21일 동안 금지됩니다. 위임할 적절한 양의 루나를 입력했는지 확인하십시오."
+    },
+
+    "Swap": {
+      "Swapping is not available": "환전할 수 없습니다",
+      "Swapping is not available at the moment": "현재 환전할 수 없습니다",
+      "Select a coin to swap": "환전할 코인을 선택하세요",
+
+      "Select a coin...": "코인 선택...",
+
+      "Current balance": "현재 잔액",
+      "Spread": "스프레드",
+      "Receive": "받는 양",
+
+      "Luna swap spread": "Luna 스왑 스프레드",
+      "min.": "최소",
+      "tobin tax": "토빈세",
+      "except for {{unit}} set at {{rate}}": "단, {{unit}}의 경우 {{rate}}",
+
+      "Swap": "환전",
+      "Swapping...": "환전하는 중...",
+      "Swapped {{coin}} to {{unit}}": "{{coin}}를 {{unit}}으로 환전했습니다",
+
+      "Final amount you receive in {{unit}} may vary due to the swap rate changes": "환율 변경으로 인해, 받게 되는 {{unit}}의 최종 금액이 달라질 수 있습니다"
+    },
+
+    "Governance": {
+      "Propose": "제안",
+      "Proposing...": "제안하는 중...",
+      "Deposit": "보증금",
+      "Depositing...": "보증금 내는 중...",
+      "Vote": "투표",
+      "Voting...": "투표하는 중...",
+
+      "Text Proposal": "텍스트 제안",
+      "Tax-rate Update": "세율 변경",
+      "Reward-weight Update": "보상 가중치 변경",
+      "Community-pool Spend": "커뮤니티풀 사용",
+      "Parameter-change": "매개변수 변경",
+
+      "Title": "제목",
+      "Description": "설명",
+      "Initial deposit": "초기 보증금",
+
+      "Tax-rate": "세율",
+      "Reward-weight": "보상 가중치",
+      "Recipient": "수령인",
+      "Changes": "변경할 내용",
+
+      "Community pool": "커뮤니티풀",
+
+      "Created proposal {{title}} with {{coin}} deposit": "보증금 {{coin}}으로 {{title}} 제안을 생성했습니다",
+      "Created proposal {{title}} without deposit": "보증금없이 {{title}} 제안을 생성했습니다",
+      "Deposited {{coin}} to {{title}}": "{{title}}에 보증금 {{coin}}를 냈습니다",
+      "Voted {{answer}} for {{title}}": "{{title}}에 {{answer}}(으)로 투표했습니다"
+    }
+  }
+}

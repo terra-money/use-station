@@ -1,0 +1,67 @@
+{
+  "name": "@terra-money/use-station",
+  "author": "Terra <engineering@terra.money> (https://terra.money)",
+  "version": "3.5.0",
+  "main": "dist/index.js",
+  "module": "dist/use-station.esm.js",
+  "typings": "dist/index.d.ts",
+  "files": [
+    "dist"
+  ],
+  "homepage": "https://github.com/terra-project/use-station",
+  "bugs": "https://github.com/terra-project/use-station/issues",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/terra-project/use-station.git"
+  },
+  "scripts": {
+    "start": "tsdx watch",
+    "build": "tsdx build",
+    "test": "tsdx test",
+    "lint": "tsdx lint",
+    "prepare": "tsdx build"
+  },
+  "devDependencies": {
+    "@types/bech32": "^1.1.2",
+    "@types/jest": "^25.1.3",
+    "@types/luxon": "^1.21.0",
+    "@types/numeral": "^0.0.26",
+    "@types/qs": "^6.9.1",
+    "@types/ramda": "^0.26.43",
+    "@types/react": "^16.9.23",
+    "@types/socketcluster-client": "13.0.3",
+    "axios": "^0.19.2",
+    "bech32": "^1.1.3",
+    "bignumber.js": "^9.0.0",
+    "husky": "^4.2.3",
+    "i18next": "^19.3.2",
+    "i18next-browser-languagedetector": "^4.0.2",
+    "lint-staged": "^10.0.8",
+    "luxon": "^1.22.0",
+    "numeral": "^2.0.6",
+    "qs": "^6.9.1",
+    "ramda": "^0.27.0",
+    "react-i18next": "^11.3.3",
+    "socketcluster-client": "14.3.1",
+    "tiny-invariant": "^1.1.0",
+    "tsdx": "^0.12.3",
+    "typescript": "^3.8.3"
+  },
+  "peerDependencies": {
+    "react": ">=16"
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "lint-staged && tsdx lint"
+    }
+  },
+  "lint-staged": {
+    "{src,example/src}/**/*.{ts,tsx,json,scss}": [
+      "prettier --write"
+    ]
+  },
+  "prettier": {
+    "semi": false,
+    "singleQuote": true
+  }
+}
