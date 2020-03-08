@@ -1,12 +1,18 @@
 {
   "name": "@terra-money/use-station",
   "author": "Terra <engineering@terra.money> (https://terra.money)",
-  "version": "3.5.1",
+  "version": "3.5.2",
   "main": "dist/index.js",
   "module": "dist/use-station.esm.js",
   "typings": "dist/index.d.ts",
   "files": [
     "dist"
+  ],
+  "keywords": [
+    "blockchain",
+    "cryptocurrency",
+    "react",
+    "reactjs"
   ],
   "homepage": "https://github.com/terra-project/use-station",
   "bugs": "https://github.com/terra-project/use-station/issues",
