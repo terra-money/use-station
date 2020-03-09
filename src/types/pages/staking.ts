@@ -78,6 +78,7 @@ export interface ValidatorListHeadings {
   rank: ValidatorListHeading
   moniker: ValidatorListHeading
   votingPower: ValidatorListHeading
+  selfDelegation: ValidatorListHeading
   commission: ValidatorListHeading
   delegationReturn: ValidatorListHeading
   uptime: ValidatorListHeading

@@ -179,6 +179,10 @@ export default (user?: User): StakingPage => {
           title: t('Page:Staking:Voting power'),
           sorter: { prop: 'votingPower.weight' }
         },
+        selfDelegation: {
+          title: t('Page:Staking:Self-delegation'),
+          sorter: { prop: 'selfDelegation.weight' }
+        },
         commission: {
           title: t('Page:Staking:Validator commission'),
           sorter: { prop: 'commissionInfo.rate' }
