@@ -21,6 +21,11 @@ export default (
   const { ERROR } = useInfo()
   const { address, name, ledger } = user
 
+  const SUCCESS = {
+    title: t('Post:Confirm:Success!'),
+    button: t('Common:Form:Ok')
+  }
+
   /* error */
   const defaultErrorMessage = t('Common:Error:Oops! Something went wrong')
   const [simulatedErrorMessage, setSimulatedErrorMessage] = useState<string>()
@@ -217,16 +222,12 @@ export default (
         }
       : undefined,
 
-    result: submitted
-      ? !errorMessage
-        ? {
-            title: t('Post:Confirm:Success!'),
-            content: message,
-            button: t('Common:Form:Ok')
-          }
-        : { ...ERROR, content: errorMessage }
-      : simulatedErrorMessage
+    result: simulatedErrorMessage
       ? { ...ERROR, content: simulatedErrorMessage }
+      : errorMessage
+      ? { ...ERROR, content: errorMessage }
+      : submitted
+      ? { ...SUCCESS, content: message }
       : undefined
   }
 }
