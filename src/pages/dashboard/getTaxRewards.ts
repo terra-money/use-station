@@ -11,7 +11,7 @@ interface Result {
 const denom = 'ukrw'
 export default (t: TFunction): Props<Result> => ({
   title: t('Page:Chart:Tax rewards'),
-  desc: t('Page:Chart:Tax rewards distributed over the selected time period.'),
+  desc: t('Page:Chart:Tax rewards distributed over the selected time period'),
   url: '/v1/dashboard/block_rewards',
   filterConfig: { type: { initial: CumulativeType.C } },
   getValue: (results, { type }) => {
