@@ -26,7 +26,7 @@ export default (): ((v: ValidatorData, params?: Params) => ValidatorUI) => {
       : undefined
 
     return {
-      rank: index && index + 1,
+      rank: typeof index === 'number' ? index + 1 : undefined,
 
       moniker: description.moniker,
       profile: description.profileIcon,
