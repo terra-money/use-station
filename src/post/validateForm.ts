@@ -58,5 +58,5 @@ const isBech32 = (value: string) => {
   }
 }
 
-const isAddress = (string: string = ''): boolean =>
+export const isAddress = (string: string = ''): boolean =>
   string.length === 44 && string.startsWith('terra') && isBech32(string)
