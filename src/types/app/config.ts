@@ -9,7 +9,7 @@ export interface InitialConfigState {
 }
 
 /* lang */
-export type LangKey = 'en' | 'zh' | 'ko'
+export type LangKey = 'en' | 'zh' | 'fr' | 'ko'
 export type LangConfig = Configure<LangKey>
 
 /* chain */

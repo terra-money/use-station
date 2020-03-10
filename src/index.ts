@@ -3,6 +3,7 @@ import { initReactI18next } from 'react-i18next'
 import LanguageDetector from 'i18next-browser-languagedetector'
 import en from './lang/en'
 import zh from './lang/zh.json'
+import fr from './lang/fr.json'
 import ko from './lang/ko.json'
 
 i18n
@@ -12,6 +13,7 @@ i18n
     resources: {
       en: { translation: en },
       zh: { translation: zh },
+      fr: { translation: fr },
       ko: { translation: ko }
     },
     keySeparator: ':'
