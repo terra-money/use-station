@@ -150,10 +150,16 @@ export default (user: User, denom: string): PostPage<RecentSentUI> => {
   }
 
   const contents: ConfirmContent[] = ([] as ConfirmContent[])
-    .concat({
-      name: t('Common:Tx:Amount'),
-      displays: [format.display({ amount, denom })]
-    })
+    .concat([
+      {
+        name: t('Post:Send:Send to'),
+        text: to
+      },
+      {
+        name: t('Common:Tx:Amount'),
+        displays: [format.display({ amount, denom })]
+      }
+    ])
     .concat(
       tax ? { name: tax.label, displays: [format.display(tax.coin)] } : []
     )
