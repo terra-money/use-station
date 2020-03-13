@@ -1,7 +1,6 @@
 import BigNumber from 'bignumber.js'
 import { DateTime } from 'luxon'
 import { Coin, DisplayCoin } from '../types'
-import { times, div } from './math'
 
 interface Config {
   integer?: boolean
@@ -40,8 +39,15 @@ export const coin = (coin: Coin, config?: Config): string => {
   return [value, unit].join(' ')
 }
 
-export const toAmount = (input: string): string => times(input ?? '0', 1e6)
-export const toInput = (amount: string): string => div(amount ?? '0', 1e6)
+export const toAmount = (input: string): string => {
+  const number = new BigNumber(input ?? 0).times(1e6)
+  return number.decimalPlaces(0, BigNumber.ROUND_DOWN).toString()
+}
+
+export const toInput = (amount: string): string => {
+  const number = new BigNumber(amount ?? 0).div(1e6)
+  return number.decimalPlaces(6, BigNumber.ROUND_DOWN).toString()
+}
 
 export const date = (
   param: string | Date,

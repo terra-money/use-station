@@ -27,6 +27,11 @@ describe('format', () => {
     expect(format.coin(coin, config)).toBe('1,234 Luna')
   })
 
+  test('input/amount', () => {
+    expect(format.toAmount('1.234567890')).toBe('1234567')
+    expect(format.toInput('1234567.890')).toBe('1.234567')
+  })
+
   test('truncate', () => {
     const address = 'terra1srw9p49fa46fw6asp0ttrr3cj8evmj3098jdej'
     expect(format.truncate(address, [9, 7])).toBe('terra1srw...098jdej')
