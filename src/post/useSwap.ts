@@ -140,7 +140,11 @@ export default (user: User, actives: string[]): PostPage<SwapUI> => {
         : t('Post:Swap:Select a coin to swap'),
     max: {
       title: t('Post:Swap:Current balance'),
-      display: format.display(getMax(from))
+      display: format.display(getMax(from)),
+      attrs: {
+        onClick: () =>
+          setValue('input', toInput(getMax(from).amount))
+      }
     },
     spread: {
       title: t('Post:Swap:Spread'),
