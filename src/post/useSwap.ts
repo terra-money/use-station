@@ -142,8 +142,7 @@ export default (user: User, actives: string[]): PostPage<SwapUI> => {
       title: t('Post:Swap:Current balance'),
       display: format.display(getMax(from)),
       attrs: {
-        onClick: () =>
-          setValue('input', toInput(getMax(from).amount))
+        onClick: () => setValue('input', toInput(getMax(from).amount))
       }
     },
     spread: {

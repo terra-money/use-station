@@ -155,9 +155,19 @@ export default (user?: User): StakingPage => {
         const compareNumber = c * (gt(a, b) ? 1 : -1)
         return a === b ? 0 : isString ? compareString : compareNumber
       })
-      .map((validator, index) =>
-        renderValidatorItem(validator, { index, total })
-      )
+
+    const grouped = [
+      ...sorted
+        .filter(({ isNewValidator }) => isNewValidator)
+        .map((
+          validator // New validators (No rank)
+        ) => renderValidatorItem(validator, { index: -1, total })),
+      ...sorted
+        .filter(({ isNewValidator }) => !isNewValidator)
+        .map((validator, index) =>
+          renderValidatorItem(validator, { index, total })
+        )
+    ]
 
     return {
       sorter: {
@@ -200,7 +210,7 @@ export default (user?: User): StakingPage => {
           sorter: { prop: 'myDelegation' }
         }
       },
-      contents: sorted
+      contents: grouped
     }
   }
 

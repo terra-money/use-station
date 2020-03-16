@@ -102,13 +102,13 @@ export interface ValidatorData {
   operatorAddress: string
   description: Description
   votingPower: VotingPower
-  selfDelegation?: VotingPower
-  commissions: Reward[]
+  selfDelegation: VotingPower
   commissionInfo: CommissionInfo
   stakingReturn: string
   upTime: number
   status: string
   rewardsPool: Rewards
+  isNewValidator: boolean
   myUndelegation?: MyUndelegation[]
   myDelegatable: string
   myDelegation?: string
