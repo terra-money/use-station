@@ -296,6 +296,7 @@
       "tax_rate": "세율",
       "reward_weight": "보상 가중치",
       "recipient": "수령인",
+      "amount": "액수",
       "changes": "변경할 내용",
 
       "Min deposit completed": "최소 보증금 확보됨",

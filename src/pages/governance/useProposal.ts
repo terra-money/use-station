@@ -34,8 +34,8 @@ export default (id: string): ProposalPage => {
           { title: `${t('Page:Governance:Proposal')} ID`, content: id },
           { title: t('Common:Type'), content: t('Post:Governance:' + type) },
           ...content.map(c => ({
-            title: t('Page:Governance:' + c.key),
-            content: stringify(c) ?? t('Page:Governance:' + c.value) ?? ''
+            title: capitalize(t('Page:Governance:' + c.key)),
+            content: stringify(c)
           })),
           {
             title: t('Page:Governance:Submit time'),
@@ -188,14 +188,16 @@ export default (id: string): ProposalPage => {
 }
 
 /* helpers */
-const stringify = ({ key, value }: ProposalDetail): string | undefined =>
+const stringify = ({ key, value }: ProposalDetail): string =>
   typeof value !== 'string'
     ? JSON.stringify(value, null, 2)
-    : key === 'tax_rate'
+    : key === 'tax_rate' || key === 'reward_weight'
     ? percent(value)
-    : undefined
+    : value
 
 const format0a = (s: string) =>
   numeral(format.amountN(s))
     .format('0a')
     .toUpperCase()
+
+const capitalize = (s: string) => s.charAt(0).toUpperCase() + s.slice(1)

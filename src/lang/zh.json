@@ -295,6 +295,7 @@
       "tax_rate": "税率",
       "reward_weight": "奖励权重",
       "recipient": "接受者",
+      "amount": "数量",
       "changes": "更改的内容",
 
       "Min deposit completed": "确保最低保证金",

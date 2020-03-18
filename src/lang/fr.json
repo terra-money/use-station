@@ -296,6 +296,7 @@
       "tax_rate": "tax_rate",
       "reward_weight": "reward_weight",
       "recipient": "destinataire",
+      "amount": "Montant",
       "changes": "changements",
 
       "Min deposit completed": "Dépôt minimum atteint",
