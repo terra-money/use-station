@@ -144,7 +144,8 @@ export default (user?: User): StakingPage => {
     const sorted = validators
       .filter(v => {
         const delegated = v.myDelegation && gt(v.myDelegation, 0)
-        const hidden = v.status === 'jailed' && !delegated
+        const hidden =
+          (v.status === 'jailed' && !delegated) || v.status === 'inactive'
         return !hidden
       })
       .sort((validatorA, validatorB) => {
