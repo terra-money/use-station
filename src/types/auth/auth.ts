@@ -15,3 +15,9 @@ export interface Auth {
   signIn: (user: User) => void
   signOut: () => void
 }
+
+export interface Wallet {
+  privateKey: string
+  publicKey: string
+  terraAddress: string
+}

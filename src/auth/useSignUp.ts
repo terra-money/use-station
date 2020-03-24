@@ -1,7 +1,8 @@
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { update } from 'ramda'
-import { Field, Address, Seed, Bip, SignUp, SignUpStep } from '../types'
+import invariant from 'tiny-invariant'
+import { Field, Seed, Bip, SignUp, SignUpStep, Wallet } from '../types'
 import { Account, BankData, Generate, BipList } from '../types'
 import { useAuth } from '../contexts/AuthContext'
 import fcd from '../api/fcd'
@@ -16,22 +17,25 @@ interface Values {
 }
 
 interface Params extends Omit<Values, 'confirm'> {
-  phrase: string
-  bip: Bip
+  wallet: Wallet
 }
 
 interface Props {
   generated?: Seed
   generateAddresses: Generate
+  generateWallet: (phrase: string, bip: Bip) => Promise<Wallet>
+  submit: (params: Params) => Promise<void>
   isNameExists: (name: string) => boolean
-  submit: (params: Params) => Promise<Address>
+  isAddressExists: (address: string) => boolean
 }
 
 export default (props: Props): SignUp => {
-  const { generated, generateAddresses, isNameExists, submit } = props
+  const { generated, generateAddresses, generateWallet, submit } = props
+  const { isNameExists, isAddressExists } = props
   const { t } = useTranslation()
   const { signIn } = useAuth()
 
+  const ADDRESS = t('Common:Account:Address')
   const ID = t('Auth:SignUp:Account name')
   const PW = t('Auth:Form:Password')
 
@@ -165,9 +169,21 @@ export default (props: Props): SignUp => {
 
   /* Sign up */
   const signUp = async (bip: Bip = 330) => {
-    const { name, password } = values
-    const address = await submit({ name, password, phrase, bip })
-    signIn({ name, address })
+    try {
+      const { name, password } = values
+      const wallet = await generateWallet(phrase, bip)
+      const { terraAddress: address } = wallet
+
+      invariant(
+        !isAddressExists(address),
+        t('Common:Validate:{{label}} already exists', { label: ADDRESS })
+      )
+
+      await submit({ name, password, wallet })
+      signIn({ name, address })
+    } catch (error) {
+      setError(error)
+    }
   }
 
   const disabled = invalid || seed.some(word => !word.length) || loading
