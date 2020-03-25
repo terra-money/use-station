@@ -47,8 +47,8 @@ export default (): Socket => {
 }
 
 const getSocket = (chainKey: ChainKey) => {
-  const { hostname } = getChain(chainKey)
-  const socket = socketCluster.create({ hostname, port: 443 })
+  const { hostname, secure, port } = getChain(chainKey)
+  const socket = socketCluster.create({ hostname, secure, port })
   socket.on('error', () => {}) // Do not report
   return socket
 }

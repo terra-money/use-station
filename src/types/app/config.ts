@@ -13,7 +13,7 @@ export type LangKey = 'en' | 'zh' | 'fr' | 'ko'
 export type LangConfig = Configure<LangKey>
 
 /* chain */
-export type ChainKey = 'columbus' | 'vodka' | 'soju' | 'fitz'
+export type ChainKey = 'columbus' | 'vodka' | 'soju' | 'fitz' | 'mars'
 export type ChainConfig = Configure<ChainKey>
 
 /* socket */

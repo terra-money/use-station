@@ -56,6 +56,10 @@
   "peerDependencies": {
     "react": ">=16"
   },
+  "prettier": {
+    "semi": false,
+    "singleQuote": true
+  },
   "husky": {
     "hooks": {
       "pre-commit": "lint-staged && tsdx lint"
@@ -65,9 +69,5 @@
     "{src,example/src}/**/*.{ts,tsx,json,scss}": [
       "prettier --write"
     ]
-  },
-  "prettier": {
-    "semi": false,
-    "singleQuote": true
   }
 }
