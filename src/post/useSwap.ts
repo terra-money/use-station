@@ -238,13 +238,16 @@ const getContent = (result: MarketData['result'], t: TFunction) => {
   ].join(': ')} ${min}`
 
   const tobin = percent(tobin_tax)
-  const tobinText = `Terra ${t('Post:Swap:tobin tax')}: ${tobin}`
+  let tobinText = `Terra ${t('Post:Swap:tobin tax')}: ${tobin}`
 
-  const illiquid = illiquid_tobin_tax_list[0]
-  const illiquidText = t('Post:Swap:except for {{unit}} set at {{rate}}', {
-    unit: format.denom(illiquid.denom),
-    rate: percent(illiquid.tax_rate, 0)
-  })
+  if (illiquid_tobin_tax_list && illiquid_tobin_tax_list.length) {
+    const illiquid = illiquid_tobin_tax_list[0]
 
-  return [minText, `${tobinText} (${illiquidText})`].join('\n')
+    tobinText += ` (${t('Post:Swap:except for {{unit}} set at {{rate}}', {
+      unit: format.denom(illiquid.denom),
+      rate: percent(illiquid.tax_rate, 0)
+    })})`
+  }
+
+  return [minText, tobinText].join('\n')
 }

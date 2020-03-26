@@ -15,7 +15,7 @@ export default (t: TFunction): Props<Result> => ({
   ),
   url: '/v1/dashboard/staking_return',
   getValue: results => [
-    percent(results[results.length - 1].annualizedReturn),
+    percent(results.length ? results[results.length - 1].annualizedReturn : 0),
     t('Page:Chart:/ year')
   ],
   getChart: results => ({

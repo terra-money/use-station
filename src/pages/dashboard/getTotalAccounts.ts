@@ -9,6 +9,8 @@ interface Result {
   activeAccountCount: number
 }
 
+const unit = 'Accounts'
+
 export default (t: TFunction): Props<Result> => ({
   title: t('Page:Chart:Total accounts'),
   desc: t(
@@ -17,14 +19,20 @@ export default (t: TFunction): Props<Result> => ({
   url: '/v1/dashboard/account_growth',
   filterConfig: { type: { initial: CumulativeType.C } },
   getValue: (results, { type }) => {
-    const { totalAccountCount: head } = results[0]
-    const { totalAccountCount: tail } = results[results.length - 1]
+    const { totalAccountCount: head } = results.length
+      ? results[0]
+      : { totalAccountCount: '0' }
+    const { totalAccountCount: tail } =
+      results.length > 1
+        ? results[results.length - 1]
+        : { totalAccountCount: head }
+
     const value =
       type === CumulativeType.C
         ? minus(tail, head)
         : sum(results.slice(1).map(d => d.totalAccountCount))
 
-    return { value: format.decimal(value, 0), unit: 'Accounts' }
+    return { value: format.decimal(value, 0), unit }
   },
   getChart: results => ({
     data:

@@ -9,22 +9,24 @@ interface Result {
 }
 
 const denom = 'ukrw'
+
 export default (t: TFunction): Props<Result> => ({
   title: t('Page:Chart:Tax rewards'),
   desc: t('Page:Chart:Tax rewards distributed over the selected time period'),
   url: '/v1/dashboard/block_rewards',
   filterConfig: { type: { initial: CumulativeType.C } },
   getValue: (results, { type }) => {
-    const { blockReward: head } = results[0]
-    const { blockReward: tail } = results[results.length - 1]
+    const { blockReward: head } = results.length
+      ? results[0]
+      : { blockReward: '0' }
+    const { blockReward: tail } =
+      results.length > 1 ? results[results.length - 1] : { blockReward: head }
+    const amount =
+      type === CumulativeType.C
+        ? minus(tail, head)
+        : sum(results.slice(1).map(d => d.blockReward))
 
-    return format.display({
-      amount:
-        type === CumulativeType.C
-          ? minus(tail, head)
-          : sum(results.slice(1).map(d => d.blockReward)),
-      denom
-    })
+    return format.display({ amount, denom })
   },
   getChart: results => ({
     data:

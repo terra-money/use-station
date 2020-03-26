@@ -5,16 +5,31 @@ export interface Config {
 
 export interface InitialConfigState {
   lang: LangKey
-  chain: ChainKey
+  chain: ChainOptions
 }
 
 /* lang */
 export type LangKey = 'en' | 'zh' | 'fr' | 'ko'
-export type LangConfig = Configure<LangKey>
+
+export interface LangConfig {
+  current: LangKey
+  list: LangKey[]
+  set: (key: LangKey) => void
+}
 
 /* chain */
-export type ChainKey = 'columbus' | 'vodka' | 'soju' | 'fitz'
-export type ChainConfig = Configure<ChainKey>
+export interface ChainOptions {
+  key: string
+  name: string
+  hostname: string
+  port?: number
+  secure?: boolean
+}
+
+export interface ChainConfig {
+  current: ChainOptions
+  set: (options: ChainOptions) => void
+}
 
 /* socket */
 export interface Socket {
@@ -25,11 +40,4 @@ export interface Socket {
 export interface Block {
   formatted: string
   link: string
-}
-
-/* utils */
-export interface Configure<T> {
-  current?: T
-  list: T[]
-  set: (key: T) => void
 }

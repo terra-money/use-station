@@ -24,9 +24,11 @@ export default (t: TFunction): Props<Result> => ({
 
     const render = (result: Result) => {
       const { denom, data } = result
-      const { txVolume: head } = data[0]
-      const { txVolume: tail } = data[data.length - 1]
-      const { txVolume: secondTail } = data[data.length - 2]
+      const { txVolume: head } = data.length ? data[0] : { txVolume: '0' }
+      const { txVolume: tail } =
+        data.length > 1 ? data[data.length - 1] : { txVolume: head }
+      const { txVolume: secondTail } =
+        data.length > 2 ? data[data.length - 2] : { txVolume: tail }
       const isCumulative = type === CumulativeType.C
 
       const value = isCumulative
@@ -35,6 +37,7 @@ export default (t: TFunction): Props<Result> => ({
 
       const lastDayValue = isCumulative ? minus(tail, secondTail) : tail
       const amount = duration !== 1 ? value : lastDayValue
+
       return format.display({ amount, denom })
     }
 
