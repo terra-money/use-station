@@ -1,10 +1,9 @@
 import { useState, useEffect } from 'react'
-import socketCluster from 'socketcluster-client'
+import socketCluster, { SCClientSocket } from 'socketcluster-client'
 import numeral from 'numeral'
-import { ChainKey, Socket } from '../types'
+import { Socket } from '../types'
 import useFinder from '../hooks/useFinder'
 import { useConfig } from './ConfigContext'
-import { getChain } from './useChain'
 
 export default (): Socket => {
   const getLink = useFinder()
@@ -15,7 +14,7 @@ export default (): Socket => {
   const [status, setStatus] = useState<string>()
 
   /* socket */
-  const socket = current && getSocket(current)
+  const socket = getSocket(current)
 
   useEffect(() => {
     const channel = {
@@ -35,20 +34,18 @@ export default (): Socket => {
   }, [current])
 
   /* block */
-  const block =
-    current && height
-      ? {
-          formatted: `#${numeral(height).format()}`,
-          link: getLink!({ q: 'blocks', v: height! })
-        }
-      : undefined
+  const block = height
+    ? {
+        formatted: `#${numeral(height).format()}`,
+        link: getLink!({ q: 'blocks', v: height! })
+      }
+    : undefined
 
   return { block, status }
 }
 
-const getSocket = (chainKey: ChainKey) => {
-  const { hostname, secure, port } = getChain(chainKey)
-  const socket = socketCluster.create({ hostname, secure, port })
+const getSocket = (options: SCClientSocket.ClientOptions) => {
+  const socket = socketCluster.create(options)
   socket.on('error', () => {}) // Do not report
   return socket
 }
