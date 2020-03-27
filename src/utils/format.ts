@@ -1,6 +1,7 @@
 import BigNumber from 'bignumber.js'
 import { DateTime } from 'luxon'
 import { Coin, DisplayCoin } from '../types'
+import currencies from './currencies.json'
 
 interface Config {
   integer?: boolean
@@ -24,8 +25,14 @@ export const amountN = (amount: string, config?: Config): number => {
 
 export const denom = (denom: string): string => {
   const invalid = !denom || !denom.startsWith('u')
-  const terra = denom.slice(1, 3) + 'T'
-  return invalid ? '' : denom === 'uluna' ? 'Luna' : terra.toUpperCase()
+  const unit = denom.slice(1).toUpperCase()
+  return invalid
+    ? ''
+    : unit === 'LUNA'
+    ? 'Luna'
+    : currencies.includes(unit)
+    ? unit.slice(0, 2) + 'T'
+    : unit
 }
 
 export const display = (coin: Coin, config?: Config): DisplayCoin => {
