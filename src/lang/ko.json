@@ -257,6 +257,9 @@
       "Event log": "이벤트 기록",
       "Delegators": "위임자들",
       "Claim log": "청구 기록",
+
+      "No events": "아직 이벤트가 없습니다",
+      "No delegators": "아직 위임자가 없습니다",
       "This validator has no claim history yet": "이 검증인은 아직 청구 내역이 없습니다"
     },
 

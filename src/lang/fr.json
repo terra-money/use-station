@@ -257,6 +257,9 @@
       "Event log": "Journal des événements",
       "Delegators": "Délégateurs",
       "Claim log": "Journal des réclamations",
+
+      "No events": "Pas encore d’événements",
+      "No delegators": "Pas encore de délégateurs",
       "This validator has no claim history yet": "Ce validateur n'a pas encore d'antécédents de réclamation"
     },
 

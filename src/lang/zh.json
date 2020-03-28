@@ -254,8 +254,11 @@
 
       "Delegations": "委托",
       "Event log": "事件记录",
-      "Delegators": "委托人们",
+      "Delegators": "委托人",
       "Claim log": "索取记录",
+
+      "No events": "没有委托人",
+      "No delegators": "没有事件",
       "This validator has no claim history yet": "这个验证人还没有任何索取记录"
     },
 
