@@ -7,16 +7,19 @@ If developers install this project from npm and use it, they can easily build a 
 ## Getting Started
 
 Install to your React project using npm:
+
 ```sh
 npm install @terra-money/use-station
 ```
 
 Declare your domain like below to solve CORS problem:
+
 ```
 https://local.terra.money
 ```
 
 Basic sample:
+
 ```tsx
 import React from 'react'
 import ReactDOM from 'react-dom'
@@ -44,7 +47,15 @@ const Dashboard = () => {
 }
 
 const App = () => {
-  const config = useConfigState()
+  const chain = {
+    key: 'columbus',
+    name: 'columbus-3',
+    hostname: 'fcd.terra.dev',
+    port: 443,
+    secure: true
+  }
+
+  const config = useConfigState({ chain })
 
   return (
     <ConfigProvider value={config}>
