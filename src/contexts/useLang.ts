@@ -10,7 +10,7 @@ export const Languages: { [key in LangKey]: { name: string } } = {
 }
 
 export default (initial?: LangKey): LangConfig => {
-  const [current, setCurrent] = useState<LangKey | undefined>()
+  const [current, setCurrent] = useState<LangKey>()
   const { i18n } = useTranslation()
 
   const set = useCallback(

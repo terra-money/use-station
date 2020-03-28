@@ -4,7 +4,7 @@ export interface Config {
 }
 
 export interface InitialConfigState {
-  lang: LangKey
+  lang?: LangKey
   chain: ChainOptions
 }
 
@@ -12,7 +12,7 @@ export interface InitialConfigState {
 export type LangKey = 'en' | 'zh' | 'fr' | 'ko'
 
 export interface LangConfig {
-  current: LangKey
+  current?: LangKey
   list: LangKey[]
   set: (key: LangKey) => void
 }
