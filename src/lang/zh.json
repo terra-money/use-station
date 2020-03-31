@@ -144,7 +144,7 @@
 
       "Current password": "当前密码",
       "New password": "新密码",
-      "Confirm new password": "确认密码",
+      "Confirm new password": "确认新密码",
 
       "Are you sure you want to delete this account? You can restore this account with your seed phrase anytime.": "您确定要删除此帐户吗？您随时可以使用助记词来恢复您的帐户。",
       "Delete": "删除",
