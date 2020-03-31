@@ -172,7 +172,10 @@ export default (user: User, { to, undelegate }: Props): PostPage => {
         message: t('Post:Staking:Delegated {{coin}} to {{moniker}}', {
           coin,
           moniker
-        })
+        }),
+        warning: t(
+          'Post:Staking:Remember to leave a small of tokens undelegated, as subsequent transactions (e.g. redelegation) require fees to be paid.'
+        )
       },
       [TxType.R]: {
         contents,

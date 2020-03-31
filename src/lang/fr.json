@@ -73,8 +73,7 @@
       "Sign up": "S'inscrire",
       "Sign in": "S'identifier",
       "Sign in with ledger": "S'identifier avec un ledger",
-      "Sign in with address": "S'identifier avec une address",
-      "Sign out": "Se déconnecter"
+      "Sign in with address": "S'identifier avec une address"
     },
 
     "Common": {
@@ -385,6 +384,7 @@
       "Withdrawing...": "Retrait...",
       "Withdrew to {{to}}": "Retrait vers {{to}}",
 
+      "Remember to leave a small of tokens undelegated, as subsequent transactions (e.g. redelegation) require fees to be paid.": "Prévoyez de laisser un petit montant de monnaie non délégué. Les futures transactions (ex: redélégations) demandent le paiement de frais.",
       "Undelegation takes 21 days to complete. You would not get rewards in the meantime.": "Le délai de retrait d'une délégation est de 21 jours. Vous n'obtiendrez pas de récompense pendant ce laps de temps.",
       "Redelegation to the same validator will be prohibited for 21 days. Please make sure you input the right amount of luna to delegate.": "La redélégation au même validateur sera interdite pendant 21 jours. Veuillez vous assurer que vous avez entré la bonne quantité de luna à déléguer"
     },
