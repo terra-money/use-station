@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { RatePage, RateUI, Rate, Filter } from '../../types'
+import { RatePage, RateUI, Rate, RateItem, Filter } from '../../types'
 import { format, percent } from '../../utils'
 import useFCD from '../../api/useFCD'
 
@@ -29,16 +29,19 @@ export default (denoms: string[]): RatePage => {
   const render = (list: Rate[]): RateUI =>
     list.length
       ? {
-          list: list.map(({ swaprate, denom, ...variation }) => ({
-            variation: {
-              value: format.decimal(variation.oneDayVariation),
-              percent: percent(variation.oneDayVariationRate)
-            },
-            display: {
-              value: format.decimal(swaprate),
-              unit: format.denom(denom)
-            }
-          }))
+          list: list.map(
+            ({ swaprate, denom, ...variation }): RateItem => ({
+              variation: {
+                amount: format.decimalN(variation.oneDayVariation),
+                value: format.decimal(variation.oneDayVariation),
+                percent: percent(variation.oneDayVariationRate)
+              },
+              display: {
+                value: format.decimal(swaprate),
+                unit: format.denom(denom)
+              }
+            })
+          )
         }
       : { message }
 

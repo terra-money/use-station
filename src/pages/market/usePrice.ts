@@ -43,6 +43,7 @@ export default (actives: string[]): PricePage => {
     return {
       price,
       variation: {
+        amount: format.decimalN(rest.oneDayVariation),
         value: format.decimal(rest.oneDayVariation),
         percent: percent(rest.oneDayVariationRate)
       },

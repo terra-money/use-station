@@ -10,6 +10,7 @@ export interface MarketUI {
 }
 
 export interface Variation {
+  amount: number
   value: string
   percent: string
 }
