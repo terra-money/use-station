@@ -13,6 +13,7 @@ export default (): ManageAccounts => {
       ),
       button: t('Auth:Manage:Delete'),
       cancel: t('Common:Form:Cancel')
-    }
+    },
+    password: t('Auth:Manage:Change password')
   }
 }
