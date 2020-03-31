@@ -104,3 +104,10 @@ export interface RecentAddresses {
   deleteAll: string
   buttons: ButtonAttrs[]
 }
+
+export type TestPassword = (params: {
+  name: string
+  password: string
+}) => boolean
+
+export type ChangePassword = FormUI

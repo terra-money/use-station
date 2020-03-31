@@ -1,11 +1,11 @@
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { SignIn, LocalUser, Field } from '../types'
+import { SignIn, LocalUser, Field, TestPassword } from '../types'
 import { useAuth } from '../contexts/AuthContext'
 
 interface Props {
   list: LocalUser[]
-  test: (params: { name: string; password: string }) => boolean
+  test: TestPassword
 }
 
 export default ({ list, test }: Props): SignIn => {

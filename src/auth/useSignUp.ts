@@ -7,6 +7,7 @@ import { Account, BankData, Generate, BipList } from '../types'
 import { useAuth } from '../contexts/AuthContext'
 import fcd from '../api/fcd'
 import useForm from '../hooks/useForm'
+import { validateConfirm } from '../post/validateForm'
 import { paste } from './helpers'
 import wordlist from './wordlist.json'
 
@@ -53,16 +54,7 @@ export default (props: Props): SignUp => {
       : isNameExists(name)
       ? t('Common:Validate:{{label}} already exists', { label: ID })
       : '',
-    password: !password.length
-      ? t('Common:Validate:{{label}} is required', { label: PW })
-      : password.length < 10
-      ? t('Common:Validate:{{label}} must be longer than {{min}} characters', {
-          label: PW,
-          min: 10
-        })
-      : '',
-    confirm:
-      password !== confirm ? t('Common:Validate:Password does not match') : ''
+    ...validateConfirm({ password, confirm }, t)
   })
 
   const form = useForm<Values>(initial, validate)

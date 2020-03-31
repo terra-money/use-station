@@ -50,6 +50,7 @@ export { default as useSignIn } from './auth/useSignIn'
 export { default as useSignInWithAddress } from './auth/useSignInWithAddress'
 export { default as useSignInWithLedger } from './auth/useSignInWithLedger'
 export { default as useManageAccounts } from './auth/useManageAccounts'
+export { default as useChangePassword } from './auth/useChangePassword'
 export { default as useRecentAddresses } from './auth/useRecentAddresses'
 
 /* hooks:pages */
