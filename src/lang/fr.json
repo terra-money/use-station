@@ -145,6 +145,8 @@
       "Current password": "Mot de passe actuel",
       "New password": "Nouveau mot de passe",
       "Confirm new password": "Confirmer le nouveau mot de passe",
+      "Password changed": "Mot de passe changé",
+      "You can now sign in with your new password": "Vous pouvez dorénavant vous connecter avec votre nouveau mot de passe",
 
       "Are you sure you want to delete this account? You can restore this account with your seed phrase anytime.": "Êtes-vous sûr de vouloir supprimer ce compte ? Vous pouvez restaurer ce compte avec votre phrase d'amorce à tout moment.",
       "Delete": "Supprimer",

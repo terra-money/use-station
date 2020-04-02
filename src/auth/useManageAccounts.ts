@@ -14,6 +14,10 @@ export default (): ManageAccounts => {
       button: t('Auth:Manage:Delete'),
       cancel: t('Common:Form:Cancel')
     },
-    password: t('Auth:Manage:Change password')
+    password: {
+      title: t('Auth:Manage:Password changed'),
+      content: t('Auth:Manage:You can now sign in with your new password'),
+      tooltip: t('Auth:Manage:Change password')
+    }
   }
 }

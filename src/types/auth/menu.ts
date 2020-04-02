@@ -97,7 +97,7 @@ export interface SignInWithAddress {
 export interface ManageAccounts {
   title: string
   delete: Card
-  password: string
+  password: { title: string; content: string; tooltip: string }
 }
 
 export interface RecentAddresses {
