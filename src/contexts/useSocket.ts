@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import socketCluster, { SCClientSocket } from 'socketcluster-client'
 import numeral from 'numeral'
 import { Socket } from '../types'
+import { intercept } from '../api/fcd'
 import useFinder from '../hooks/useFinder'
 import { useConfig } from './ConfigContext'
 
@@ -40,6 +41,11 @@ export default (): Socket => {
         link: getLink!({ q: 'blocks', v: height! })
       }
     : undefined
+
+  /* intercept request on height change */
+  useEffect(() => {
+    intercept(Object.assign({ time: Date.now() }, height && { height }))
+  }, [height])
 
   return { block, status }
 }

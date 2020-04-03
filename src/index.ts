@@ -39,6 +39,7 @@ export { default as useSocket } from './contexts/useSocket'
 export { Languages, getLang } from './contexts/useLang'
 
 /* hooks:api */
+export { default as fcd } from './api/fcd'
 export { default as useBank } from './api/useBank'
 
 /* hooks:auth */
