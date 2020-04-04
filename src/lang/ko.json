@@ -329,6 +329,8 @@
       "No\nWithVeto": "반대\n(거부권 행사)",
       "Abstain": "기권",
 
+      "The following validators you've delegated to have not yet voted on this proposal": "위임한 검증인들 중 다음은 아직 이 제안에 투표하지 않았습니다",
+
       "Tallying procedure": "합산 절차",
       "Quorum": "최소 투표참여율",
       "Pass threshold": "통과 임계값",

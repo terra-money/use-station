@@ -1,6 +1,7 @@
 import { useTranslation } from 'react-i18next'
 import numeral from 'numeral'
 import { DateTime } from 'luxon'
+import { User } from '../../types'
 import { ProposalData, ProposalDetail } from '../../types'
 import { Deposit, Vote, TallyingParameters } from '../../types'
 import { ProposalPage, ProposalUI } from '../../types'
@@ -12,45 +13,47 @@ import useFinder from '../../hooks/useFinder'
 import useFCD from '../../api/useFCD'
 import { calcDepositRatio, convertVote, getVoter } from './helpers'
 
-export default (id: string): ProposalPage => {
+export default (id: string, user?: User): ProposalPage => {
   const { t } = useTranslation()
   const getLink = useFinder()
-  const response = useFCD<ProposalData>({ url: `/v1/gov/proposals/${id}` })
+
+  /* api */
+  const url = `/v1/gov/proposals/${id}`
+  const params = { account: user?.address }
+  const response = useFCD<ProposalData>({ url, params })
 
   const render = (proposal: ProposalData): ProposalUI => {
     const { id, submitTime, status, title, proposer, type } = proposal
     const { description, content, vote, deposit, tallyingParameters } = proposal
 
-    return Object.assign(
-      {
-        id,
-        status,
-        statusTranslation: t('Page:Governance:' + status),
-        title,
-        meta: t('Page:Governance:Submitted by '),
-        proposer: getVoter(proposer, getLink),
-        description,
-        details: [
-          { title: `${t('Page:Governance:Proposal')} ID`, content: id },
-          { title: t('Common:Type'), content: t('Post:Governance:' + type) },
-          ...content.map(c => ({
-            title: capitalize(t('Page:Governance:' + c.key)),
-            content: stringify(c)
-          })),
-          {
-            title: t('Page:Governance:Submit time'),
-            content: format.date(submitTime)
-          }
-        ],
-        deposit: renderDeposit(deposit)
-      },
-      status !== 'Deposit' && {
-        vote: vote && renderVote(vote, proposal)
-      },
-      status === 'Voting' && {
-        tallying: tallyingParameters && renderTallying(tallyingParameters)
-      }
-    )
+    return {
+      id,
+      status,
+      statusTranslation: t('Page:Governance:' + status),
+      title,
+      meta: t('Page:Governance:Submitted by '),
+      proposer: getVoter(proposer, getLink),
+      description,
+      details: [
+        { title: `${t('Page:Governance:Proposal')} ID`, content: id },
+        { title: t('Common:Type'), content: t('Post:Governance:' + type) },
+        ...content.map(c => ({
+          title: capitalize(t('Page:Governance:' + c.key)),
+          content: stringify(c)
+        })),
+        {
+          title: t('Page:Governance:Submit time'),
+          content: format.date(submitTime)
+        }
+      ],
+      deposit: renderDeposit(deposit),
+      vote:
+        status !== 'Deposit' && vote ? renderVote(vote, proposal) : undefined,
+      tallying:
+        status === 'Voting' && tallyingParameters
+          ? renderTallying(tallyingParameters)
+          : undefined
+    }
   }
 
   const renderDeposit = (deposit: Deposit): DepositUI => {
@@ -92,7 +95,7 @@ export default (id: string): ProposalPage => {
 
   const renderVote = (vote: Vote, proposal: ProposalData): VoteUI => {
     const { count, distribution, total, votingEndTime, stakedLuna } = vote
-    const { status, tallyingParameters } = proposal
+    const { status, tallyingParameters, validatorsNotVoted } = proposal
 
     const list = convertVote(distribution, t).list
     const ratio = div(total, stakedLuna)
@@ -122,7 +125,20 @@ export default (id: string): ProposalPage => {
       progress:
         voting && tallyingParameters
           ? renderProgress({ list, ratio, params: tallyingParameters })
-          : undefined
+          : undefined,
+      notVoted: validatorsNotVoted
+        ? {
+            title: t(
+              "Page:Governance:The following validators you've delegated to have not yet voted on this proposal"
+            ),
+            list: validatorsNotVoted.map(
+              ({ operatorAddress, description: { moniker } }) => ({
+                operatorAddress,
+                moniker
+              })
+            )
+          }
+        : undefined
     }
   }
 

@@ -1,6 +1,7 @@
 import { Dictionary } from 'ramda'
 import { API, Hash, ProposalItemData, DisplayCoin, VoteOption } from '..'
 import { Pagination, TablePage, TableUI, Coin, Article } from '..'
+import { ValidatorData } from '..'
 
 export interface ProposalPage extends API<ProposalData> {
   ui?: ProposalUI
@@ -50,6 +51,7 @@ export interface VoteUI {
   voting: boolean
   count: Dictionary<number>
   progress?: VoteProgressBar
+  notVoted?: NotVoted
 }
 
 export interface VoteProgressBar {
@@ -60,6 +62,11 @@ export interface VoteProgressBar {
 export interface TallyingUI {
   title: string
   contents: Article[]
+}
+
+export interface NotVoted {
+  title: string
+  list: { operatorAddress: string; moniker: string }[]
 }
 
 /* depositors */
@@ -96,6 +103,7 @@ export interface VoteContent {
 export interface ProposalData extends ProposalItemData {
   content: ProposalDetail[]
   tallyingParameters?: TallyingParameters
+  validatorsNotVoted?: ValidatorData[]
 }
 
 export interface Voter {

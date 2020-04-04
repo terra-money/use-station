@@ -329,6 +329,8 @@
       "No\nWithVeto": "反对\n(行使拒绝权)",
       "Abstain": "弃权",
 
+      "The following validators you've delegated to have not yet voted on this proposal": "没有进行表决的自己关注的验证人(已委托状态)",
+
       "Tallying procedure": "统计过程",
       "Quorum": "法定人数(Quorum)",
       "Pass threshold": "通过门槛",
