@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next'
 import { RatePage, RateUI, Rate, RateItem, Filter } from '../../types'
 import { format, percent } from '../../utils'
 import useFCD from '../../api/useFCD'
+import usePoll, { DAY } from './usePoll'
 
 export default (denoms: string[]): RatePage => {
   const { t } = useTranslation()
@@ -23,6 +24,9 @@ export default (denoms: string[]): RatePage => {
   /* api */
   const url = `/v1/market/swaprate/${denom}`
   const response = useFCD<Rate[]>({ url }, !!denom)
+
+  /* polling */
+  usePoll(response.execute, DAY)
 
   /* render */
   const message = t('Page:Market:Chart is not available')
