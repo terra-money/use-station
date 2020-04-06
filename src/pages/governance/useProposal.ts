@@ -136,7 +136,8 @@ export default (id: string, user?: User): ProposalPage => {
                 operatorAddress,
                 moniker
               })
-            )
+            ),
+            button: t('Page:Governance:Request to vote')
           }
         : undefined
     }

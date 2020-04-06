@@ -67,6 +67,7 @@ export interface TallyingUI {
 export interface NotVoted {
   title: string
   list: { operatorAddress: string; moniker: string }[]
+  button: string
 }
 
 /* depositors */
