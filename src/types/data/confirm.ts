@@ -1,4 +1,5 @@
-import { FormUI, FieldAttrs, Card, Coin, DisplayCoin, ConfirmLedger } from '..'
+import { FormUI, FieldAttrs, Options } from '..'
+import { Card, Coin, DisplayCoin, ConfirmLedger } from '..'
 
 export interface ConfirmProps {
   url: string
@@ -24,7 +25,7 @@ export interface ConfirmPage extends Pick<ConfirmProps, 'contents'> {
     label: string
     status?: string
     select: {
-      options: { value: string; children: string }[]
+      options: Options[]
       attrs: FieldAttrs
       setValue: (value: string) => void
     }

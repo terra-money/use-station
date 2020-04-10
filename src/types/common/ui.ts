@@ -1,4 +1,4 @@
-import { API } from '..'
+import { API, Options } from '..'
 
 export interface Card {
   title?: string
@@ -21,7 +21,7 @@ export interface Tooltip {
 export interface Filter<T = string> {
   value: string
   set: (v: T) => void
-  options: { value: string; children: string }[]
+  options: Options
 }
 
 /* tx */

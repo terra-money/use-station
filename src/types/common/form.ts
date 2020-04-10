@@ -27,7 +27,7 @@ export interface Field<U = any> {
   button?: FieldButton
 
   /* select */
-  options?: { value: string; children: string; disabled?: boolean }[]
+  options?: Options
 }
 
 export interface FieldAttrs {
@@ -61,3 +61,6 @@ export interface ButtonAttrs {
   onClick: () => void
   children: string
 }
+
+export type Options = Option[]
+export type Option = { value: string; children: string; disabled?: boolean }
