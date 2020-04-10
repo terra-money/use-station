@@ -94,7 +94,8 @@ export default (user: User, actives: string[]): PostPage<SwapUI> => {
       attrs: getDefaultAttrs('from'),
       options: denoms.map(denom => ({
         value: denom,
-        children: format.denom(denom)
+        children: format.denom(denom),
+        disabled: !gt(find(`${denom}:available`, bank?.balance) ?? '0', '0')
       }))
     },
     {
