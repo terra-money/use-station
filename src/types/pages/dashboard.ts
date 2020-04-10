@@ -1,5 +1,5 @@
 import { Dictionary } from 'ramda'
-import { API, DisplayCoin, DisplayCoinDictionary } from '..'
+import { API, DisplayCoin, DisplayCoinDictionary, Options } from '..'
 
 export interface DashboardPage extends API<DashboardData> {
   ui: DashboardUI
@@ -26,8 +26,7 @@ export interface TaxRateUI {
 
 export interface DisplaySelector {
   title: string
-  defaultOption: string
-  options: string[]
+  select: { defaultValue: string; options: Options }
   displays: DisplayCoinDictionary
 }
 

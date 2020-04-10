@@ -65,8 +65,13 @@ const getSelector = (
   data: Dictionary<string>
 ): DisplaySelector => ({
   title,
-  defaultOption: 'Luna',
-  options: Object.keys(data).map(format.denom),
+  select: {
+    defaultValue: 'Luna',
+    options: Object.keys(data).map(denom => {
+      const label = format.denom(denom)
+      return { value: label, children: label }
+    })
+  },
   displays: Object.entries(data).reduce(
     (acc, [denom, amount]) => ({
       ...acc,
