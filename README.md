@@ -21,7 +21,7 @@ https://local.terra.money
 Basic sample:
 
 ```tsx
-import React from 'react'
+import React, { useMemo } from 'react'
 import ReactDOM from 'react-dom'
 import { useConfigState, ConfigProvider } from '@terra-money/use-station'
 import { useDashboard, DashboardUI } from '@terra-money/use-station'
@@ -47,19 +47,22 @@ const Dashboard = () => {
 }
 
 const App = () => {
-  const chain = {
-    key: 'columbus',
-    name: 'columbus-3',
-    hostname: 'fcd.terra.dev',
-    port: 443,
-    secure: true
-  }
+  const chain = useMemo(
+    () => ({
+      key: 'columbus',
+      name: 'columbus-3',
+      hostname: 'fcd.terra.dev',
+      port: 443,
+      secure: true
+    }),
+    []
+  )
 
   const config = useConfigState({ chain })
 
   return (
     <ConfigProvider value={config}>
-      {config.chain.current && <Dashboard />}
+      {config.chain.current.key && config.lang.current && <Dashboard />}
     </ConfigProvider>
   )
 }
