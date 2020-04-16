@@ -46,18 +46,15 @@ const Dashboard = () => {
   )
 }
 
-const App = () => {
-  const chain = useMemo(
-    () => ({
-      key: 'columbus',
-      name: 'columbus-3',
-      hostname: 'fcd.terra.dev',
-      port: 443,
-      secure: true
-    }),
-    []
-  )
+const chain = {
+  key: 'columbus',
+  name: 'columbus-3',
+  hostname: 'fcd.terra.dev',
+  port: 443,
+  secure: true
+}
 
+const App = () => {
   const config = useConfigState({ chain })
 
   return (
