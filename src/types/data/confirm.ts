@@ -25,7 +25,7 @@ export interface ConfirmPage extends Pick<ConfirmProps, 'contents'> {
     label: string
     status?: string
     select: {
-      options: Options[]
+      options: Options
       attrs: FieldAttrs
       setValue: (value: string) => void
     }
