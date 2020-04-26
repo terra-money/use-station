@@ -2,20 +2,18 @@ import axios from 'axios'
 
 const instance = axios.create()
 
-type Params = { height?: number; time: number }
-export const intercept = ({ height, time }: Params) => {
+export const intercept = ({ height }: { height: string }) => {
   instance.interceptors.request.use(config => {
-    const { _h, _t }: { _h?: number; _t?: number } = config.params ?? {}
-    const params = {
-      // Why?
-      // Because of the order in which these these parameters are applied.
-      // time: Always exists
-      // height: Use current value when possible or use previous value
-      _t: Math.max(_t ?? 0, time),
-      _h: _h || height ? Math.max(_h ?? 0, height ?? 0) : undefined
-    }
+    const BLOCK_HEIGHT = 'block-height'
+    const prev = config.headers[BLOCK_HEIGHT]
 
-    return { ...config, params: { ...config.params, ...params } }
+    // Use current value when possible or use previous value
+    const next =
+      prev || height
+        ? Math.max(Number(prev) || 0, Number(height) || 0)
+        : undefined
+
+    return { ...config, headers: { ...config.headers, [BLOCK_HEIGHT]: next } }
   })
 }
 

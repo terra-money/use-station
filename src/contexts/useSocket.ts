@@ -44,7 +44,7 @@ export default (): Socket => {
 
   /* intercept request on height change */
   useEffect(() => {
-    intercept(Object.assign({ time: Date.now() }, height && { height }))
+    height && intercept({ height })
   }, [height])
 
   return { block, status }
