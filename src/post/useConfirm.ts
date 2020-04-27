@@ -1,6 +1,5 @@
 import { useState, useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
-import invariant from 'tiny-invariant'
 import { ConfirmProps, ConfirmPage, Sign, Field, User } from '../types'
 import { PostResult } from '../types'
 import useInfo from '../lang/useInfo'
@@ -110,8 +109,7 @@ export default (
 
       // Catch error
       const errorMessage = checkError(result.data.raw_log)
-      invariant(!errorMessage, errorMessage)
-      setSubmitted(true)
+      errorMessage ? setErrorMessage(errorMessage) : setSubmitted(true)
     } catch (error) {
       error.message === 'Incorrect password'
         ? setPasswordError(t('Auth:Form:Incorrect password'))
