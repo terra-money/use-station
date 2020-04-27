@@ -77,7 +77,7 @@ export default ({ id, option, page }: Params): VotesPage => {
                 hash: t('Common:Tx:Tx')
               },
               contents: votes.map(({ voter, answer, txhash }: VoteItem) => ({
-                voter: getVoter(voter),
+                voter: getVoter(voter, getLink),
                 answer: t('Page:Governance:' + answer),
                 hash: {
                   link: getLink?.({ q: 'tx', v: txhash }) ?? '',
