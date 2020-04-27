@@ -36,7 +36,9 @@ describe('format', () => {
 
   test('input/amount', () => {
     expect(format.toAmount('1.234567890')).toBe('1234567')
+    expect(format.toAmount('')).toBe('0')
     expect(format.toInput('1234567.890')).toBe('1.234567')
+    expect(format.toInput('')).toBe('0')
   })
 
   test('truncate', () => {

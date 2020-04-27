@@ -48,12 +48,12 @@ export const coin = (coin: Coin, config?: Config): string => {
 
 export const toAmount = (input: string): string => {
   const number = new BigNumber(input ?? 0).times(1e6)
-  return number.decimalPlaces(0, BigNumber.ROUND_DOWN).toString()
+  return input ? number.decimalPlaces(0, BigNumber.ROUND_DOWN).toString() : '0'
 }
 
 export const toInput = (amount: string): string => {
   const number = new BigNumber(amount ?? 0).div(1e6)
-  return number.decimalPlaces(6, BigNumber.ROUND_DOWN).toString()
+  return amount ? number.decimalPlaces(6, BigNumber.ROUND_DOWN).toString() : '0'
 }
 
 export const date = (
