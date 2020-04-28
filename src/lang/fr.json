@@ -157,6 +157,12 @@
   },
 
   "Page": {
+    "Share": "Partager",
+    "Twitter": "Twitter",
+    "Telegram": "Telegram",
+    "Mail": "Email",
+    "Copy link": "Copier le lien",
+
     "Menu": {
       "Dashboard": "Tableau de bord",
       "Bank": "Banque",

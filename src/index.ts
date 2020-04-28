@@ -56,6 +56,7 @@ export { default as useRecentAddresses } from './auth/useRecentAddresses'
 
 /* hooks:pages */
 export { default as useMenu } from './pages/useMenu'
+export { default as useShare } from './pages/useShare'
 export { default as useDashboard } from './pages/dashboard/useDashboard'
 export { default as useChart } from './pages/dashboard/useChart'
 export { default as useChartCard } from './pages/dashboard/useChartCard'

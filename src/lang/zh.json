@@ -157,6 +157,12 @@
   },
 
   "Page": {
+    "Share": "分享",
+    "Twitter": "Twitter",
+    "Telegram": "Telegram",
+    "Mail": "邮件分享",
+    "Copy link": "复制链接",
+
     "Menu": {
       "Dashboard": "仪表盘",
       "Bank": "银行",

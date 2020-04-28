@@ -157,6 +157,12 @@
   },
 
   "Page": {
+    "Share": "공유하기",
+    "Twitter": "트위터",
+    "Telegram": "텔레그램",
+    "Mail": "메일",
+    "Copy link": "링크 복사하기",
+
     "Menu": {
       "Dashboard": "대시보드",
       "Bank": "뱅크",
