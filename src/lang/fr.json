@@ -187,6 +187,8 @@
     "Chart": {
       "Cumulative": "Cumulatif",
       "Periodic": "Périodique",
+      "Annualized": "Annualisé",
+      "Daily": "Journalier",
       "From genesis": "Depuis la genèse",
       "Last day": "Dernier jour",
       "{{d}} days": "{{d}} jours",

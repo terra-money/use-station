@@ -13,6 +13,7 @@ export interface Props<T = any> {
 
   /** Initial configurations of the filter */
   filterConfig?: FilterConfig
+  cumulativeLabel?: { [CumulativeType.C]: string; [CumulativeType.P]: string }
 
   /** One value representing the chart */
   getValue: (results: T[], filter: Filter) => ChartCard['value']
@@ -40,13 +41,15 @@ interface Filter {
 }
 
 export default <T extends { denom?: string }>(props: Props): ChartCard => {
-  const { url, filterConfig: config, getValue, getChart, ...rest } = props
   const { t } = useTranslation()
 
-  const CumulativeLabel = {
+  const DefaultCumulativeLabel = {
     [CumulativeType.C]: t('Page:Chart:Cumulative'),
     [CumulativeType.P]: t('Page:Chart:Periodic')
   }
+
+  const { url, filterConfig: config, getValue, getChart, ...rest } = props
+  const { cumulativeLabel = DefaultCumulativeLabel } = rest
 
   /* state: filter */
   const [type, setType] = useState(config?.type?.initial ?? CumulativeType.C)
@@ -67,7 +70,7 @@ export default <T extends { denom?: string }>(props: Props): ChartCard => {
           set: setType,
           options: [CumulativeType.C, CumulativeType.P].map(value => ({
             value,
-            children: CumulativeLabel[value]
+            children: cumulativeLabel[value]
           }))
         }
       : undefined,

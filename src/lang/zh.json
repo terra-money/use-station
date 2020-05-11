@@ -187,6 +187,8 @@
     "Chart": {
       "Cumulative": "累计",
       "Periodic": "周期",
+      "Annualized": "1年",
+      "Daily": "1日",
       "From genesis": "自创世区块起",
       "Last day": "昨天",
       "{{d}} days": "{{d}} 天",

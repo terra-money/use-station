@@ -187,6 +187,8 @@
     "Chart": {
       "Cumulative": "누적",
       "Periodic": "일일",
+      "Annualized": "연간",
+      "Daily": "일일",
       "From genesis": "제네시스부터",
       "Last day": "어제",
       "{{d}} days": "{{d}}일간",
