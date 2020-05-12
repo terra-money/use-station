@@ -192,7 +192,8 @@
       "From genesis": "Depuis la genèse",
       "Last day": "Dernier jour",
       "{{d}} days": "{{d}} jours",
-      "/ year": "/ année",
+      "/ year": "/ an",
+      "/ day": "/ jour",
 
       "Transaction volume": "Volume des transactions",
       "The onchain transaction volume for the selected currency over the selected time period": "Le volume des transactions sur chaîne pour la devise sélectionnée sur la période sélectionnée",

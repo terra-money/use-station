@@ -193,6 +193,7 @@
       "Last day": "어제",
       "{{d}} days": "{{d}}일간",
       "/ year": "/년",
+      "/ day": "/일",
 
       "Transaction volume": "거래량",
       "The onchain transaction volume for the selected currency over the selected time period": "선택한 통화에 대한 선택한 기간 동안의 체인상 거래량입니다",

@@ -21,10 +21,13 @@ export default (t: TFunction): Props<Result> => ({
     [CumulativeType.P]: t('Page:Chart:Daily')
   },
   getValue: (results, { type }) => {
-    const key = type === CumulativeType.C ? 'annualizedReturn' : 'dailyReturn'
+    const isAnnualized = type === CumulativeType.C
+    const key = isAnnualized ? 'annualizedReturn' : 'dailyReturn'
+    const unit = isAnnualized ? t('Page:Chart:/ year') : t('Page:Chart:/ day')
+
     return [
       percent(results.length ? results[results.length - 1][key] : 0),
-      t('Page:Chart:/ year')
+      unit
     ]
   },
   getChart: (results, { type }) => {

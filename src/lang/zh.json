@@ -193,6 +193,7 @@
       "Last day": "昨天",
       "{{d}} days": "{{d}} 天",
       "/ year": "/ 年",
+      "/ day": "/ 日",
 
       "Transaction volume": "交易量",
       "The onchain transaction volume for the selected currency over the selected time period": "所选周期内所选代币的链上交易量",
