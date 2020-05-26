@@ -11,16 +11,24 @@ export enum CumulativeType {
   P = 'periodic'
 }
 
+export enum AccountType {
+  A = 'active',
+  T = 'total'
+}
+
 export interface ChartCard {
   title: string
   desc: string
-  filter: {
-    type?: Filter<CumulativeType>
-    denom?: Filter
-    duration: Filter
-  }
+  filter: ChartFilter
   value?: DisplayCoin | [string, string]
   chart?: ChartUI
+}
+
+export interface ChartFilter {
+  type?: Filter<CumulativeType>
+  denom?: Filter
+  account?: Filter<AccountType>
+  duration: Filter
 }
 
 export interface ChartUI {

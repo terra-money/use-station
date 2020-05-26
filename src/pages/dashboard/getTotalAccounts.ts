@@ -1,12 +1,11 @@
 import { TFunction } from 'i18next'
-import { CumulativeType } from '../../types'
+import { CumulativeType, AccountType } from '../../types'
 import { format, sum, minus } from '../../utils'
 import { Props } from './useChartCard'
 
 interface Result {
   datetime: number
-  totalAccountCount: number
-  activeAccountCount: number
+  value: number
 }
 
 const unit = 'Accounts'
@@ -14,35 +13,38 @@ const unit = 'Accounts'
 export default (t: TFunction): Props<Result> => ({
   title: t('Page:Chart:Total accounts'),
   desc: t(
-    'Page:Chart:Number of total accounts with more than 1 non-trivial transaction in the selected period'
+    'Page:Chart:Number of total registered accounts in the selected period'
   ),
-  url: '/v1/dashboard/account_growth',
-  filterConfig: { type: { initial: CumulativeType.C } },
+  url: ({ account }) =>
+    ({
+      [AccountType.A]: '/v1/dashboard/active_accounts',
+      [AccountType.T]: '/v1/dashboard/registered_accounts'
+    }[account!]),
+  filterConfig: {
+    type: { initial: CumulativeType.C },
+    account: { initial: AccountType.T }
+  },
   getValue: (results, { type }) => {
-    const { totalAccountCount: head } = results.length
-      ? results[0]
-      : { totalAccountCount: '0' }
-    const { totalAccountCount: tail } =
-      results.length > 1
-        ? results[results.length - 1]
-        : { totalAccountCount: head }
+    const { value: head } = results.length ? results[0] : { value: '0' }
+    const { value: tail } =
+      results.length > 1 ? results[results.length - 1] : { value: head }
 
-    const value =
+    const v =
       type === CumulativeType.C
         ? minus(tail, head)
-        : sum(results.slice(1).map(d => d.totalAccountCount))
+        : sum(results.slice(1).map(d => d.value))
 
-    return { value: format.decimal(value, 0), unit }
+    return { value: format.decimal(v, 0), unit }
   },
   getChart: results => ({
     data:
-      results?.map(({ datetime, totalAccountCount }) => ({
+      results?.map(({ datetime, value }) => ({
         t: new Date(datetime),
-        y: totalAccountCount
+        y: value
       })) ?? [],
     tooltips:
-      results?.map(({ datetime, totalAccountCount }) => ({
-        title: format.decimal(String(totalAccountCount), 0),
+      results?.map(({ datetime, value }) => ({
+        title: format.decimal(String(value), 0),
         label: format.date(new Date(datetime), { short: true })
       })) ?? []
   })

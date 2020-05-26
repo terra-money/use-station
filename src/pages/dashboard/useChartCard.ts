@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { ChartCard, CumulativeType } from '../../types'
+import { ChartCard, ChartFilter } from '../../types'
+import { CumulativeType, AccountType } from '../../types'
 import { format } from '../../utils'
 import useFCD from '../../api/useFCD'
 
@@ -9,7 +10,7 @@ export interface Props<T = any> {
   desc: string
 
   /** Endpoint to fetch chart data */
-  url: string
+  url: string | ((filter: Filter) => string)
 
   /** Initial configurations of the filter */
   filterConfig?: FilterConfig
@@ -25,6 +26,7 @@ export interface Props<T = any> {
 interface FilterConfig {
   type?: Config<CumulativeType>
   denom?: Config<string>
+  account?: Config<AccountType>
   duration?: Config<number>
 }
 
@@ -37,6 +39,7 @@ interface Filter {
   /** Cumulative | Periodic */
   type?: CumulativeType
   denom?: string
+  account?: AccountType
   duration: number
 }
 
@@ -48,6 +51,11 @@ export default <T extends { denom?: string }>(props: Props): ChartCard => {
     [CumulativeType.P]: t('Page:Chart:Periodic')
   }
 
+  const accountLabel = {
+    [AccountType.A]: t('Page:Chart:Active'),
+    [AccountType.T]: t('Page:Chart:Total')
+  }
+
   const { url, filterConfig: config, getValue, getChart, ...rest } = props
   const { cumulativeLabel = DefaultCumulativeLabel } = rest
 
@@ -55,22 +63,26 @@ export default <T extends { denom?: string }>(props: Props): ChartCard => {
   const [type, setType] = useState(config?.type?.initial ?? CumulativeType.C)
   const [denom, setDenom] = useState(config?.denom?.initial)
   const [duration, setDuration] = useState(config?.duration?.initial ?? 0)
+  const [account, setAccount] = useState(config?.account?.initial)
+  const filter: Filter = { type, denom, duration, account }
 
   /* api */
   type Response = T[] | { [key in CumulativeType]: T[] }
+  const getURL = () => (typeof url === 'string' ? url : url(filter))
   const params = duration > 0 ? { count: duration === 1 ? 3 : duration } : {}
-  const { data } = useFCD<Response>({ url, params })
+  const { data } = useFCD<Response>({ url: getURL(), params })
   const results = Array.isArray(data) ? data : data?.[type]
 
   /* render */
-  const renderFilter = () => ({
+  const renderFilter = (): ChartFilter => ({
     type: config?.type
       ? {
           value: type,
           set: setType,
           options: [CumulativeType.C, CumulativeType.P].map(value => ({
             value,
-            children: cumulativeLabel[value]
+            children: cumulativeLabel[value],
+            disabled: value === CumulativeType.C && account === AccountType.A
           }))
         }
       : undefined,
@@ -85,6 +97,17 @@ export default <T extends { denom?: string }>(props: Props): ChartCard => {
             }))
           }
         : undefined,
+    account: config?.account
+      ? {
+          value: account!,
+          set: setAccount,
+          options: [AccountType.A, AccountType.T].map(value => ({
+            value,
+            children: accountLabel[value],
+            disabled: type === CumulativeType.C && value === AccountType.A
+          }))
+        }
+      : undefined,
     duration: {
       value: String(duration),
       set: (v: string) => setDuration(Number(v)),
@@ -103,8 +126,8 @@ export default <T extends { denom?: string }>(props: Props): ChartCard => {
   return Object.assign(
     { ...rest, filter: renderFilter() },
     results && {
-      value: getValue(results, { type, denom, duration }),
-      chart: getChart(results, { type, denom, duration })
+      value: getValue(results, filter),
+      chart: getChart(results, filter)
     }
   )
 }

@@ -202,7 +202,9 @@
       "Tax rewards": "Récompenses fiscales",
       "Tax rewards distributed over the selected time period": "Récompenses fiscales réparties sur la période choisie",
       "Total accounts": "Nombre total de comptes",
-      "Number of total accounts with more than 1 non-trivial transaction in the selected period": "Nombre total de comptes comportant plus d'une transaction non négligeable durant la période sélectionnée"
+      "Total": "Total",
+      "Active": "Actif",
+      "Number of total registered accounts in the selected period": "Nombre total de comptes enregistrés pendant la période séléctionnée"
     },
 
     "Bank": {

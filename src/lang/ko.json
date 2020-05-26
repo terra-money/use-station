@@ -202,7 +202,9 @@
       "Tax rewards": "세금 보상",
       "Tax rewards distributed over the selected time period": "선택한 기간 동안 분배된 세금 보상입니다",
       "Total accounts": "계정 수",
-      "Number of total accounts with more than 1 non-trivial transaction in the selected period": "선택한 기간 동안 두 개 이상의 트랜잭션을 발생시킨 총 계정 수입니다"
+      "Total": "전체",
+      "Active": "활성",
+      "Number of total registered accounts in the selected period": "선택한 기간 동안 등록한 총 계정 수입니다"
     },
 
     "Bank": {

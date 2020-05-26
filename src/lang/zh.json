@@ -202,7 +202,9 @@
       "Tax rewards": "税收奖励",
       "Tax rewards distributed over the selected time period": "在所选周期内分配的税收奖励",
       "Total accounts": "账户数",
-      "Number of total accounts with more than 1 non-trivial transaction in the selected period": "在所选周期内交易不止1次的帐户总数"
+      "Total": "Total",
+      "Active": "Active",
+      "Number of total registered accounts in the selected period": "账户总数更新，以只基于选定的时段"
     },
 
     "Bank": {
