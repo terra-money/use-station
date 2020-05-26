@@ -27,7 +27,8 @@ export default (): DashboardPage => {
         title: t('Page:Dashboard:Tax rate'),
         content: percent(taxRate, 3),
         desc: t('Page:Dashboard:Capped at {{cappedAt}}', {
-          cappedAt: taxCaps.map(formatTaxCap).join(' / ')
+          cappedAt: taxCaps.map(formatTaxCap).join(' / '),
+          interpolation: { escapeValue: false }
         })
       },
       issuance: getSelector(t('Page:Dashboard:Issuance'), issuances),
