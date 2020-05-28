@@ -5,6 +5,7 @@ import { User } from '../../types'
 import { StakingUI, StakingPersonal } from '../../types'
 import { StakingData, StakingPage, StakingDelegation } from '../../types'
 import { ValidatorSorter, Undelegation } from '../../types'
+import { ValidatorListHeadings, ValidatorListHeading } from '../../types'
 import { format } from '../../utils'
 import { sum, plus, minus } from '../../utils'
 import { gte, gt, isFinite, toNumber } from '../../utils'
@@ -12,7 +13,10 @@ import useFCD from '../../api/useFCD'
 import useValidatorItem from './useValidatorItem'
 
 const denom = 'uluna'
-export default (user?: User): StakingPage => {
+export default (
+  user?: User,
+  initialSort?: { by: string; sort?: string }
+): StakingPage => {
   const { t } = useTranslation()
   const renderValidatorItem = useValidatorItem()
   const calcUndelegationTotal = (undelegations?: Undelegation[]) =>
@@ -131,9 +135,55 @@ export default (user?: User): StakingPage => {
   }
 
   /* validators */
+  const headings: ValidatorListHeadings = {
+    rank: {
+      title: t('Page:Staking:Rank')
+    },
+    moniker: {
+      title: t('Page:Staking:Moniker'),
+      sorter: { prop: 'description.moniker', isString: true }
+    },
+    votingPower: {
+      title: t('Page:Staking:Voting power'),
+      sorter: { prop: 'votingPower.weight' }
+    },
+    selfDelegation: {
+      title: t('Page:Staking:Self-delegation'),
+      sorter: { prop: 'selfDelegation.weight' }
+    },
+    commission: {
+      title: t('Page:Staking:Validator commission'),
+      sorter: { prop: 'commissionInfo.rate' }
+    },
+    delegationReturn: {
+      title: t('Page:Staking:Delegation return'),
+      sorter: { prop: 'stakingReturn' }
+    },
+    uptime: {
+      title: t('Page:Staking:Uptime'),
+      sorter: { prop: 'upTime' }
+    },
+    myDelegation: {
+      title: t('Page:Staking:My delegations'),
+      sorter: { prop: 'myDelegation' }
+    }
+  }
+
+  const getInitialSorter = (by: string) => {
+    const values: ValidatorListHeading[] = Object.values(headings)
+    const sorter = values.find(({ sorter }) => sorter?.prop === by)
+    const isString = sorter?.sorter?.isString
+    return sorter ? { prop: by, isString } : undefined
+  }
+
   const DefaultSorter: ValidatorSorter = { prop: 'stakingReturn' }
-  const [sorter, setSorter] = useState<ValidatorSorter>(DefaultSorter)
-  const [asc, setAsc] = useState<boolean>(false)
+  const initialSorter =
+    (initialSort?.['by'] && getInitialSorter(initialSort['by'])) ||
+    DefaultSorter
+  const initialAsc = initialSort?.['sort'] === 'asc'
+
+  const [sorter, setSorter] = useState<ValidatorSorter>(initialSorter)
+  const [asc, setAsc] = useState<boolean>(initialAsc)
   const { prop, isString } = sorter
 
   const renderValidators = (staking: StakingData): StakingUI => {
@@ -178,39 +228,7 @@ export default (user?: User): StakingPage => {
           setAsc(asc)
         }
       },
-      headings: {
-        rank: {
-          title: t('Page:Staking:Rank')
-        },
-        moniker: {
-          title: t('Page:Staking:Moniker'),
-          sorter: { prop: 'description.moniker', isString: true }
-        },
-        votingPower: {
-          title: t('Page:Staking:Voting power'),
-          sorter: { prop: 'votingPower.weight' }
-        },
-        selfDelegation: {
-          title: t('Page:Staking:Self-delegation'),
-          sorter: { prop: 'selfDelegation.weight' }
-        },
-        commission: {
-          title: t('Page:Staking:Validator commission'),
-          sorter: { prop: 'commissionInfo.rate' }
-        },
-        delegationReturn: {
-          title: t('Page:Staking:Delegation return'),
-          sorter: { prop: 'stakingReturn' }
-        },
-        uptime: {
-          title: t('Page:Staking:Uptime'),
-          sorter: { prop: 'upTime' }
-        },
-        myDelegation: {
-          title: t('Page:Staking:My delegations'),
-          sorter: { prop: 'myDelegation' }
-        }
-      },
+      headings,
       contents: grouped
     }
   }
