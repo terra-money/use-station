@@ -3,7 +3,7 @@ import { Dictionary } from 'ramda'
 import { DashboardPage, DashboardData, DashboardUI } from '../../types'
 import { DisplaySelector, TaxCap } from '../../types'
 import { format } from '../../utils'
-import { percent, toNumber } from '../../utils/math'
+import { percent } from '../../utils/math'
 import useFCD from '../../api/useFCD'
 
 export default (): DashboardPage => {
@@ -59,7 +59,7 @@ export default (): DashboardPage => {
 
 /* helpers */
 const formatTaxCap = ({ taxCap, denom }: TaxCap) =>
-  [toNumber(format.amount(taxCap)), format.denom(denom)].join(' ')
+  [format.amountN(taxCap), format.denom(denom)].join(' ')
 
 const getSelector = (
   title: string,
