@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { useTranslation } from 'react-i18next'
 import { ChartCard, ChartFilter } from '../../types'
 import { CumulativeType, AccountType } from '../../types'
@@ -66,6 +66,20 @@ export default <T extends { denom?: string }>(props: Props): ChartCard => {
   const [account, setAccount] = useState(config?.account?.initial)
   const filter: Filter = { type, denom, duration, account }
 
+  const prevType = usePrevious<CumulativeType>(type)
+
+  useEffect(() => {
+    // Condition below is not possible
+    const disabled = account === AccountType.A && type === CumulativeType.C
+
+    disabled &&
+      (prevType !== type
+        ? setAccount(AccountType.T)
+        : setType(CumulativeType.P))
+
+    // eslint-disable-next-line
+  }, [type, account])
+
   /* api */
   type Response = T[] | ({ [key in CumulativeType]: T[] } & { total?: number })
   const getURL = () => (typeof url === 'string' ? url : url(filter))
@@ -81,8 +95,7 @@ export default <T extends { denom?: string }>(props: Props): ChartCard => {
           set: setType,
           options: [CumulativeType.C, CumulativeType.P].map(value => ({
             value,
-            children: cumulativeLabel[value],
-            disabled: value === CumulativeType.C && account === AccountType.A
+            children: cumulativeLabel[value]
           }))
         }
       : undefined,
@@ -103,8 +116,7 @@ export default <T extends { denom?: string }>(props: Props): ChartCard => {
           set: setAccount,
           options: [AccountType.A, AccountType.T].map(value => ({
             value,
-            children: accountLabel[value],
-            disabled: type === CumulativeType.C && value === AccountType.A
+            children: accountLabel[value]
           }))
         }
       : undefined,
@@ -130,4 +142,15 @@ export default <T extends { denom?: string }>(props: Props): ChartCard => {
       chart: getChart(results, filter)
     }
   )
+}
+
+/* hooks */
+const usePrevious = <T>(value: T): T => {
+  const ref = useRef<T>(value)
+
+  useEffect(() => {
+    ref.current = value
+  })
+
+  return ref.current
 }
