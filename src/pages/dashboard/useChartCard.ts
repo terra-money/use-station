@@ -17,7 +17,7 @@ export interface Props<T = any> {
   cumulativeLabel?: { [CumulativeType.C]: string; [CumulativeType.P]: string }
 
   /** One value representing the chart */
-  getValue: (results: T[], filter: Filter) => ChartCard['value']
+  getValue: (results: T[], filter: Filter, payload?: any) => ChartCard['value']
 
   /** All values ​​to display on the chart */
   getChart: (results: T[], filter: Filter) => ChartCard['chart']
@@ -67,7 +67,7 @@ export default <T extends { denom?: string }>(props: Props): ChartCard => {
   const filter: Filter = { type, denom, duration, account }
 
   /* api */
-  type Response = T[] | { [key in CumulativeType]: T[] }
+  type Response = T[] | ({ [key in CumulativeType]: T[] } & { total?: number })
   const getURL = () => (typeof url === 'string' ? url : url(filter))
   const params = duration > 0 ? { count: duration === 1 ? 3 : duration } : {}
   const { data } = useFCD<Response>({ url: getURL(), params })
@@ -126,7 +126,7 @@ export default <T extends { denom?: string }>(props: Props): ChartCard => {
   return Object.assign(
     { ...rest, filter: renderFilter() },
     results && {
-      value: getValue(results, filter),
+      value: getValue(results, filter, data && 'total' in data && data.total),
       chart: getChart(results, filter)
     }
   )

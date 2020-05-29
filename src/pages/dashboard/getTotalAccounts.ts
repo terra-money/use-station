@@ -1,6 +1,6 @@
 import { TFunction } from 'i18next'
 import { CumulativeType, AccountType } from '../../types'
-import { format, sum, minus } from '../../utils'
+import { format } from '../../utils'
 import { Props } from './useChartCard'
 
 interface Result {
@@ -24,18 +24,7 @@ export default (t: TFunction): Props<Result> => ({
     type: { initial: CumulativeType.C },
     account: { initial: AccountType.T }
   },
-  getValue: (results, { type }) => {
-    const { value: head } = results.length ? results[0] : { value: '0' }
-    const { value: tail } =
-      results.length > 1 ? results[results.length - 1] : { value: head }
-
-    const v =
-      type === CumulativeType.C
-        ? minus(tail, head)
-        : sum(results.slice(1).map(d => d.value))
-
-    return { value: format.decimal(v, 0), unit }
-  },
+  getValue: (_, __, total) => ({ value: format.decimal(total, 0), unit }),
   getChart: results => ({
     data:
       results?.map(({ datetime, value }) => ({
