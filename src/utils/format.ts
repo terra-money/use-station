@@ -14,12 +14,12 @@ export const decimalN = (number: string = '0', p: number = 6): number =>
   new BigNumber(number).decimalPlaces(p, BigNumber.ROUND_DOWN).toNumber()
 
 export const amount = (amount: string, config?: Config): string => {
-  const number = new BigNumber(amount).div(1e6)
+  const number = new BigNumber(amount || 0).div(1e6) // amount can be ''
   return decimal(number.toString(), config?.integer ? 0 : 6)
 }
 
 export const amountN = (amount: string, config?: Config): number => {
-  const number = new BigNumber(amount).div(1e6)
+  const number = new BigNumber(amount || 0).div(1e6) // amount can be ''
   return decimalN(number.toString(), config?.integer ? 0 : 6)
 }
 
