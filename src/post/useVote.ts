@@ -64,7 +64,7 @@ export default (
   const formUI = {
     fields,
     disabled,
-    title: t('Post:Governance:Deposit'),
+    title: t('Post:Governance:Vote'),
     submitLabel: t('Common:Form:Next'),
     onSubmit: disabled ? undefined : () => setSubmitted(true)
   }
