@@ -121,7 +121,7 @@ export default (props: Props): SignUp => {
     paste: (clipboard: string, index: number = 0) =>
       setSeed(paste(index, toArray(clipboard), seed)),
     suggest: (input: string) =>
-      wordlist.filter(word => input && word.startsWith(input) && word !== input)
+      wordlist.filter(word => input && word.startsWith(input))
   }
 
   /* Select account */
