@@ -65,7 +65,7 @@ export default (user: User, { to, undelegate }: Props): PostPage => {
   const { values, setValue, invalid, getDefaultProps, getDefaultAttrs } = form
   const { input, from } = values
   const amount = toAmount(input)
-  const moniker = findDelegation(undelegate ? to : from)?.validatorName
+  const moniker = findDelegation(to)?.validatorName
   const redelegation = from !== address
   const type = redelegation ? TxType.R : undelegate ? TxType.U : TxType.D
 
