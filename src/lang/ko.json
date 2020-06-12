@@ -209,6 +209,7 @@
 
     "Bank": {
       "My wallet": "내 지갑",
+      "Verify this address on your Ledger": "렛저에서 주소를 확인하세요",
 
       "Account empty": "빈 계정",
       "This account doesn't hold any coins yet": "이 계정은 아직 코인을 보유하고 있지 않습니다",

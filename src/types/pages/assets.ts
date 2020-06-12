@@ -2,6 +2,7 @@ import { DisplayCoin, Card, BankAPI } from '..'
 
 export interface AssetsPage extends BankAPI {
   address: Card
+  viewAddress: string
   ui?: AssetsUI
 }
 

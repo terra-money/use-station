@@ -77,7 +77,10 @@ export default (user: User, config?: Config): AssetsPage => {
   }
 
   return Object.assign(
-    { address: { title: t('Page:Bank:My wallet'), content: user.address } },
+    {
+      address: { title: t('Page:Bank:My wallet'), content: user.address },
+      viewAddress: t('Page:Bank:Verify this address on your Ledger')
+    },
     bank,
     bank.data && { ui: render(bank.data) }
   )

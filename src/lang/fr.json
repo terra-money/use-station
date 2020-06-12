@@ -209,6 +209,7 @@
 
     "Bank": {
       "My wallet": "Mon portefeuille",
+      "Verify this address on your Ledger": "Verifier cette adresse sur votre Ledger",
 
       "Account empty": "Compte vide",
       "This account doesn't hold any coins yet": "Ce compte ne contient pas encore de monnaies",

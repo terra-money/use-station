@@ -209,6 +209,7 @@
 
     "Bank": {
       "My wallet": "我的钱包",
+      "Verify this address on your Ledger": "使用您的Ledger设备验证生成的地址",
 
       "Account empty": "账户为空",
       "This account doesn't hold any coins yet": "此帐户还没有任何代币",
