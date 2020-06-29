@@ -120,8 +120,10 @@ export default (props: Props): SignUp => {
     }),
     paste: (clipboard: string, index: number = 0) =>
       setSeed(paste(index, toArray(clipboard), seed)),
-    suggest: (input: string) =>
-      wordlist.filter(word => input && word.startsWith(input))
+    suggest: (input: string): string[] => {
+      const list = wordlist.filter(word => input && word.startsWith(input))
+      return list.length === 1 && list.includes(input) ? [] : list
+    }
   }
 
   /* Select account */
