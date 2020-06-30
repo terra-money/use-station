@@ -32,22 +32,29 @@ export const parseError = (
   e: PostError,
   defaultMessage: string = ''
 ): string => {
-  if ('response' in e) {
-    // API Error
-    const { data } = e.response!
-    if ('message' in data) {
-      return data.message!
-    } else if ('error' in data) {
-      const { error } = data
-      return typeof error === 'string' ? checkError(error!) : getMessage(error!)
+  try {
+    if ('response' in e) {
+      // API Error
+      const { data } = e.response!
+
+      if ('message' in data) {
+        return data.message!
+      } else if ('error' in data) {
+        const { error } = data
+        return typeof error === 'string'
+          ? checkError(error!)
+          : getMessage(error!)
+      }
+    } else {
+      // JS Error
+      console.error(e)
+      return defaultMessage
     }
-  } else {
-    // JS Error
+  } catch (e) {
     console.error(e)
+  } finally {
     return defaultMessage
   }
-
-  return defaultMessage
 }
 
 export const checkError = (raw?: string): string => {
