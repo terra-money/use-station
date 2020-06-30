@@ -12,6 +12,7 @@ export default (user: User, { from, amounts }: WithdrawProps): PostPage => {
   return {
     error,
     loading,
+    submitted: true,
     confirm: bank && {
       url: `/distribution/delegators/${to}/rewards${path}`,
       contents: [{ name: t('Common:Tx:Amount'), displays: amounts }],

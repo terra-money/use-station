@@ -4,7 +4,7 @@ import { FormUI, Card, ConfirmProps } from '..'
 export interface PostPage<UI = any> {
   error?: Error
   loading?: boolean
-  submitted?: boolean
+  submitted: boolean
   form?: FormUI
   confirm?: ConfirmProps
   card?: Card
