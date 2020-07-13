@@ -25,6 +25,13 @@ export default (): Dictionary<Card> => {
       i18nKey:
         'Auth:Common:This page shows data for a specific address. To access the page, please <0>sign in</0>.',
       button: t('Auth:Menu:Sign in')
+    },
+    LOCALTERRA_ERROR: {
+      title: t("Common:Error:LocalTerra doesn't seem to be running."),
+      content: t(
+        'Common:Error:LocalTerra is a one-click local Terra testnet & ecosystem for easy development of smart contracts and Terra tools.'
+      ),
+      button: t('Common:Error:Learn more about it here')
     }
   }
 }

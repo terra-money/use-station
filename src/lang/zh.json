@@ -42,7 +42,11 @@
       "Station ran into an error": "Station 出现错误",
 
       "No internet connection": "您没有连接到互联网",
-      "Please check your internet connection and retry again": "请检查您的互联网连接，然后重试。"
+      "Please check your internet connection and retry again": "请检查您的互联网连接，然后重试。",
+
+      "LocalTerra doesn't seem to be running.": "",
+      "LocalTerra is a one-click local Terra testnet & ecosystem for easy development of smart contracts and Terra tools.": "",
+      "Learn more about it here": ""
     },
 
     "Loading": {

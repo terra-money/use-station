@@ -42,7 +42,11 @@
       "Station ran into an error": "오류가 발생했습니다",
 
       "No internet connection": "인터넷에 연결되어 있지 않습니다",
-      "Please check your internet connection and retry again": "인터넷 연결 상태를 확인하고 다시 시도해주세요"
+      "Please check your internet connection and retry again": "인터넷 연결 상태를 확인하고 다시 시도해주세요",
+
+      "LocalTerra doesn't seem to be running.": "LocalTerra가 실행되고 있지 않습니다.",
+      "LocalTerra is a one-click local Terra testnet & ecosystem for easy development of smart contracts and Terra tools.": "LocalTerra는 스마트 컨트랙트와 테라 도구들을 쉽게 개발하기 위한 원클릭 로컬 테라 테스트넷 및 생태계입니다.",
+      "Learn more about it here": "여기서 더 알아보세요"
     },
 
     "Loading": {
