@@ -1,5 +1,5 @@
-import bech32 from 'bech32'
 import { TFunction } from 'i18next'
+import { is } from '../utils'
 import { gt, lte, isInteger } from '../utils/math'
 import { toAmount } from '../utils/format'
 
@@ -35,7 +35,7 @@ const validateForm = (t: TFunction) => {
         ? t('Common:Validate:{{label}} is required', {
             label: t('Common:Account:Address')
           })
-        : !isAddress(to)
+        : !is.address(to)
         ? t('Common:Validate:{{label}} is invalid', {
             label: t('Common:Account:Address')
           })
@@ -59,19 +59,6 @@ const validateForm = (t: TFunction) => {
         : ''
   }
 }
-
-/* validate:address */
-const isBech32 = (value: string) => {
-  try {
-    const words = bech32.decode(value)
-    return words.prefix === `terra`
-  } catch (error) {
-    return false
-  }
-}
-
-export const isAddress = (string: string = ''): boolean =>
-  string.length === 44 && string.startsWith('terra') && isBech32(string)
 
 /* validate:confirm */
 export const validateConfirm = (

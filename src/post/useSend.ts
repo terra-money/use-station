@@ -5,6 +5,7 @@ import { last } from 'ramda'
 import { BankData, TxsData, Tx, RecentSentUI, RecentSentItemUI } from '../types'
 import { PostPage, Result, Coin, User, Field } from '../types'
 import { ConfirmContent, ConfirmProps } from '../types'
+import { is } from '../utils'
 import { format, find, gt } from '../utils'
 import { times, min, ceil, percent } from '../utils'
 import { toAmount, toInput } from '../utils/format'
@@ -12,7 +13,7 @@ import fcd from '../api/fcd'
 import useFCD from '../api/useFCD'
 import useBank from '../api/useBank'
 import useForm from '../hooks/useForm'
-import validateForm, { isAddress } from './validateForm'
+import validateForm from './validateForm'
 import { isAvailable, getFeeDenomList } from './validateConfirm'
 
 interface Values {
@@ -223,7 +224,7 @@ const findRecent = (txs: Tx[], denom: string): RecentSentItem[] | undefined => {
         const to = last(text.split(' to '))
         const coin = out![0]
 
-        return coin.denom === denom && to && !acc[to] && isAddress(to)
+        return coin.denom === denom && to && !acc[to] && is.address(to)
           ? {
               ...acc,
               [to]: {
