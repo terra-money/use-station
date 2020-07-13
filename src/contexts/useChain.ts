@@ -20,7 +20,7 @@ export default (initial: ChainOptions): ChainConfig => {
 
 /* helpers */
 const getURL = (options: ChainOptions) => {
-  const { hostname, secure, port } = options
+  const { hostname, fcd, secure, port } = options
   const protocol = secure ? 'https' : 'http'
-  return `${protocol}://${hostname}${port ? `:${port}` : ''}`
+  return `${protocol}://${fcd ?? hostname}${port ? `:${port}` : ''}`
 }

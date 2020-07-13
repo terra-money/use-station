@@ -21,6 +21,7 @@ export interface LangConfig {
 export interface ChainOptions {
   key: string
   name: string
+  fcd?: string
   hostname: string
   port?: number
   secure?: boolean
