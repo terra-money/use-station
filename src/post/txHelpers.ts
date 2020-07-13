@@ -20,7 +20,12 @@ export const getBase = async (from: string): Promise<Base> => {
   const { data: account } = await fcd.get<Account>(`/auth/accounts/${from}`)
   const { account_number, sequence } = getValue(account)
 
-  return { from, chain_id, account_number, sequence }
+  return {
+    from,
+    chain_id,
+    account_number: String(account_number),
+    sequence: String(sequence)
+  }
 }
 
 type AccountValue = { account_number: string; sequence: string }
@@ -82,3 +87,14 @@ const getMessage = (parsed: ParsedRaw): string => {
 
   return ''
 }
+
+export const stringify = (object: object): string | undefined => {
+  const string = JSON.stringify(compact(object))
+  return string === '{}' ? undefined : string
+}
+
+const compact = (object: object): object =>
+  Object.entries(object).reduce(
+    (acc, [key, value]) => Object.assign({}, acc, value && { [key]: value }),
+    {}
+  )

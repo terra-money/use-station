@@ -31,7 +31,7 @@ export interface Field<U = any> {
 }
 
 export interface FieldAttrs {
-  type?: 'text' | 'password' | 'checkbox' | 'radio'
+  type?: 'text' | 'password' | 'checkbox' | 'radio' | 'file'
 
   id: string
   name?: string
@@ -49,6 +49,7 @@ export interface FieldAttrs {
   autoComplete?: 'off'
   autoFocus?: boolean
   readOnly?: boolean
+  hidden?: boolean
 }
 
 interface FieldButton {

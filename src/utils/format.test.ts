@@ -45,4 +45,11 @@ describe('format', () => {
     const address = 'terra1srw9p49fa46fw6asp0ttrr3cj8evmj3098jdej'
     expect(format.truncate(address, [9, 7])).toBe('terra1srw...098jdej')
   })
+
+  test('sanitizeJSON', () => {
+    const string = `{
+  "a": true
+}`
+    expect(format.sanitizeJSON(string)).toBe('{"a":true}')
+  })
 })

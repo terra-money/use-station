@@ -12,6 +12,7 @@ export default (): Dictionary<string> => {
     Validator: t('Page:Menu:Validator details'),
     Market: t('Page:Menu:Market'),
     Governance: t('Page:Menu:Governance'),
-    Proposal: t('Page:Menu:Proposal details')
+    Proposal: t('Page:Menu:Proposal details'),
+    Contracts: t('Page:Menu:Contracts')
   }
 }

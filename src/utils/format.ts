@@ -85,3 +85,11 @@ export const truncate = (address: string = '', [h, t]: number[]) => {
     ? [head, tail].join('...')
     : address
 }
+
+export const sanitizeJSON = (string: string): string => {
+  try {
+    return JSON.stringify(JSON.parse(string))
+  } catch {
+    return ''
+  }
+}
