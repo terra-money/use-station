@@ -73,7 +73,8 @@
       "Sign up": "注册",
       "Sign in": "登录",
       "Sign in with ledger": "使用ledger 登录",
-      "Sign in with address": "使用地址登录"
+      "Sign in with address": "使用地址登录",
+      "Download Terra Station": ""
     },
 
     "Common": {
@@ -153,6 +154,11 @@
 
       "Recent addresses": "最近的地址",
       "Delete all": "全部删除"
+    },
+
+    "Download": {
+      "For Mac": "",
+      "For Windows": ""
     }
   },
 
@@ -171,7 +177,8 @@
       "Validator details": "验证人详情",
       "Market": "市场",
       "Governance": "治理",
-      "Proposal details": "提案详情"
+      "Proposal details": "提案详情",
+      "Contracts": ""
     },
 
     "Dashboard": {
@@ -352,6 +359,17 @@
       "Veto threshold": "否决门槛",
 
       "New proposal": "提案"
+    },
+
+    "Contracts": {
+      "Create": "创建",
+      "Upload": "代码上传",
+      "Interact": "执行",
+      "Query": "查询",
+
+      "Search": "搜索",
+      "No contracts": "无智能合约",
+      "No contracts yet": "暂未创建智能合约"
     }
   },
 
@@ -416,6 +434,7 @@
       "Swapping is not available": "现在兑换不可用",
       "Swapping is not available at the moment": "现在不能兑换代币",
       "Select a coin to swap": "请选择要兑换的货币",
+
       "Select a coin...": "选择代币...",
 
       "Current balance": "当前余额",
@@ -463,6 +482,45 @@
       "Created proposal {{title}} without deposit": "无保证金成为{{proposal}}提案",
       "Deposited {{coin}} to {{title}}": "支付{{coin}}的保证金到{{proposal}}",
       "Voted {{answer}} for {{title}}": "关于{{title}}提案，投票赞成{{answer}}"
+    },
+
+    "Contracts": {
+      "Code upload": "代码上传",
+      "Create contract": "编写智能合约",
+      "Interact with": "执行",
+      "Query": "查询",
+
+      "Contract address": "智能合约地址",
+
+      "File": "文件",
+      "Choose a file": "请选择文件",
+      "Size": "文件大小",
+      "The uploaded file is invalid": "文件无效",
+
+      "Name": "智能合约名称",
+      "Description": "描述",
+      "Repo URL": "Repo URL",
+      "Code": "代码",
+      "Coins": "货币",
+
+      "InitMsg JSON": "InitMsg JSON",
+      "HandleMsg JSON": "HandleMsg JSON",
+      "QueryMsg JSON": "QueryMsg JSON",
+
+      "Upload": "上传",
+      "Uploading...": "上传中...",
+      "Uploaded code": "代码上传成功",
+
+      "Create": "创建",
+      "Creating...": "创建中...",
+      "Created contract": "创建成功",
+
+      "Interact": "执行",
+      "Interacting...": "执行中...",
+      "Interacted with {{address}}": "{{address}}执行成功",
+
+      "Query result": "查询结果",
+      "JSON output": "JSON 输出"
     }
   }
 }

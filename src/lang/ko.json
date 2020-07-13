@@ -73,7 +73,8 @@
       "Sign up": "등록하기",
       "Sign in": "로그인",
       "Sign in with ledger": "렛저로 로그인",
-      "Sign in with address": "주소로 로그인"
+      "Sign in with address": "주소로 로그인",
+      "Download Terra Station": "테라 스테이션 다운받기"
     },
 
     "Common": {
@@ -153,6 +154,11 @@
 
       "Recent addresses": "최근 주소들",
       "Delete all": "모두 삭제"
+    },
+
+    "Download": {
+      "For Mac": "Mac",
+      "For Windows": "Windows"
     }
   },
 
@@ -171,7 +177,8 @@
       "Validator details": "검증인 세부 사항",
       "Market": "마켓",
       "Governance": "거버넌스",
-      "Proposal details": "제안 세부 사항"
+      "Proposal details": "제안 세부 사항",
+      "Contracts": "계약"
     },
 
     "Dashboard": {
@@ -352,6 +359,17 @@
       "Veto threshold": "거부 임계값",
 
       "New proposal": "제안하기"
+    },
+
+    "Contracts": {
+      "Create": "만들기",
+      "Upload": "올리기",
+      "Interact": "실행하기",
+      "Query": "질의하기",
+
+      "Search": "찾기",
+      "No contracts": "계약 없음",
+      "No contracts yet": "아직 계약이 없습니다"
     }
   },
 
@@ -464,6 +482,45 @@
       "Created proposal {{title}} without deposit": "보증금없이 {{title}} 제안을 생성했습니다",
       "Deposited {{coin}} to {{title}}": "{{title}}에 보증금 {{coin}}를 냈습니다",
       "Voted {{answer}} for {{title}}": "{{title}}에 {{answer}}(으)로 투표했습니다"
+    },
+
+    "Contracts": {
+      "Code upload": "코드 올리기",
+      "Create contract": "계약 만들기",
+      "Interact with": "실행하기",
+      "Query": "질의하기",
+
+      "Contract address": "계약 주소",
+
+      "File": "파일",
+      "Choose a file": "파일을 선택하세요",
+      "Size": "크기",
+      "The uploaded file is invalid": "이 파일은 유효하지 않습니다",
+
+      "Name": "이름",
+      "Description": "설명",
+      "Repo URL": "Repo URL",
+      "Code": "코드",
+      "Coins": "코인",
+
+      "InitMsg JSON": "InitMsg JSON",
+      "HandleMsg JSON": "HandleMsg JSON",
+      "QueryMsg JSON": "QueryMsg JSON",
+
+      "Upload": "올리기",
+      "Uploading...": "올리는 중...",
+      "Uploaded code": "코드를 올렸습니다",
+
+      "Create": "만들기",
+      "Creating...": "만드는 중...",
+      "Created contract": "계약을 만들었습니다",
+
+      "Interact": "실행하기",
+      "Interacting...": "실행하는 중...",
+      "Interacted with {{address}}": "{{address}}를 실행했습니다",
+
+      "Query result": "질의 결과",
+      "JSON output": "JSON 출력"
     }
   }
 }

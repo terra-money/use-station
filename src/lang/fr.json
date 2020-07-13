@@ -73,7 +73,8 @@
       "Sign up": "S'inscrire",
       "Sign in": "S'identifier",
       "Sign in with ledger": "S'identifier avec un ledger",
-      "Sign in with address": "S'identifier avec une address"
+      "Sign in with address": "S'identifier avec une address",
+      "Download Terra Station": ""
     },
 
     "Common": {
@@ -153,6 +154,11 @@
 
       "Recent addresses": "Adresses récentes",
       "Delete all": "Tout supprimer"
+    },
+
+    "Download": {
+      "For Mac": "",
+      "For Windows": ""
     }
   },
 
@@ -171,7 +177,8 @@
       "Validator details": "Informations sur le validateur",
       "Market": "Marché",
       "Governance": "Gouvernance",
-      "Proposal details": "Détails de la proposition"
+      "Proposal details": "Détails de la proposition",
+      "Contracts": ""
     },
 
     "Dashboard": {
@@ -352,6 +359,17 @@
       "Veto threshold": "Seuil de veto",
 
       "New proposal": "Nouvelle proposition"
+    },
+
+    "Contracts": {
+      "Create": "Créer",
+      "Upload": "Télécharger",
+      "Interact": "Interagir",
+      "Query": "Demander",
+
+      "Search": "Rechercher",
+      "No contracts": "Pas de contrats",
+      "No contracts yet": "Pas encore de contrats"
     }
   },
 
@@ -464,6 +482,45 @@
       "Created proposal {{title}} without deposit": "Création de la proposition {{title}} sans dépot",
       "Deposited {{coin}} to {{title}}": "Déposé {{coin}} pour {{title}}",
       "Voted {{answer}} for {{title}}": "A voté {{answer}} pour {{title}}"
+    },
+
+    "Contracts": {
+      "Code upload": "Télécharger le code",
+      "Create contract": "Créer le contrat",
+      "Interact with": "Interagir avec",
+      "Query": "Demander",
+
+      "Contract address": "Adresse du contrat",
+
+      "File": "Fichier",
+      "Choose a file": "Choisir un fichier",
+      "Size": "Taille",
+      "The uploaded file is invalid": "Le fichier téléchargé est invalide",
+
+      "Name": "Nom",
+      "Description": "Description",
+      "Repo URL": "URL du dépot",
+      "Code": "Code",
+      "Coins": "Monnaies",
+
+      "InitMsg JSON": "JSON du InitMsg",
+      "HandleMsg JSON": "JSON du HandleMsg",
+      "QueryMsg JSON": "JSON du QueryMsg",
+
+      "Upload": "Télécharger",
+      "Uploading...": "Téléchargement...",
+      "Uploaded code": "Code téléchargé",
+
+      "Create": "Créer",
+      "Creating...": "Création...",
+      "Created contract": "Contract crée",
+
+      "Interact": "Interagir",
+      "Interacting...": "Interaction...",
+      "Interacted with {{address}}": "Interagit avec {{address}}",
+
+      "Query result": "Résultat de la demande",
+      "JSON output": "Sortie JSON"
     }
   }
 }
