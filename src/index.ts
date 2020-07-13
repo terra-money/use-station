@@ -54,6 +54,7 @@ export { default as useSignInWithLedger } from './auth/useSignInWithLedger'
 export { default as useManageAccounts } from './auth/useManageAccounts'
 export { default as useChangePassword } from './auth/useChangePassword'
 export { default as useRecentAddresses } from './auth/useRecentAddresses'
+export { default as useDownload } from './auth/useDownload'
 
 /* hooks:pages */
 export { default as useMenu } from './pages/useMenu'

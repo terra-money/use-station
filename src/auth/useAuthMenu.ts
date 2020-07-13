@@ -9,7 +9,8 @@ export default (keys: AuthMenuKey[] = []): AuthMenu => {
     signUp: t('Auth:Menu:Sign up'),
     signIn: t('Auth:Menu:Sign in'),
     signInWithAddress: t('Auth:Menu:Sign in with address'),
-    signInWithLedger: t('Auth:Menu:Sign in with ledger')
+    signInWithLedger: t('Auth:Menu:Sign in with ledger'),
+    download: t('Auth:Menu:Download Terra Station')
   }
 
   return {

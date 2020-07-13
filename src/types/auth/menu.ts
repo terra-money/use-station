@@ -11,6 +11,7 @@ export type AuthMenuKey =
   | 'signIn'
   | 'signInWithAddress'
   | 'signInWithLedger'
+  | 'download'
 
 export interface AuthMenuUI {
   signInWithLedger: [string, string]
@@ -112,3 +113,9 @@ export type TestPassword = (params: {
 }) => boolean
 
 export type ChangePassword = FormUI
+
+/* Download */
+export interface Download {
+  title: string
+  links: { key: string; label: string; link: string }[]
+}
