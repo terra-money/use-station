@@ -41,6 +41,7 @@ export { Languages, getLang } from './contexts/useLang'
 /* hooks:api */
 export { default as fcd } from './api/fcd'
 export { default as useBank } from './api/useBank'
+export { default as useActiveDenoms } from './api/useActiveDenoms'
 
 /* hooks:auth */
 export { default as useAuthMenu } from './auth/useAuthMenu'
