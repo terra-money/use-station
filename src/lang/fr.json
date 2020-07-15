@@ -44,9 +44,9 @@
       "No internet connection": "Pas de connexion internet",
       "Please check your internet connection and retry again": "Veuillez vérifier votre connexion internet et réessayer",
 
-      "LocalTerra doesn't seem to be running.": "",
-      "LocalTerra is a one-click local Terra testnet & ecosystem for easy development of smart contracts and Terra tools.": "",
-      "Learn more about it here": ""
+      "LocalTerra doesn't seem to be running.": "LocalTerra ne semble pas être en cours d'execution",
+      "LocalTerra is a one-click local Terra testnet & ecosystem for easy development of smart contracts and Terra tools.": "LocalTerra est un testnet local pour Terra, facilitant le développement de smart contracts et outils écosystème",
+      "Learn more about it here": "Apprenez-en plus à son propos ici"
     },
 
     "Loading": {
@@ -78,7 +78,7 @@
       "Sign in": "S'identifier",
       "Sign in with ledger": "S'identifier avec un ledger",
       "Sign in with address": "S'identifier avec une address",
-      "Download Terra Station": ""
+      "Download Terra Station": "Télécharger Terra Station"
     },
 
     "Common": {
@@ -161,8 +161,8 @@
     },
 
     "Download": {
-      "For Mac": "",
-      "For Windows": ""
+      "For Mac": "Pour Mac",
+      "For Windows": "Pour Windows"
     }
   },
 
@@ -182,7 +182,7 @@
       "Market": "Marché",
       "Governance": "Gouvernance",
       "Proposal details": "Détails de la proposition",
-      "Contracts": ""
+      "Contracts": "Contrats"
     },
 
     "Dashboard": {

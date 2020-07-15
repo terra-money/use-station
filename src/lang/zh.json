@@ -44,9 +44,9 @@
       "No internet connection": "您没有连接到互联网",
       "Please check your internet connection and retry again": "请检查您的互联网连接，然后重试。",
 
-      "LocalTerra doesn't seem to be running.": "",
-      "LocalTerra is a one-click local Terra testnet & ecosystem for easy development of smart contracts and Terra tools.": "",
-      "Learn more about it here": ""
+      "LocalTerra doesn't seem to be running.": "Local Terra似乎没有被执行",
+      "LocalTerra is a one-click local Terra testnet & ecosystem for easy development of smart contracts and Terra tools.": "LocalTerra是一个用来开发Terra的测试环境（本地私有测试链）",
+      "Learn more about it here": "了解更多信息"
     },
 
     "Loading": {
@@ -78,7 +78,7 @@
       "Sign in": "登录",
       "Sign in with ledger": "使用ledger 登录",
       "Sign in with address": "使用地址登录",
-      "Download Terra Station": ""
+      "Download Terra Station": "Terra Station下载"
     },
 
     "Common": {
@@ -161,8 +161,8 @@
     },
 
     "Download": {
-      "For Mac": "",
-      "For Windows": ""
+      "For Mac": "Mac版下载",
+      "For Windows": "Windows版下载"
     }
   },
 
@@ -182,7 +182,7 @@
       "Market": "市场",
       "Governance": "治理",
       "Proposal details": "提案详情",
-      "Contracts": ""
+      "Contracts": "智能合约"
     },
 
     "Dashboard": {
