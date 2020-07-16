@@ -10,9 +10,15 @@ import { times, lt } from '../utils/math'
 import { getBase, config, calc, GAS_PRICE } from './txHelpers'
 import { checkError, parseError } from './txHelpers'
 
+interface SignParams {
+  user: User
+  password?: string
+  sign: Sign
+}
+
 export default (
   { url, payload, memo, submitLabels, message, ...rest }: ConfirmProps,
-  { user, sign }: { user: User; sign: Sign }
+  { user, password: defaultPassword = '', sign }: SignParams
 ): ConfirmPage => {
   const { contents, feeDenom, validate, warning } = rest
 
@@ -129,7 +135,7 @@ export default (
   const [ledgerError, setLedgerError] = useState<string>()
 
   /* password */
-  const [password, setPassword] = useState('')
+  const [password, setPassword] = useState(defaultPassword)
   const [passwordError, setPasswordError] = useState<string>()
   const passwordField: Field = {
     label: t('Post:Confirm:Confirm with password'),
