@@ -17,8 +17,8 @@ interface Values {
 }
 
 interface Props {
-  to: string
-  undelegate: boolean
+  validatorAddress: string
+  isUndelegation: boolean
 }
 
 enum TxType {
@@ -28,7 +28,11 @@ enum TxType {
 }
 
 const denom = 'uluna'
-export default (user: User, { to, undelegate }: Props): PostPage => {
+
+export default (
+  user: User,
+  { validatorAddress, isUndelegation }: Props
+): PostPage => {
   const { t } = useTranslation()
   const v = validateForm(t)
 
@@ -38,15 +42,21 @@ export default (user: User, { to, undelegate }: Props): PostPage => {
   const { data: bank, loading, error } = useBank(user)
   const { data: staking, ...stakingResponse } = useFCD<StakingData>({ url })
   const { loading: stakingLoading, error: stakingError } = stakingResponse
-  const sources = staking?.myDelegations?.filter(d => d.validatorAddress !== to)
+  const sources = staking?.myDelegations?.filter(
+    d => d.validatorAddress !== validatorAddress
+  )
 
-  const findDelegation = (address: string) =>
+  const findDelegationFromSources = (address: string) =>
     staking?.myDelegations?.find(d => d.validatorAddress === address)
+
+  const findDelegationFromValidators = (address: string) =>
+    staking?.validators?.find(d => d.operatorAddress === address)
 
   /* max */
   const getMax = (address: string): Coin => {
     const amount =
-      findDelegation(address)?.amountDelegated ?? staking?.availableLuna
+      findDelegationFromSources(address)?.amountDelegated ??
+      staking?.availableLuna
 
     return { amount: amount ?? '0', denom }
   }
@@ -54,10 +64,16 @@ export default (user: User, { to, undelegate }: Props): PostPage => {
   /* form */
   const validate = ({ input, from }: Values) => ({
     input: v.input(input, {
-      max: toInput(getMax(undelegate ? to : from).amount)
+      max: toInput(getMax(isUndelegation ? validatorAddress : from).amount)
     }),
     from: ''
   })
+
+  /*
+  Delegation:   from = address(user) / to = validatorAddress
+  Redelegation: from = address(src)  / to = validatorAddress
+  Undelegation: from = address(user) / to = validatorAddress
+  */
 
   const initial = { input: '', from: address }
   const [submitted, setSubmitted] = useState(false)
@@ -65,9 +81,11 @@ export default (user: User, { to, undelegate }: Props): PostPage => {
   const { values, setValue, invalid, getDefaultProps, getDefaultAttrs } = form
   const { input, from } = values
   const amount = toAmount(input)
-  const moniker = findDelegation(to)?.validatorName
-  const redelegation = from !== address
-  const type = redelegation ? TxType.R : undelegate ? TxType.U : TxType.D
+
+  const isRedelegation = from !== address
+  const type = isRedelegation ? TxType.R : isUndelegation ? TxType.U : TxType.D
+  const moniker = findDelegationFromValidators(validatorAddress)?.description
+    .moniker
 
   /* render */
   const unit = format.denom(denom)
@@ -77,7 +95,7 @@ export default (user: User, { to, undelegate }: Props): PostPage => {
     : t('Page:Bank:My wallet')
 
   const fields: Field[] = [
-    !undelegate
+    !isUndelegation
       ? {
           ...getDefaultProps('from'),
           label: t('Post:Staking:Source ({{length}})', {
@@ -106,7 +124,7 @@ export default (user: User, { to, undelegate }: Props): PostPage => {
           element: 'input' as FieldElement,
           attrs: {
             id: 'to',
-            defaultValue: to,
+            defaultValue: validatorAddress,
             readOnly: true
           }
         },
@@ -115,10 +133,15 @@ export default (user: User, { to, undelegate }: Props): PostPage => {
       label: t('Common:Tx:Amount'),
       button: {
         label: t('Common:Account:Available'),
-        display: format.display(getMax(undelegate ? to : from)),
+        display: format.display(
+          getMax(isUndelegation ? validatorAddress : from)
+        ),
         attrs: {
           onClick: () =>
-            setValue('input', toInput(getMax(undelegate ? to : from).amount))
+            setValue(
+              'input',
+              toInput(getMax(isUndelegation ? validatorAddress : from).amount)
+            )
         }
       },
       attrs: {
@@ -129,13 +152,13 @@ export default (user: User, { to, undelegate }: Props): PostPage => {
       unit
     }
   ].concat(
-    !undelegate
+    !isUndelegation
       ? {
           label: t('Post:Staking:Delegate to'),
           element: 'input' as FieldElement,
           attrs: {
             id: 'to',
-            defaultValue: to,
+            defaultValue: validatorAddress,
             readOnly: true
           }
         }
@@ -160,7 +183,7 @@ export default (user: User, { to, undelegate }: Props): PostPage => {
         url: `/staking/delegators/${from}/delegations`,
         payload: {
           delegator_address: from,
-          validator_address: to,
+          validator_address: validatorAddress,
           amount: { amount, denom }
         },
         validate: (fee: Coin) =>
@@ -185,7 +208,7 @@ export default (user: User, { to, undelegate }: Props): PostPage => {
         payload: {
           delegator_address: address,
           validator_src_address: from,
-          validator_dst_address: to,
+          validator_dst_address: validatorAddress,
           amount: { amount, denom }
         },
         validate: (fee: Coin) => isFeeAvailable(fee, bank.balance),
@@ -208,7 +231,7 @@ export default (user: User, { to, undelegate }: Props): PostPage => {
         url: `/staking/delegators/${from}/unbonding_delegations`,
         payload: {
           delegator_address: from,
-          validator_address: to,
+          validator_address: validatorAddress,
           amount: { amount, denom }
         },
         validate: (fee: Coin) => isFeeAvailable(fee, bank.balance),
