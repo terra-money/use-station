@@ -1,8 +1,9 @@
 export type Address = string
 
 export interface User {
-  name?: string
   address: Address
+  name?: string
+  wallet?: string
   ledger?: boolean
 }
 
