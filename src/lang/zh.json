@@ -366,6 +366,8 @@
     },
 
     "Contracts": {
+      "Contract": "智能合约",
+
       "Create": "创建",
       "Upload": "代码上传",
       "Interact": "执行",

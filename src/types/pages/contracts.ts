@@ -15,6 +15,9 @@ export interface ContractsUI {
 
 export interface ContractUI {
   address: string
+  date: string
+  code: { label: string; value: string }
+  contract: { label: string; value: string }
   interact: string
   query: string
 }
@@ -31,4 +34,18 @@ export interface Contract {
   txhash: string
   timestamp: string
   contract_address: string
+  info: Info
+  code: {
+    code_id: string
+    sender: string
+    timestamp: string
+    txhash: string
+    info: Info
+  }
+}
+
+export interface Info {
+  name: string
+  description: string
+  memo: string
 }

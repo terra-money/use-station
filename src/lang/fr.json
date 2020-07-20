@@ -366,6 +366,8 @@
     },
 
     "Contracts": {
+      "Contract": "Contrat",
+
       "Create": "Créer",
       "Upload": "Télécharger",
       "Interact": "Interagir",

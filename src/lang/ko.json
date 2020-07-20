@@ -366,6 +366,8 @@
     },
 
     "Contracts": {
+      "Contract": "계약",
+
       "Create": "만들기",
       "Upload": "올리기",
       "Interact": "실행하기",
