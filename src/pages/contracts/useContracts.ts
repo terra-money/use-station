@@ -1,7 +1,8 @@
 import { useTranslation } from 'react-i18next'
 import { ContractsPage, ContractsData } from '../../types'
-import useFCD from '../../api/useFCD'
 import { gt, format } from '../../utils'
+import useFCD from '../../api/useFCD'
+import useFinder from '../../hooks/useFinder'
 
 interface Params {
   page?: number
@@ -11,6 +12,7 @@ interface Params {
 
 export default (params: Params): ContractsPage => {
   const { t } = useTranslation()
+  const getLink = useFinder()
 
   /* api */
   const url = '/v1/wasm/contracts'
@@ -38,6 +40,7 @@ export default (params: Params): ContractsPage => {
             list: contracts.map(
               ({ contract_address, timestamp, code, info }) => ({
                 address: contract_address,
+                link: getLink?.({ q: 'account', v: contract_address }),
                 date: format.date(timestamp, { toLocale: true }),
                 code: {
                   label: t('Post:Contracts:Code'),
