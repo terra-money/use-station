@@ -41,11 +41,12 @@ export const useCoinsFields = (denoms: string[]): CoinFields => {
             onClick: () => setCoinInputs([...coinInputs, InitialCoinInput])
           }
     })),
-    coins: coinInputs.map(({ denom, input }) => ({
-      denom,
-      amount: toAmount(input)
-    })),
-    invalid: coinInputs.some(({ input }) => !gt(input, '0'))
+    coins: coinInputs
+      .filter(({ input }) => !!input)
+      .map(({ denom, input }) => ({ denom, amount: toAmount(input) })),
+    invalid: coinInputs
+      .filter(({ input }) => !!input)
+      .some(({ input }) => !gt(input, '0'))
   }
 }
 
