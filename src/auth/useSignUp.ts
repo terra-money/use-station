@@ -1,7 +1,6 @@
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { update } from 'ramda'
-import invariant from 'tiny-invariant'
 import { Field, Seed, Bip, SignUp, SignUpStep, Wallet } from '../types'
 import { Account, BankData, Generate, BipList } from '../types'
 import { useAuth } from '../contexts/AuthContext'
@@ -168,10 +167,11 @@ export default (props: Props): SignUp => {
       const wallet = await generateWallet(phrase, bip)
       const { terraAddress: address } = wallet
 
-      invariant(
-        !isAddressExists(address),
-        t('Common:Validate:{{label}} already exists', { label: ADDRESS })
-      )
+      if (isAddressExists(address)) {
+        throw Error(
+          t('Common:Validate:{{label}} already exists', { label: ADDRESS })
+        )
+      }
 
       await submit({ name, password, wallet })
       signIn({ name, address })
