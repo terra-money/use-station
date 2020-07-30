@@ -1,7 +1,7 @@
-import { Component, ReactNode } from 'react'
+import { Component, ReactNode, ErrorInfo } from 'react'
 
 interface Props {
-  handleError?: (error: Error, errorInfo: object) => void
+  handleError?: (error: Error, errorInfo: ErrorInfo) => void
   fallback?: ReactNode
 }
 
@@ -9,7 +9,7 @@ class ErrorBoundary extends Component<Props> {
   state = { hasError: null }
   static getDerivedStateFromError = () => ({ hasError: true })
 
-  componentDidCatch(error: Error, errorInfo: object) {
+  componentDidCatch(error: Error, errorInfo: ErrorInfo) {
     this.props.handleError?.(error, errorInfo)
   }
 
