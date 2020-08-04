@@ -67,7 +67,7 @@ export default (
 
       // Simulate with initial fee
       const base = await getBase(address)
-      const req = { simulate: true, gas: 'auto', fees: [], memo }
+      const req = { simulate: true, gas: 'auto', fees: [fee], memo }
       const body = { base_req: { ...base, ...req }, ...payload }
 
       type Data = { gas_estimate: string }
