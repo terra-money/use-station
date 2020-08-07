@@ -25,7 +25,7 @@ export default (getAddress: () => Promise<string>): ConfirmLedger => {
 
   return {
     card: {
-      title: t('Auth:Menu:Sign in'),
+      title: t('Auth:Menu:Select wallet'),
       content: t('Auth:SignIn:Please plug in your\nLedger Wallet')
     },
     retry: error

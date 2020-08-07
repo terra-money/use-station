@@ -23,7 +23,7 @@ export default ({ list, test }: Props): SignIn => {
 
   const fields: Field[] = [
     {
-      label: t('Auth:SignIn:Select account'),
+      label: t('Auth:SignIn:Wallet'),
       element: 'select',
       attrs: {
         id: 'name',
@@ -62,11 +62,15 @@ export default ({ list, test }: Props): SignIn => {
 
   return {
     form: {
-      title: t('Auth:Menu:Sign in'),
+      title: t('Auth:Menu:Select wallet'),
       fields,
       disabled,
       submitLabel: t('Common:Form:Next'),
       onSubmit: disabled ? undefined : onSubmit
-    }
+    },
+    manage: [
+      t('Auth:Manage:Manage wallets'),
+      t('Auth:Manage:Change password or delete wallet')
+    ] as [string, string]
   }
 }

@@ -60,7 +60,7 @@ export default ({ accounts, signUp }: SignUpNext): SelectAccount => {
   }
 
   const card = {
-    title: t('Auth:SignUp:Account recovered successfully!'),
+    title: t('Auth:SignUp:Wallet recovered successfully!'),
     content: t('Auth:SignUp:Welcome back to Terra Station.'),
     button: t('Auth:SignUp:Explore the Terra Network')
   }

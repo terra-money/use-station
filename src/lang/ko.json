@@ -73,29 +73,30 @@
 
   "Auth": {
     "Menu": {
-      "Recover": "복원하기",
-      "Sign up": "등록하기",
-      "Sign in": "로그인",
-      "Sign in with ledger": "렛저로 로그인",
-      "Sign in with address": "주소로 로그인",
+      "Recover existing wallet": "기존 지갑 복원하기",
+      "New wallet": "새 지갑",
+      "Select wallet": "지갑 연결",
+      "Access with ledger": "렛저로 연결",
+      "Browse with address": "주소로 탐색",
       "Download Terra Station": "테라 스테이션 다운받기"
     },
 
     "Common": {
       "Welcome": "환영합니다",
+      "Connect": "연결하기",
 
-      "Sign in to your account, create a new account or recover an existing wallet using a seed phrase": "계정에 로그인하거나 새 계정을 만들거나 시드 문구를 사용하여 기존 지갑을 복구하세요",
-      "Create a new account or recover an existing wallet using a seed phrase": "새 계정을 만들거나 시드 문구를 사용하여 기존 지갑을 복구하세요",
+      "Connect to your wallet, create a new wallet or recover an existing wallet using a seea phrase": "지갑에 연결하거나 새 지갑을 만들거나 시드 문구를 사용하여 기존 지갑을 복구하세요",
+      "Create a new wallet or recover an existing wallet using a seed phrase": "새 지갑을 만들거나 시드 문구를 사용하여 기존 지갑을 복구하세요",
 
       "Just browsing?": "그냥 둘러보고 싶으세요?",
       "Quickly glance through your address": "주소로 빠르게 훑어보세요",
 
-      "How can I create an account?": "계정은 어떻게 만드나요?",
-      "If you want to create an account, please download <0>Terra Station for Windows/MacOS</0>. We don't support creating an account for Terra Station web due to the security reasons.": "계정을 만들려면 <0>윈도우즈/맥용 테라 스테이션</0> 앱을 다운로드하세요. 보안상의 이유로 웹에선 계정 생성을 제한하고 있습니다.",
+      "How can I create an wallet?": "지갑은 어떻게 만드나요?",
+      "If you want to create an wallet, please download <0>Terra Station for Windows/MacOS</0>. We don't support creating an wallet for Terra Station web due to the security reasons.": "지갑을 만들려면 <0>윈도우즈/맥용 테라 스테이션</0> 앱을 다운로드하세요. 보안상의 이유로 웹에선 지갑 생성을 제한하고 있습니다.",
 
-      "Sign in required": "로그인 필요",
-      "This page shows data for a specific address. To access the page, please <0>sign in</0>.": "이 페이지는 특정 주소에 대한 데이터를 보여줍니다. 페이지에 액세스하려면 <0>로그인</0>하십시오.",
-      "Please sign in with account or ledger to execute": "수행하려면 계정이나 렛저로 로그인하세요"
+      "Connection required": "연결 필요",
+      "This page shows data for a specific address. To access the page, please <0>connect</0>.": "이 페이지는 특정 주소에 대한 데이터를 보여줍니다. 페이지에 액세스하려면 <0>연결</0>하십시오.",
+      "Please connect with wallet or ledger to execute": "수행하려면 지갑이나 렛저로 연결하세요"
     },
 
     "Form": {
@@ -105,17 +106,14 @@
     },
 
     "SignUp": {
-      "Import with seed": "시드 문구로 계정 복구하기",
-      "Create an account": "계정 생성",
-
-      "Account name": "계정 이름",
+      "Wallet name": "지갑 이름",
       "Enter 5-20 alphanumeric characters": "5자 이상 20자 이하의 영숫자를 입력하세요",
       "Confirm password": "비밀번호 확인",
       "Confirm your password": "비밀번호를 다시 입력하세요",
       "Seed phrase": "시드 문구",
 
       "What if I lost my seed phrase?": "시드 문구를 잃어버리면 어떻게 하나요?",
-      "We cannot recover your information for you. If you lose your seed phrase it's GONE FOREVER. Station doesn't store any data.": "시드 문구를 잃어버리면 해당 계정은 영원히 복구가 불가능합니다. 테라 스테이션은 어떠한 정보도 저장하고 있지 않습니다.",
+      "We cannot recover your information for you. If you lose your seed phrase it's GONE FOREVER. Terra Station does not store your mnemonic.": "시드 문구를 잃어버리면 해당 지갑은 영원히 복구가 불가능합니다. 테라 스테이션은 니모닉을 저장하지 않습니다.",
       "I have securely <0>WRITTEN DOWN MY SEED</0>. I understand that lost seeds cannot be recovered.": "<0>내 시드 문구를 확실하게 적어두었습니다.</0> 잃어버린 시드 문구는 복구할 수 없다는 것을 알고 있습니다.",
 
       "Select address to recover": "복원할 주소 선택",
@@ -123,37 +121,39 @@
       "Delegated": "위임",
       "Undelegated": "위임 취소",
       "No balance": "잔액 없음",
-      "Account recovered successfully!": "계정을 성공적으로 복원했습니다!",
+      "Wallet recovered successfully!": "지갑을 성공적으로 복원했습니다!",
       "Welcome back to Terra Station.": "테라 스테이션에 돌아오신 것을 환영합니다.",
 
       "Confirm your seed": "시드 확인하기",
       "{{index}} word": "{{index}}번째 단어",
       "Select or type": "선택하거나 입력하세요",
-      "Confirm and finish": "확인하고 끝내기",
-      "Account created!": "계정 생성!",
+      "Create a wallet": "지갑 만들기",
+      "Wallet created!": "지갑 생성!",
       "Welcome aboard to Terra Station.": "테라 스테이션에 승선하신 것을 환영합니다.",
       "Explore the Terra Network": "테라 네트워크 탐험하기"
     },
 
     "SignIn": {
-      "Select account": "계정 선택",
+      "Wallet": "지갑",
       "Wallet address": "지갑 주소",
       "Input your wallet address": "지갑 주소를 입력하세요",
-      "Please plug in your\nLedger Wallet": "렛저 디바이스를 연결하세요"
+      "Please plug in your\nLedger Wallet": "렛저 디바이스를 연결하세요",
+      "Browse": "탐색하기"
     },
 
     "Manage": {
-      "Manage accounts": "계정 관리",
+      "Manage wallets": "지갑 관리",
+      "Change password or delete wallet": "비밀번호를 바꾸거나 지갑 지우기",
       "Change password": "비밀번호 변경",
-      "Delete accounts": "계정 삭제",
+      "Delete wallet": "지갑 삭제",
 
       "Current password": "현재 비밀번호",
       "New password": "새 비밀번호",
       "Confirm new password": "새 비밀번호 확인",
       "Password changed": "비밀번호를 변경했습니다",
-      "You can now sign in with your new password": "이제 새 비밀번호로 로그인할 수 있습니다",
+      "You can now connect with your new password": "이제 새 비밀번호로 연결할 수 있습니다",
 
-      "Are you sure you want to delete this account? You can restore this account with your seed phrase anytime.": "이 계정을 삭제하시겠습니까? 시드 문구로 언제든지 계정을 복원할 수 있습니다.",
+      "Are you sure you want to delete this wallet? Your wallet cannot be recovered without seed phrase.": "이 지갑을 삭제하시겠습니까? 시드 문구가 없으면 지갑을 복원할 수 없습니다.",
       "Delete": "삭제",
 
       "Recent addresses": "최근 주소들",
@@ -175,8 +175,8 @@
 
     "Menu": {
       "Dashboard": "대시보드",
-      "Bank": "뱅크",
-      "Transactions": "트랜잭션",
+      "Wallet": "지갑",
+      "History": "이력",
       "Staking": "스테이킹",
       "Validator details": "검증인 세부 사항",
       "Market": "마켓",
@@ -222,14 +222,14 @@
       "My wallet": "내 지갑",
       "Verify this address on your Ledger": "렛저에서 주소를 확인하세요",
 
-      "Account empty": "빈 계정",
-      "This account doesn't hold any coins yet": "이 계정은 아직 코인을 보유하고 있지 않습니다",
+      "Wallet empty": "빈 지갑",
+      "This wallet doesn't hold any coins yet": "이 지갑은 아직 코인을 보유하고 있지 않습니다",
 
       "Available": "사용 가능",
       "Hide small balances": "작은 잔액 숨기기",
 
       "Vesting schedule": "베스팅 스케쥴",
-      "This displays your investment with Terra. Vested Luna can be delegated in the meantime.": "해당 계정의 베스팅 내역을 표시합니다. 베스팅 중인 루나도 위임할 수 있습니다.",
+      "This displays your investment with Terra. Vested Luna can be delegated in the meantime.": "해당 지갑의 베스팅 내역을 표시합니다. 베스팅 중인 루나도 위임할 수 있습니다.",
 
       "Released": "지급 완료",
       "Releasing": "지급 중",

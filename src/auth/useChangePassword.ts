@@ -41,7 +41,7 @@ export default ({ name, test, changePassword }: Props): ChangePassword => {
     fields: [
       {
         element: 'input',
-        label: t('Auth:SignUp:Account name'),
+        label: t('Auth:SignUp:Wallet name'),
         attrs: { id: 'name', value: name, readOnly: true }
       },
       {

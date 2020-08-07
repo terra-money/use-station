@@ -36,7 +36,7 @@ export default (props: Props): SignUp => {
   const { signIn } = useAuth()
 
   const ADDRESS = t('Common:Account:Address')
-  const ID = t('Auth:SignUp:Account name')
+  const ID = t('Auth:SignUp:Wallet name')
   const PW = t('Auth:Form:Password')
 
   /* form */
@@ -186,8 +186,8 @@ export default (props: Props): SignUp => {
     {
       form: {
         title: generated
-          ? t('Auth:SignUp:Create an account')
-          : t('Auth:SignUp:Import with seed'),
+          ? t('Auth:Menu:New wallet')
+          : t('Auth:Menu:Recover existing wallet'),
         fields: generated ? fields.concat(phraseField) : fields,
         disabled,
         submitLabel: loading
@@ -200,7 +200,7 @@ export default (props: Props): SignUp => {
         tooltip: [
           t('Auth:SignUp:What if I lost my seed phrase?'),
           t(
-            "Auth:SignUp:We cannot recover your information for you. If you lose your seed phrase it's GONE FOREVER. Station doesn't store any data."
+            "Auth:SignUp:We cannot recover your information for you. If you lose your seed phrase it's GONE FOREVER. Terra Station does not store your mnemonic."
           )
         ] as [string, string],
         i18nKey:

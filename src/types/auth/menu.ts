@@ -89,6 +89,7 @@ export interface ConfirmSeed {
 /* SignIn */
 export interface SignIn {
   form: FormUI
+  manage: [string, string]
 }
 
 export interface SignInWithAddress {

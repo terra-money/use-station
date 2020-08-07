@@ -64,7 +64,7 @@ export default ({ seed, signUp }: Props): ConfirmSeed => {
       title: t('Auth:SignUp:Confirm your seed'),
       fields,
       disabled,
-      submitLabel: t('Auth:SignUp:Confirm and finish'),
+      submitLabel: t('Auth:SignUp:Create a wallet'),
       onSubmit: disabled ? undefined : onSubmit
     },
     hint: hint.map(index => {
@@ -77,7 +77,7 @@ export default ({ seed, signUp }: Props): ConfirmSeed => {
     result: !submitted
       ? undefined
       : {
-          title: t('Auth:SignUp:Account created!'),
+          title: t('Auth:SignUp:Wallet created!'),
           content: t('Auth:SignUp:Welcome abroad to Terra Station.'),
           button: t('Auth:SignUp:Explore the Terra Network')
         }

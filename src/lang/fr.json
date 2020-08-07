@@ -73,29 +73,30 @@
 
   "Auth": {
     "Menu": {
-      "Recover": "Récupération",
-      "Sign up": "S'inscrire",
-      "Sign in": "S'identifier",
-      "Sign in with ledger": "S'identifier avec un ledger",
-      "Sign in with address": "S'identifier avec une address",
+      "Recover existing wallet": "Recouvrer un portefeuille existant",
+      "New wallet": "Nouveau portefeuille",
+      "Select wallet": "Sélectionner un portefeuille",
+      "Access with ledger": "S'identifier avec Ledger",
+      "Browse with address": "S'identifier avec une address",
       "Download Terra Station": "Télécharger Terra Station"
     },
 
     "Common": {
       "Welcome": "Bienvenue",
+      "Connect": "Connexion",
 
-      "Sign in to your account, create a new account or recover an existing wallet using a seed phrase": "Connectez-vous à votre compte, créez un nouveau compte ou récupérez un portefeuille existant en utilisant une phrase d'amorce",
-      "Create a new account or recover an existing wallet using a seed phrase": "Créez un nouveau compte ou récupérez un portefeuille existant en utilisant une phrase d'amorce",
+      "Connect to your wallet, create a new wallet or recover an existing wallet using a seea phrase": "Se connecter à un portefeuille, créer un nouveau portefeuille, ou recouvrer un portefeuille existant à l'aide d'une phrase d'amorce.",
+      "Create a new wallet or recover an existing wallet using a seed phrase": "Créer un nouveau portefeuille ou recouvrer un portefeuille existant à l'aide d'une phrase d'amorce",
 
       "Just browsing?": "Juste ici pour consulter?",
       "Quickly glance through your address": "Jetez un coup d'œil rapide à votre adresse",
 
-      "How can I create an account?": "Comment puis-je créer un compte    ?",
-      "If you want to create an account, please download <0>Terra Station for Windows/MacOS</0>. We don't support creating an account for Terra Station web due to the security reasons.": "Si vous voulez créer un compte, merci de télécharger <0>Terra Station pour Windows/MacOS</0>. Nous ne supportons pas la création d'un compte via Terra Station web pour des raisons de sécurité.",
+      "How can I create an wallet?": "Comment créer un portefeuille ?",
+      "If you want to create an wallet, please download <0>Terra Station for Windows/MacOS</0>. We don't support creating an wallet for Terra Station web due to the security reasons.": "Si vous souhaitez créer un portefeuille, merci de télécharger <0>Terra Station pour Windows/macOS.</0> La création d'un portefeuille sur Terra Station web n'est pas prise en charge pour des raisons de sécurité.",
 
-      "Sign in required": "Connexion requise",
-      "This page shows data for a specific address. To access the page, please <0>sign in</0>.": "Cette page affiche les données d'une adresse spécifique. Pour accéder à cette page, merci de <0>s'enregistrer</0>.",
-      "Please sign in with account or ledger to execute": "Veuillez vous connecter avec un compte ou un leger pour exécuter"
+      "Connection required": "Connexion requise.",
+      "This page shows data for a specific address. To access the page, please <0>connect</0>.": "Cette page affiche les données pour une address spécifique. Pour accéder à cette page, merci de <0>vous connecter</0>.",
+      "Please connect with wallet or ledger to execute": "Veuillez vous connecter avec un portefeuille ou avec Ledger pour éxecuter"
     },
 
     "Form": {
@@ -105,17 +106,14 @@
     },
 
     "SignUp": {
-      "Import with seed": "Importer avec la phrase d'amorce",
-      "Create an account": "Créer un compte",
-
-      "Account name": "Nom du compte",
+      "Wallet name": "Nom du portefeuille",
       "Enter 5-20 alphanumeric characters": "Entrez 5 à 20 caractères alphanumériques",
       "Confirm password": "Confirmez le mot de passe",
       "Confirm your password": "Confirmez votre mot de passe",
       "Seed phrase": "Phrase d'amorce",
 
       "What if I lost my seed phrase?": "Et si je perdais ma phrase d'amorce?",
-      "We cannot recover your information for you. If you lose your seed phrase it's GONE FOREVER. Station doesn't store any data.": "Nous ne pouvons pas recouvrer vos informations pour vous. Si vous perdez votre phrase d'amorce, elles seront perdues POUR TOUJOURS. Station ne stocke aucune donnée.",
+      "We cannot recover your information for you. If you lose your seed phrase it's GONE FOREVER. Terra Station does not store your mnemonic.": "Nous ne pouvons pas recouvrer vos informations pour vous. Si vous perdez votre phrase d'amorce, elle sera perdu POUR TOUJOURS. Terra Station ne la sauvegarde pas.",
       "I have securely <0>WRITTEN DOWN MY SEED</0>. I understand that lost seeds cannot be recovered.": "J'ai bien <0>ÉCRIT MA PHRASE D'AMORCE</0>. Je comprends que les phrases d'amorce perdues ne peuvent pas être récupérées.",
 
       "Select address to recover": "Sélectionnez l'adresse à recouvrer",
@@ -123,37 +121,39 @@
       "Delegated": "Délégué",
       "Undelegated": "Non délégué",
       "No balance": "Pas de solde",
-      "Account recovered successfully!": "Compte recouvré avec succès!",
+      "Wallet recovered successfully!": "Portefeuille recouvré avec succès!",
       "Welcome back to Terra Station.": "Bienvenue sur Terra Station.",
 
       "Confirm your seed": "Confirmez votre phrase d'amorce",
       "{{index}} word": "Mot numéro {{index}}",
       "Select or type": "Sélectionnez ou tapez",
-      "Confirm and finish": "Confirmer et terminer",
-      "Account created!": "Compte créé!",
+      "Create a wallet": "Créer un portefeuille",
+      "Wallet created!": "Portefeuille créé!",
       "Welcome aboard to Terra Station.": "Bienvenue sur Terra Station.",
       "Explore the Terra Network": "Explorez le réseau Terra"
     },
 
     "SignIn": {
-      "Select account": "Sélectionner un compte",
+      "Wallet": "Portefeuille",
       "Wallet address": "Adresse de portefeuille",
       "Input your wallet address": "Saisissez l'adresse de votre portefeuille",
-      "Please plug in your\nLedger Wallet": "Veuillez brancher votre\nLedger Wallet"
+      "Please plug in your\nLedger Wallet": "Veuillez brancher votre\nLedger Wallet",
+      "Browse": "Parcourir"
     },
 
     "Manage": {
-      "Manage accounts": "Gérer les comptes",
+      "Manage wallets": "Gérer ce portefeuille",
+      "Change password or delete wallet": "Changer de mot de passe ou supprimer ce portefeuille",
       "Change password": "Changer le mot de passe",
-      "Delete accounts": "Supprimer des comptes",
+      "Delete wallet": "Supprimer ce portefeuille",
 
       "Current password": "Mot de passe actuel",
       "New password": "Nouveau mot de passe",
       "Confirm new password": "Confirmer le nouveau mot de passe",
       "Password changed": "Mot de passe changé",
-      "You can now sign in with your new password": "Vous pouvez dorénavant vous connecter avec votre nouveau mot de passe",
+      "You can now connect with your new password": "Vous pouvez dorénavant vous connecter avec votre nouveau mot de passe",
 
-      "Are you sure you want to delete this account? You can restore this account with your seed phrase anytime.": "Êtes-vous sûr de vouloir supprimer ce compte ? Vous pouvez restaurer ce compte avec votre phrase d'amorce à tout moment.",
+      "Are you sure you want to delete this wallet? Your wallet cannot be recovered without seed phrase.": "Êtes-vous sûr de vouloir supprimer ce portefeuille ? Il n'est pas possible de le recouvrer sans la phrase d'amorce.",
       "Delete": "Supprimer",
 
       "Recent addresses": "Adresses récentes",
@@ -175,8 +175,8 @@
 
     "Menu": {
       "Dashboard": "Tableau de bord",
-      "Bank": "Banque",
-      "Transactions": "Transactions",
+      "Wallet": "Portefeuille",
+      "History": "Historique",
       "Staking": "Staking",
       "Validator details": "Informations sur le validateur",
       "Market": "Marché",
@@ -222,14 +222,14 @@
       "My wallet": "Mon portefeuille",
       "Verify this address on your Ledger": "Verifier cette adresse sur votre Ledger",
 
-      "Account empty": "Compte vide",
-      "This account doesn't hold any coins yet": "Ce compte ne contient pas encore de monnaies",
+      "Wallet empty": "Portefeuille vide",
+      "This wallet doesn't hold any coins yet": "Ce portefeuille ne contient pas encore de monnaies",
 
       "Available": "Disponible",
       "Hide small balances": "Cacher les petits soldes",
 
       "Vesting schedule": "Calendrier d'acquisition des droits",
-      "This displays your investment with Terra. Vested Luna can be delegated in the meantime.": "Ceci affiche votre investissement avec Terra. En attendant, vous pouvez déjà déléguer ces Luna.",
+      "This displays your investment with Terra. Vested Luna can be delegated in the meantime.": "Ceci affice votre investissement avec Terra. Vous pouvez déléguer vos Lunas acquises pendant qu'elles vous sont bloquées.",
 
       "Released": "Libérés",
       "Releasing": "En cours de libération",

@@ -36,10 +36,10 @@ export default (): SignInWithAddress => {
 
   return {
     form: {
-      title: t('Auth:Menu:Sign in with address'),
+      title: t('Auth:Menu:Browse with address'),
       fields,
       disabled,
-      submitLabel: t('Auth:Menu:Sign in'),
+      submitLabel: t('Auth:SignIn:Browse'),
       onSubmit: disabled ? undefined : onSubmit
     }
   }

@@ -21,10 +21,10 @@ export default (): Dictionary<Card> => {
       )
     },
     SIGN_IN_REQUIRED: {
-      title: t('Auth:Common:Sign in required'),
+      title: t('Auth:Common:Connection required'),
       i18nKey:
-        'Auth:Common:This page shows data for a specific address. To access the page, please <0>sign in</0>.',
-      button: t('Auth:Menu:Sign in')
+        'Auth:Common:This page shows data for a specific address. To access the page, please <0>connect</0>.',
+      button: t('Auth:Menu:Select wallet')
     },
     LOCALTERRA_ERROR: {
       title: t("Common:Error:LocalTerra doesn't seem to be running."),

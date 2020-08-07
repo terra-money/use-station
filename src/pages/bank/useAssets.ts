@@ -20,8 +20,8 @@ export default (user: User, config?: Config): AssetsPage => {
     card:
       !balance.length && !vesting.length
         ? {
-            title: t('Page:Bank:Account empty'),
-            content: t("Page:Bank:This account doesn't hold any coins yet")
+            title: t('Page:Bank:Wallet empty'),
+            content: t("Page:Bank:This wallet doesn't hold any coins yet")
           }
         : undefined,
     available: !balance.length
@@ -76,14 +76,7 @@ export default (user: User, config?: Config): AssetsPage => {
     }
   }
 
-  return Object.assign(
-    {
-      address: { title: t('Page:Bank:My wallet'), content: user.address },
-      viewAddress: t('Page:Bank:Verify this address on your Ledger')
-    },
-    bank,
-    bank.data && { ui: render(bank.data) }
-  )
+  return Object.assign({}, bank, bank.data && { ui: render(bank.data) })
 }
 
 /* helper */
