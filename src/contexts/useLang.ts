@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from 'react'
 import { useTranslation } from 'react-i18next'
-import { LangConfig, LangKey } from '..'
+import { LangConfig, LangKey } from '../types'
 
 export const Languages: { [key in LangKey]: { name: string } } = {
   en: { name: 'English' },
