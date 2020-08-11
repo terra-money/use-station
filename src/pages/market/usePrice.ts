@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { PricePage, PriceUI, PriceData, Price, Point } from '../../types'
+import { useConfig } from '../../contexts/ConfigContext'
 import { format, percent } from '../../utils'
 import useFCD from '../../api/useFCD'
 import usePoll, { MINUTE, HOUR, DAY } from './usePoll'
@@ -14,23 +15,16 @@ const intervals = [
   { interval: DAY * 1, label: '1d' }
 ]
 
-export default (actives: string[]): PricePage => {
+export default (): PricePage => {
   const { t } = useTranslation()
+  const { currency } = useConfig()
+  const denom = currency.current?.key
 
   /* filter */
-  const [denom, setDenom] = useState('ukrw')
   const [intervalIndex, setIntervalIndex] = useState(2) // intervals[2] === 15m
   const { label } = intervals[intervalIndex]
 
   const filter = {
-    denom: {
-      value: denom,
-      set: setDenom,
-      options: actives.map(denom => ({
-        value: denom,
-        children: format.denom(denom)
-      }))
-    },
     interval: {
       value: String(intervalIndex),
       set: (value: string) => setIntervalIndex(Number(value)),
@@ -51,11 +45,12 @@ export default (actives: string[]): PricePage => {
   usePoll(response.execute, interval)
 
   /* render */
-  const render = (data: PriceData): PriceUI => {
+  const render = (data: PriceData, denom: string): PriceUI => {
     const { lastPrice: price = 0, prices = [], ...rest } = data
 
     return {
       price,
+      unit: format.denom(denom),
       variation: {
         amount: format.decimalN(rest.oneDayVariation),
         value: format.decimal(rest.oneDayVariation),
@@ -70,7 +65,7 @@ export default (actives: string[]): PricePage => {
   return Object.assign(
     { title: t('Page:Market:Luna price'), filter },
     response,
-    response.data && { ui: render(response.data) }
+    response.data && denom && { ui: render(response.data, denom) }
   )
 }
 

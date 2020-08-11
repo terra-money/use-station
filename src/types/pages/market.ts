@@ -18,12 +18,13 @@ export interface Variation {
 /* price */
 export interface PricePage extends API<PriceData> {
   title: string
-  filter: { denom?: Filter; interval: Filter }
+  filter: { interval: Filter }
   ui?: PriceUI
 }
 
 export interface PriceUI {
   price: number
+  unit: string
   variation: Variation
   chart: { data?: Point[]; message?: string }
 }

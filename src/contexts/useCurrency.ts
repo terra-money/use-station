@@ -16,6 +16,7 @@ export default (initial?: string): CurrencyConfig => {
       const item = list?.find(item => item.key === key)
       setCurrent(item)
     },
+    // eslint-disable-next-line
     [loading]
   )
 

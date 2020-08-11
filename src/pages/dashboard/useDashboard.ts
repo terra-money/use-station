@@ -2,6 +2,7 @@ import { useTranslation } from 'react-i18next'
 import { Dictionary } from 'ramda'
 import { DashboardPage, DashboardData, DashboardUI } from '../../types'
 import { DisplaySelector, TaxCap } from '../../types'
+import { useConfig } from '../../contexts/ConfigContext'
 import { format } from '../../utils'
 import { percent } from '../../utils/math'
 import useFCD from '../../api/useFCD'
@@ -10,17 +11,19 @@ export default (): DashboardPage => {
   const { t } = useTranslation()
   const response = useFCD<DashboardData>({ url: '/v1/dashboard' })
 
-  const render = (dashboard: DashboardData): DashboardUI => {
+  const { currency } = useConfig()
+
+  const render = (dashboard: DashboardData, denom: string): DashboardUI => {
     const { prices, taxRate, taxCaps } = dashboard
     const { issuances, communityPool, stakingPool } = dashboard
-    const price = prices['ukrw']
+    const price = prices[denom]
 
     return {
       prices: {
         title: t('Page:Market:Luna price'),
         display: {
           value: format.decimal(price ?? 0),
-          unit: format.denom('ukrw')
+          unit: format.denom(denom)
         }
       },
       taxRate: {
@@ -56,7 +59,8 @@ export default (): DashboardPage => {
   return Object.assign(
     {},
     response,
-    response.data && { ui: render(response.data) }
+    response.data &&
+      currency.current && { ui: render(response.data, currency.current.key) }
   )
 }
 
