@@ -85,7 +85,7 @@
       "Welcome": "欢迎",
       "Connect": "连接",
 
-      "Connect to your wallet, create a new wallet or recover an existing wallet using a seea phrase": "使用密码登录,创建一个新钱包, 或者连接钱包",
+      "Connect to your wallet, create a new wallet or recover an existing wallet using a seed phrase": "使用密码登录,创建一个新钱包, 或者连接钱包",
       "Create a new wallet or recover an existing wallet using a seed phrase": "创建一个新钱包或者使用助记词恢复钱包。",
 
       "Just browsing?": "仅浏览？",
