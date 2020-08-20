@@ -19,7 +19,7 @@ export default (keys: AuthMenuKey[] = []): AuthMenu => {
         title: t('Auth:Common:Welcome'),
         content: keys.includes('signIn')
           ? t(
-              'Auth:Common:Connect to your wallet, Create a new wallet or recover an existing wallet using a seed phrase'
+              'Auth:Common:Connect to your wallet, create a new wallet or recover an existing wallet using a seed phrase'
             )
           : t(
               'Auth:Common:Create a new wallet or recover an existing wallet using a seed phrase'
