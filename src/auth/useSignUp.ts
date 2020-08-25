@@ -112,7 +112,7 @@ export default (props: Props): SignUp => {
       return {
         label,
         element: 'input' as const,
-        attrs: { id: label, value: word, autoComplete: 'off' },
+        attrs: { id: label, value: word, autoComplete: 'off' as const },
         setValue: (value: string) =>
           setSeed(update(index, sanitize.word(value), seed))
       }
