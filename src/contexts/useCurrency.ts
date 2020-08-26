@@ -2,18 +2,20 @@ import { useState, useEffect, useCallback } from 'react'
 import { CurrencyConfig, Currency, Rate, API } from '../types'
 import useFCD from '../api/useFCD'
 
+const format = (denom: string): string => denom.slice(1).toUpperCase()
+const DefaultCurrency = { key: 'ukrw', value: format('ukrw'), krwRate: '1' }
+
 export default (initial?: string): CurrencyConfig => {
   const { loading, data } = useRateKRT()
   const [current, setCurrent] = useState<Currency | undefined>()
 
-  const list = data && [
-    { key: 'ukrw', value: format('ukrw'), krwRate: '1' },
-    ...data.filter(({ denom }) => denom !== 'uluna').map(convert)
-  ]
+  const list = [DefaultCurrency].concat(
+    data?.filter(({ denom }) => denom !== 'uluna').map(convert) ?? []
+  )
 
   const set = useCallback(
     (key: string) => {
-      const item = list?.find(item => item.key === key)
+      const item = list?.find(item => item.key === key) ?? DefaultCurrency
       setCurrent(item)
     },
     // eslint-disable-next-line
@@ -34,7 +36,6 @@ const useRateKRT = (): API<Rate[]> => {
   return response
 }
 
-const format = (denom: string): string => denom.slice(1).toUpperCase()
 const convert = ({ denom, swaprate }: Rate): Currency => ({
   key: denom,
   value: format(denom),
