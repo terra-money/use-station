@@ -1,3 +1,5 @@
+import { SCClientSocket } from 'socketcluster-client'
+
 export interface Config {
   lang: LangConfig
   currency: CurrencyConfig
@@ -39,9 +41,7 @@ export interface ChainOptions {
   name: string
   lcd?: string
   fcd?: string
-  hostname: string
-  port?: number
-  secure?: boolean
+  ws: SCClientSocket.ClientOptions
 }
 
 export interface ChainConfig {

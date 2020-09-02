@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
-import socketCluster, { SCClientSocket } from 'socketcluster-client'
+import socketCluster from 'socketcluster-client'
 import numeral from 'numeral'
-import { Socket } from '../types'
+import { Socket, ChainOptions } from '../types'
 import { intercept } from '../api/fcd'
 import useFinder from '../hooks/useFinder'
 import { useConfig } from './ConfigContext'
@@ -50,8 +50,8 @@ export default (): Socket => {
   return { block, status }
 }
 
-const getSocket = (options: SCClientSocket.ClientOptions) => {
-  const socket = socketCluster.create(options)
+const getSocket = (options: ChainOptions) => {
+  const socket = socketCluster.create(options.ws)
   socket.on('error', () => {}) // Do not report
   return socket
 }

@@ -6,8 +6,7 @@ export default (initial: ChainOptions): ChainConfig => {
   const [current, setCurrent] = useState<ChainOptions>(initial)
 
   const set = (options: ChainOptions) => {
-    const baseURL = getURL(options)
-    fcd.defaults.baseURL = baseURL
+    fcd.defaults.baseURL = options.fcd
     setCurrent(options)
   }
 
@@ -16,11 +15,4 @@ export default (initial: ChainOptions): ChainConfig => {
   }, [initial])
 
   return { current, set }
-}
-
-/* helpers */
-const getURL = (options: ChainOptions) => {
-  const { hostname, fcd, secure, port } = options
-  const protocol = secure ? 'https' : 'http'
-  return `${protocol}://${fcd ?? hostname}${port ? `:${port}` : ''}`
 }
