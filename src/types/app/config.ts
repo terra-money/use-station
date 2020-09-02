@@ -37,6 +37,7 @@ export interface CurrencyConfig {
 export interface ChainOptions {
   key: string
   name: string
+  lcd?: string
   fcd?: string
   hostname: string
   port?: number
