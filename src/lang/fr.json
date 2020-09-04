@@ -324,7 +324,7 @@
       "Submitted by {{proposer}} at {{date}}": "Soumis par {{proposer}} le {{date}}",
       "Submitted by ": "Soumis par ",
       "Submit time": "Date de soumission",
-      "Ends in": "Se termine dans",
+      "Ends in": "Termine dans",
 
       "tax_rate": "tax_rate",
       "reward_weight": "reward_weight",
@@ -341,7 +341,7 @@
 
       "Vote": "Vote",
       "Voting end time": "Date de fin de votes",
-      "Most voted on": "Les plus votés",
+      "Most voted on": "Le plus voté",
       "Percent voting": "Pourcentage de votes",
       "{{n}} of {{d}} has voted": "{{n}} sur {{d}} ont voté",
       "No votes yet": "Pas encore de vote",
@@ -445,7 +445,7 @@
 
       "Current balance": "Solde actuel",
       "Spread": "Écart",
-      "Receive": "Recevoir",
+      "Receive": "Reçoit",
 
       "Luna swap spread": "Écart d'échange pour Luna",
       "min.": "min.",
