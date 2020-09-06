@@ -55,6 +55,7 @@ export default (
 
   useEffect(() => {
     simulate()
+    // eslint-disable-next-line
   }, [denom])
 
   const simulate = async () => {
