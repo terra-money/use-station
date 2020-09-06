@@ -7,7 +7,7 @@ import fcd from '../api/fcd'
 import { format } from '../utils'
 import { toInput, toAmount } from '../utils/format'
 import { times, lt } from '../utils/math'
-import { getBase, config, calc, GAS_PRICE } from './txHelpers'
+import { getBase, config, calc } from './txHelpers'
 import { checkError, parseError } from './txHelpers'
 
 interface SignParams {
@@ -55,13 +55,13 @@ export default (
 
   useEffect(() => {
     simulate()
-    // eslint-disable-next-line
-  }, [])
+  }, [denom])
 
   const simulate = async () => {
     try {
+      setSimulated(false)
+      setSimulating(true)
       setInput(toInput('1'))
-      setDenom(initDenom)
       setEstimated(undefined)
       setErrorMessage(undefined)
 
@@ -72,13 +72,11 @@ export default (
 
       type Data = { gas_estimate: string }
       const { data } = await fcd.post<Data>(url, body, config)
-      const feeAmount = calc.fee(times(data.gas_estimate, 1.5))
+      const feeAmount = calc.fee(denom, times(data.gas_estimate, 1.5))
 
       // Set simulated fee
       setInput(toInput(feeAmount))
-      setDenom(getFeeDenom(feeAmount))
       setEstimated(feeAmount)
-
       setSimulated(true)
     } catch (error) {
       setSimulatedErrorMessage(parseError(error, defaultErrorMessage))
@@ -98,8 +96,8 @@ export default (
       setErrorMessage(undefined)
 
       // Post to fetch tx
-      const gas = calc.gas(fee.amount)
-      const gas_prices = [{ amount: GAS_PRICE, denom: fee.denom }]
+      const gas_prices = [calc.gasPrice(fee.denom)]
+      const gas = calc.gas(fee.denom, fee.amount)
       const base = await getBase(address)
       const req = { simulate: false, gas, gas_prices, memo }
       const body = { base_req: { ...base, ...req }, ...payload }

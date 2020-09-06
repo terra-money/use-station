@@ -2,11 +2,24 @@ import { Result, ParsedRaw, ParsedLog, Base, PostError } from '../types'
 import { times, div, ceil, floor } from '../utils/math'
 import fcd from '../api/fcd'
 
-export const GAS_PRICE = '0.015'
+const GAS_PRICES: { [denom: string]: string } = {
+  uluna: '0.15',
+  uusd: '0.15',
+  usdr: '0.1018',
+  ukrw: '178.05',
+  umnt: '431.6259'
+}
+
 export const config = { headers: { 'Content-Type': 'application/json' } }
 export const calc = {
-  fee: (gas: string): string => ceil(times(gas, GAS_PRICE)),
-  gas: (fee: string): string => floor(div(fee, GAS_PRICE))
+  gasPrice: (denom: string): { amount: string; denom: string } => ({
+    amount: GAS_PRICES[denom],
+    denom
+  }),
+  fee: (denom: string, gas: string): string =>
+    ceil(times(gas, GAS_PRICES[denom])),
+  gas: (denom: string, fee: string): string =>
+    floor(div(fee, GAS_PRICES[denom]))
 }
 
 /* base */
