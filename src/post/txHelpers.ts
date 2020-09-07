@@ -22,6 +22,13 @@ export const calc = {
     floor(div(fee, GAS_PRICES[denom]))
 }
 
+/* Mainnet */
+export const GAS_PRICE = '0.015'
+export const calcMainnet = {
+  fee: (gas: string): string => ceil(times(gas, GAS_PRICE)),
+  gas: (fee: string): string => floor(div(fee, GAS_PRICE))
+}
+
 /* base */
 type Latest = { block: { header: { chain_id: string } } }
 type Account = Result<{ value: AccountValue | BaseAccountValue }>

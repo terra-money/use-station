@@ -7,7 +7,8 @@ import fcd from '../api/fcd'
 import { format } from '../utils'
 import { toInput, toAmount } from '../utils/format'
 import { times, lt } from '../utils/math'
-import { getBase, config, calc } from './txHelpers'
+import { useConfig } from '../contexts/ConfigContext'
+import { getBase, config, calc, calcMainnet, GAS_PRICE } from './txHelpers'
 import { checkError, parseError } from './txHelpers'
 
 interface SignParams {
@@ -31,6 +32,9 @@ export default (
     button: t('Common:Form:Ok')
   }
 
+  const { chain } = useConfig()
+  const isMainnet = chain.current.key === 'columbus'
+
   /* error */
   const defaultErrorMessage = t('Common:Error:Oops! Something went wrong')
   const [simulatedErrorMessage, setSimulatedErrorMessage] = useState<string>()
@@ -53,10 +57,13 @@ export default (
   const [simulating, setSimulating] = useState(true)
   const [simulated, setSimulated] = useState(false)
 
-  useEffect(() => {
-    simulate()
+  useEffect(
+    () => {
+      simulate()
+    },
     // eslint-disable-next-line
-  }, [denom])
+    isMainnet ? [] : [denom]
+  )
 
   const simulate = async () => {
     try {
@@ -73,7 +80,9 @@ export default (
 
       type Data = { gas_estimate: string }
       const { data } = await fcd.post<Data>(url, body, config)
-      const feeAmount = calc.fee(denom, times(data.gas_estimate, 1.5))
+      const feeAmount = isMainnet
+        ? calcMainnet.fee(times(data.gas_estimate, 1.5))
+        : calc.fee(denom, times(data.gas_estimate, 1.5))
 
       // Set simulated fee
       setInput(toInput(feeAmount))
@@ -97,8 +106,12 @@ export default (
       setErrorMessage(undefined)
 
       // Post to fetch tx
-      const gas_prices = [calc.gasPrice(fee.denom)]
-      const gas = calc.gas(fee.denom, fee.amount)
+      const gas_prices = isMainnet
+        ? [{ amount: GAS_PRICE, denom: fee.denom }]
+        : [calc.gasPrice(fee.denom)]
+      const gas = isMainnet
+        ? calcMainnet.gas(fee.amount)
+        : calc.gas(fee.denom, fee.amount)
       const base = await getBase(address)
       const req = { simulate: false, gas, gas_prices, memo }
       const body = { base_req: { ...base, ...req }, ...payload }
