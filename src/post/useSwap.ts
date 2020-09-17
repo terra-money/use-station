@@ -232,7 +232,7 @@ interface MarketData {
 const getContent = (result: MarketData['result'], t: TFunction) => {
   const { min_spread, tobin_tax, illiquid_tobin_tax_list } = result
 
-  const min = percent(min_spread, 0)
+  const min = percent(min_spread)
   const minText = `${[
     t('Post:Swap:Luna swap spread'),
     t('Post:Swap:min.')
