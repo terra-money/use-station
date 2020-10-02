@@ -7,6 +7,7 @@ export type TxType =
   | 'staking'
   | 'market'
   | 'governance'
+  | 'contract'
 
 export interface TxsPage extends API<TxsData> {
   ui?: TxsUI

@@ -243,6 +243,7 @@
       "Market": "마켓",
       "Swap": "스왑",
       "Governance": "거버넌스",
+      "Contract": "계약",
 
       "No transaction history": "트랜잭션 내역 없음",
       "Looks like you haven't made any transaction yet": "아직 트랜잭션이 없습니다"
