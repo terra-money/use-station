@@ -65,13 +65,13 @@ export default (
     try {
       setSimulated(false)
       setSimulating(true)
-      setInput(toInput('1'))
       setEstimated(undefined)
       setErrorMessage(undefined)
 
       // Simulate with initial fee
       const base = await getBase(address)
-      const req = { simulate: true, gas: 'auto', fees: [fee], memo }
+      const fees = [{ ...fee, amount: '1' }]
+      const req = { simulate: true, gas: 'auto', fees, memo }
       const body = { base_req: { ...base, ...req }, ...payload }
 
       type Data = { gas_estimate: string }
