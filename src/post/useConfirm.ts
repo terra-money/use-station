@@ -7,8 +7,7 @@ import fcd from '../api/fcd'
 import { format } from '../utils'
 import { toInput, toAmount } from '../utils/format'
 import { times, lt } from '../utils/math'
-import { useConfig } from '../contexts/ConfigContext'
-import { getBase, config, calc, calcMainnet, GAS_PRICE } from './txHelpers'
+import { getBase, config, calc } from './txHelpers'
 import { checkError, parseError } from './txHelpers'
 
 interface SignParams {
@@ -31,9 +30,6 @@ export default (
     title: t('Post:Confirm:Success!'),
     button: t('Common:Form:Ok')
   }
-
-  const { chain } = useConfig()
-  const isMainnet = chain.current.key === 'columbus'
 
   /* error */
   const defaultErrorMessage = t('Common:Error:Oops! Something went wrong')
@@ -62,7 +58,7 @@ export default (
       simulate()
     },
     // eslint-disable-next-line
-    isMainnet ? [] : [denom]
+    [denom]
   )
 
   const simulate = async () => {
@@ -80,9 +76,7 @@ export default (
 
       type Data = { gas_estimate: string }
       const { data } = await fcd.post<Data>(url, body, config)
-      const feeAmount = isMainnet
-        ? calcMainnet.fee(times(data.gas_estimate, 1.5))
-        : calc.fee(denom, times(data.gas_estimate, 1.5))
+      const feeAmount = calc.fee(denom, times(data.gas_estimate, 1.5))
 
       // Set simulated fee
       setInput(toInput(feeAmount))
@@ -106,12 +100,8 @@ export default (
       setErrorMessage(undefined)
 
       // Post to fetch tx
-      const gas_prices = isMainnet
-        ? [{ amount: GAS_PRICE, denom: fee.denom }]
-        : [calc.gasPrice(fee.denom)]
-      const gas = isMainnet
-        ? calcMainnet.gas(fee.amount)
-        : calc.gas(fee.denom, fee.amount)
+      const gas_prices = [calc.gasPrice(fee.denom)]
+      const gas = calc.gas(fee.denom, fee.amount)
       const base = await getBase(address)
       const req = { simulate: false, gas, gas_prices, memo }
       const body = { base_req: { ...base, ...req }, ...payload }
