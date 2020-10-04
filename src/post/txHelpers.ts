@@ -1,8 +1,17 @@
+import { Dictionary } from 'ramda'
 import { Result, ParsedRaw, ParsedLog, Base, PostError } from '../types'
 import { times, div, ceil, floor } from '../utils/math'
 import fcd from '../api/fcd'
 
-const GAS_PRICES: { [denom: string]: string } = {
+const GAS_PRICES_MAINNET: Dictionary<string> = {
+  uluna: '0.00506',
+  uusd: '0.0015',
+  usdr: '0.00102',
+  ukrw: '1.7805',
+  umnt: '4.31626'
+}
+
+const GAS_PRICES_TESTNET: Dictionary<string> = {
   uluna: '0.15',
   uusd: '0.15',
   usdr: '0.1018',
@@ -10,16 +19,19 @@ const GAS_PRICES: { [denom: string]: string } = {
   umnt: '431.6259'
 }
 
+const getGasPrices = (denom: string, isMainnet: boolean) =>
+  (isMainnet ? GAS_PRICES_MAINNET : GAS_PRICES_TESTNET)[denom]
+
 export const config = { headers: { 'Content-Type': 'application/json' } }
 export const calc = {
-  gasPrice: (denom: string): { amount: string; denom: string } => ({
-    amount: GAS_PRICES[denom],
+  gasPrice: (denom: string, isMainnet: boolean) => ({
+    amount: getGasPrices(denom, isMainnet),
     denom
   }),
-  fee: (denom: string, gas: string): string =>
-    ceil(times(gas, GAS_PRICES[denom])),
-  gas: (denom: string, fee: string): string =>
-    floor(div(fee, GAS_PRICES[denom]))
+  fee: (denom: string, gas: string, isMainnet: boolean): string =>
+    ceil(times(gas, getGasPrices(denom, isMainnet))),
+  gas: (denom: string, fee: string, isMainnet: boolean): string =>
+    floor(div(fee, getGasPrices(denom, isMainnet)))
 }
 
 /* base */
