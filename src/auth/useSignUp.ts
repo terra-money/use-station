@@ -26,16 +26,14 @@ interface Props {
   generateWallet: (phrase: string, bip: Bip) => Promise<Wallet>
   submit: (params: Params) => Promise<void>
   isNameExists: (name: string) => boolean
-  isAddressExists: (address: string) => boolean
 }
 
 export default (props: Props): SignUp => {
   const { generated, generateAddresses, generateWallet, submit } = props
-  const { isNameExists, isAddressExists } = props
+  const { isNameExists } = props
   const { t } = useTranslation()
   const { signIn } = useAuth()
 
-  const ADDRESS = t('Common:Account:Address')
   const ID = t('Auth:SignUp:Wallet name')
   const PW = t('Auth:Form:Password')
 
@@ -166,13 +164,6 @@ export default (props: Props): SignUp => {
       const { name, password } = values
       const wallet = await generateWallet(phrase, bip)
       const { terraAddress: address } = wallet
-
-      if (isAddressExists(address)) {
-        throw Error(
-          t('Common:Validate:{{label}} already exists', { label: ADDRESS })
-        )
-      }
-
       await submit({ name, password, wallet })
       signIn({ name, address })
     } catch (error) {
