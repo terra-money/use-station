@@ -69,13 +69,13 @@ export type DelegationsPage = TablePage<DelegationsData, DelegationsTable>
 export type DelegationsUI = TableUI<DelegationsTable>
 
 export interface DelegationsTable {
-  headings: { height: string; type: string; change: string; date: string }
+  headings: { hash: string; type: string; change: string; date: string }
   contents: DelegationContent[]
 }
 
 export interface DelegationContent {
   link: string
-  height: string
+  hash: string
   type: string
   display: DisplayCoin
   date: string
@@ -166,13 +166,14 @@ export interface DelegatorsData extends Pagination {
 }
 
 export interface Claim {
-  tx: string
+  txhash: string
   type: string
   amounts?: Coin[]
   timestamp: string
 }
 
 export interface Event {
+  txhash: string
   height: string
   type: string
   amount: Coin

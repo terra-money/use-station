@@ -18,6 +18,7 @@
 
     "Tx": {
       "Tx": "Tx",
+      "Tx Hash": "Tx Hash",
       "Height": "Hauteur",
       "Amount": "Montant",
       "Memo": "Mémo",

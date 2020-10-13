@@ -18,6 +18,7 @@
 
     "Tx": {
       "Tx": "交易",
+      "Tx Hash": "Tx Hash",
       "Height": "区块高度",
       "Amount": "数量",
       "Memo": "Memo",

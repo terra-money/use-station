@@ -36,15 +36,15 @@ export default (
         : {
             table: {
               headings: {
-                height: t('Common:Tx:Height'),
+                hash: t('Common:Tx:Tx Hash'),
                 type: t('Common:Type'),
                 change: t('Common:Change'),
                 date: t('Common:Time')
               },
 
-              contents: events.map(({ height, type, amount, timestamp }) => ({
-                link: getLink!({ q: 'blocks', v: height }),
-                height,
+              contents: events.map(({ txhash, type, amount, timestamp }) => ({
+                link: getLink!({ q: 'tx', v: txhash }),
+                hash: format.truncate(txhash, [6, 6]),
                 type: t('Post:Staking:' + type),
                 display: format.display(amount),
                 date: format.date(timestamp)

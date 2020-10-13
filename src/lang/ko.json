@@ -18,6 +18,7 @@
 
     "Tx": {
       "Tx": "트랜잭션",
+      "Tx Hash": "Tx Hash",
       "Height": "블록 넘버",
       "Amount": "액수",
       "Memo": "메모",

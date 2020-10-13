@@ -32,15 +32,15 @@ export default (address: string, { page }: { page?: number }): ClaimsPage => {
         : {
             table: {
               headings: {
-                hash: t('Common:Tx:Tx'),
+                hash: t('Common:Tx:Tx Hash'),
                 type: t('Common:Type'),
                 displays: t('Common:Tx:Amount'),
                 date: t('Common:Time')
               },
 
-              contents: claims.map(({ tx, type, amounts, timestamp }) => ({
-                link: getLink!({ q: 'tx', v: tx }),
-                hash: tx,
+              contents: claims.map(({ txhash, type, amounts, timestamp }) => ({
+                link: getLink!({ q: 'tx', v: txhash }),
+                hash: format.truncate(txhash, [6, 6]),
                 type: t('Page:Staking:' + type),
                 displays: amounts?.map(coin => format.display(coin)) ?? [],
                 date: format.date(timestamp)
