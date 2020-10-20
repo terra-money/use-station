@@ -14,6 +14,8 @@ import useBank from '../api/useBank'
 import useForm from '../hooks/useForm'
 import validateForm from './validateForm'
 import { isAvailable, getFeeDenomList } from './validateConfirm'
+import { useConfig } from '../contexts/ConfigContext'
+import { calc } from './txHelpers'
 
 interface Values {
   to: string
@@ -66,17 +68,26 @@ export default (user: User, denom: string): PostPage<RecentSentUI> => {
   const [submitting, setSubmitting] = useState(false)
   const [submitted, setSubmitted] = useState(false)
   const [max, setMax] = useState<Coin>({ denom, amount: '0' })
+  const { chain } = useConfig()
+  const isMainnet = chain.current.key === 'columbus'
 
   const calculateMax = async () => {
     if (bank) {
       const amount = find(`${denom}:available`, bank.balance) || '0'
 
-      // When there's only one token, we have to remove tax from maxmium available amount
-      if (bank.balance.length === 1) {
+      if (denom === 'uluna') {
+        // If luna is the only token available, we have to remove gas fee from luna
+        if (bank.balance.length === 1) {
+          setMax({
+            denom,
+            amount: minus(amount, calc.fee(denom, '100000', isMainnet))
+          })
+        } else {
+          setMax({ denom, amount })
+        }
+      } else {
         const tax = await fetchTax({ amount, denom }, t)
         setMax({ denom, amount: minus(amount, tax.coin.amount) })
-      } else {
-        setMax({ denom, amount })
       }
     }
   }
