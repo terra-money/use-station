@@ -75,14 +75,12 @@ export const parseError = (
           ? checkError(error!)
           : getMessage(error!)
       }
-    } else {
-      // JS Error
-      console.error(e)
-      return defaultMessage
     }
+
+    console.error(e)
+    return defaultMessage
   } catch (e) {
     console.error(e)
-  } finally {
     return defaultMessage
   }
 }

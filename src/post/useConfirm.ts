@@ -43,13 +43,14 @@ export default (
   /* fee */
   const getFeeDenom = (amount: string) => {
     const { defaultValue, list } = feeDenom
-    const available = list.filter(denom => validate({ amount, denom }))
-    return available.includes(defaultValue) ? defaultValue : available[0]
+    const available: string[] = list
+      .filter(d => d !== denom) // People would prefer other denoms for paying fee
+      .filter(denom => validate({ amount, denom }))
+    return available.length === 0 ? defaultValue : available[0]
   }
 
-  const initDenom = () => getFeeDenom('1')
   const [input, setInput] = useState<string>(toInput('1'))
-  const [denom, setDenom] = useState<string>(initDenom)
+  const [denom, setDenom] = useState<string>(getFeeDenom('1'))
   const [estimated, setEstimated] = useState<string>()
   const fee = { amount: toAmount(input), denom }
 
@@ -74,7 +75,7 @@ export default (
 
       // Simulate with initial fee
       const base = await getBase(address)
-      const fees = [{ ...fee, amount: '1' }]
+      const fees = [{ ...fee, amount: '0' }]
       const req = { simulate: true, gas: 'auto', fees, memo }
       const body = { base_req: { ...base, ...req }, ...payload }
 

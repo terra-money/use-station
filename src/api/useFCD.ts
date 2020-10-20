@@ -10,7 +10,7 @@ export default <T>(
   immediate: boolean = true
 ): API<T> => {
   const [data, setData] = useState<T>()
-  const [loading, setLoading] = useState<boolean>(false)
+  const [loading, setLoading] = useState<boolean>(immediate)
   const [error, setError] = useState<Error>()
 
   /* request */
