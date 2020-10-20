@@ -6,7 +6,7 @@ import { BankData, TxsData, Tx, RecentSentUI, RecentSentItemUI } from '../types'
 import { PostPage, Result, Coin, User, Field } from '../types'
 import { ConfirmContent, ConfirmProps } from '../types'
 import { is, format, find } from '../utils'
-import { gt, times, min, ceil, percent, subtotal } from '../utils/math'
+import { gt, times, min, ceil, percent, minus } from '../utils/math'
 import { toAmount, toInput } from '../utils/format'
 import fcd from '../api/fcd'
 import useFCD from '../api/useFCD'
@@ -70,13 +70,14 @@ export default (user: User, denom: string): PostPage<RecentSentUI> => {
   const calculateMax = async () => {
     const amount = find(`${denom}:available`, bank?.balance) || '0'
     const tax = await fetchTax({ amount, denom }, t)
-    setMax({ denom, amount: ceil(subtotal(amount, tax.coin.amount)) })
+    setMax({ denom, amount: minus(amount, tax.coin.amount) })
   }
 
   useEffect(() => {
     if (!loading) {
       calculateMax()
     }
+    // eslint-disable-next-line
   }, [loading])
 
   /* form */
