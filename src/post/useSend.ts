@@ -1,13 +1,12 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { TFunction } from 'i18next'
 import { last } from 'ramda'
 import { BankData, TxsData, Tx, RecentSentUI, RecentSentItemUI } from '../types'
 import { PostPage, Result, Coin, User, Field } from '../types'
 import { ConfirmContent, ConfirmProps } from '../types'
-import { is } from '../utils'
-import { format, find, gt } from '../utils'
-import { times, min, ceil, percent } from '../utils'
+import { is, format, find } from '../utils'
+import { gt, times, min, ceil, percent, minus } from '../utils/math'
 import { toAmount, toInput } from '../utils/format'
 import fcd from '../api/fcd'
 import useFCD from '../api/useFCD'
@@ -66,10 +65,28 @@ export default (user: User, denom: string): PostPage<RecentSentUI> => {
   const [taxError, setTaxError] = useState<Error>()
   const [submitting, setSubmitting] = useState(false)
   const [submitted, setSubmitted] = useState(false)
+  const [max, setMax] = useState<Coin>({ denom, amount: '0' })
 
-  /* max */
-  const available = find(`${denom}:available`, bank?.balance) ?? '0'
-  const max = { amount: available, denom }
+  const calculateMax = async () => {
+    if (bank) {
+      const amount = find(`${denom}:available`, bank.balance) || '0'
+
+      // When there's only one token, we have to remove tax from maxmium available amount
+      if (bank.balance.length === 1) {
+        const tax = await fetchTax({ amount, denom }, t)
+        setMax({ denom, amount: minus(amount, tax.coin.amount) })
+      } else {
+        setMax({ denom, amount })
+      }
+    }
+  }
+
+  useEffect(() => {
+    if (!loading) {
+      calculateMax()
+    }
+    // eslint-disable-next-line
+  }, [loading])
 
   /* form */
   const validate = ({ input, to, memo }: Values) => ({
