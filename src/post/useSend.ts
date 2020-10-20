@@ -68,9 +68,17 @@ export default (user: User, denom: string): PostPage<RecentSentUI> => {
   const [max, setMax] = useState<Coin>({ denom, amount: '0' })
 
   const calculateMax = async () => {
-    const amount = find(`${denom}:available`, bank?.balance) || '0'
-    const tax = await fetchTax({ amount, denom }, t)
-    setMax({ denom, amount: minus(amount, tax.coin.amount) })
+    if (bank) {
+      const amount = find(`${denom}:available`, bank.balance) || '0'
+
+      // When there's only one token, we have to remove tax from maxmium available amount
+      if (bank.balance.length === 1) {
+        const tax = await fetchTax({ amount, denom }, t)
+        setMax({ denom, amount: minus(amount, tax.coin.amount) })
+      } else {
+        setMax({ denom, amount })
+      }
+    }
   }
 
   useEffect(() => {
