@@ -66,6 +66,7 @@
       "{{label}} must be between {{min}} and {{max}} characters": "{{label}}은(는) {{min}}자 이상 {{max}}자 이하여야 합니다",
       "{{label}} must be longer than {{min}} characters": "{{label}}는 {{min}}자보다 길어야 합니다",
       "{{label}} must be within 6 decimal points": "{{label}}은(는) 소수점 6자리 이내여야 합니다",
+      "{{label}} cannot include angle brackets": "{{label}}에 꺾쇠 괄호 문자를 사용할 수 없습니다",
       "Password does not match": "비밀번호가 일치하지 않습니다",
       "Insufficient balance": "잔액이 부족합니다",
       "Invalid": "유효하지 않습니다"
