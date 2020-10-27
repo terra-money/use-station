@@ -56,6 +56,13 @@ const validateForm = (t: TFunction) => {
     length: (text: string, { max, label }: { max: number; label: string }) =>
       new Blob([text]).size > max
         ? t('Common:Validate:{{label}} is too long', { label })
+        : '',
+
+    includes: (haystack: string, needle: string): string =>
+      haystack.includes(needle)
+        ? t('Common:Validate:{{label}} cannot include angle brackets', {
+            label: t('Common:Tx:Memo')
+          })
         : ''
   }
 }

@@ -66,6 +66,7 @@
       "{{label}} must be between {{min}} and {{max}} characters": "{{label}}必须至少{{min}}个且不超过{{max}}个字符",
       "{{label}} must be longer than {{min}} characters": "{{label}}必须大于{{min}}个字符",
       "{{label}} must be within 6 decimal points": "{{label}}必须在6位小数位之内。",
+      "{{label}} cannot include angle brackets": "{{label}}不能使用歪斜括号文字",
       "Password does not match": "密码不匹配",
       "Insufficient balance": "余额不足",
       "Invalid": "无效"

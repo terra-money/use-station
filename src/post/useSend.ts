@@ -103,7 +103,10 @@ export default (user: User, denom: string): PostPage<RecentSentUI> => {
   const validate = ({ input, to, memo }: Values) => ({
     to: v.address(to),
     input: v.input(input, { max: toInput(max.amount) }),
-    memo: v.length(memo, { max: 256, label: t('Common:Tx:Memo') })
+    memo:
+      v.length(memo, { max: 256, label: t('Common:Tx:Memo') }) ||
+      v.includes(memo, '<') ||
+      v.includes(memo, '>')
   })
 
   const initial = { to: '', input: '', memo: '' }
