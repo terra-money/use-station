@@ -24,6 +24,7 @@ export * from './types'
 
 /* component */
 export { default as ErrorBoundary } from './components/ErrorBoundary'
+export { default as useForm } from './hooks/useForm'
 
 /* utility */
 export * from './utils'
