@@ -1,4 +1,5 @@
 import { TFunction } from 'i18next'
+import { ethers } from 'ethers'
 import { is } from '../utils'
 import { gt, lte, isInteger } from '../utils/math'
 import { toAmount } from '../utils/format'
@@ -30,12 +31,14 @@ const validateForm = (t: TFunction) => {
           })
         : between(input, { range: [0, max], label: t('Common:Tx:Amount') }),
 
-    address: (to: string) =>
+    address: (to: string, eth = false) =>
       !to
         ? t('Common:Validate:{{label}} is required', {
             label: t('Common:Account:Address')
           })
-        : !is.address(to)
+        : (eth
+          ? ![is.address, ethers.utils.isAddress].some(v => v(to))
+          : !is.address(to))
         ? t('Common:Validate:{{label}} is invalid', {
             label: t('Common:Account:Address')
           })

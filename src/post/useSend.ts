@@ -1,7 +1,8 @@
 import { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { TFunction } from 'i18next'
-import { last } from 'ramda'
+import { Dictionary, last } from 'ramda'
+import { ethers } from 'ethers'
 import { BankData, TxsData, Tx, RecentSentUI, RecentSentItemUI } from '../types'
 import { PostPage, Result, Coin, User, Field } from '../types'
 import { ConfirmContent, ConfirmProps } from '../types'
@@ -18,6 +19,11 @@ import validateForm from './validateForm'
 import { isAvailable, getFeeDenomList, isFeeAvailable } from './validateConfirm'
 import { calc } from './txHelpers'
 
+const SHUTTLE: Dictionary<string> = {
+  mainnet: 'terra13yxhrk08qvdf5zdc9ss5mwsg5sf7zva9xrgwgc',
+  testnet: 'terra10a29fyas9768pw8mewdrar3kzr07jz8f3n73t3'
+}
+
 interface Values {
   to: string
   input: string
@@ -30,6 +36,8 @@ export default (user: User, denom: string): PostPage<RecentSentUI> => {
   const tokenBalance = useTokenBalance(user.address)
   const { list: tokens, loading: tokenLoading, whitelist } = tokenBalance
   const loading = bankLoading || tokenLoading
+  const { chain } = useConfig()
+  const shuttle = SHUTTLE[chain.current.name]
   const v = validateForm(t)
 
   /* recent txs */
@@ -46,15 +54,19 @@ export default (user: User, denom: string): PostPage<RecentSentUI> => {
       date,
       values
     }: RecentSentItem): RecentSentItemUI => {
-      const { to, input, memo } = values
+      const { to, input, memo: $memo } = values
+      const toEthereum = shuttle === to
+      const recipient = !toEthereum ? to : $memo
+      const memo = !toEthereum ? $memo : ''
+
       return {
         title: date,
         contents: [
-          { title: t('Post:Send:Send to'), content: to },
+          { title: t('Post:Send:Send to'), content: recipient },
           { title: t('Common:Tx:Amount'), content: `${input} ${unit}` },
           { title: t('Common:Tx:Memo'), content: memo }
         ].filter(({ content }) => content),
-        onClick: () => form.setValues(values)
+        onClick: () => form.setValues({ ...values, to: recipient, memo })
       }
     }
 
@@ -72,7 +84,6 @@ export default (user: User, denom: string): PostPage<RecentSentUI> => {
   const [submitting, setSubmitting] = useState(false)
   const [submitted, setSubmitted] = useState(false)
   const [max, setMax] = useState<Coin>({ denom, amount: '0' })
-  const { chain } = useConfig()
   const isMainnet = chain.current.name === 'mainnet'
 
   const calculateMax = async () => {
@@ -109,7 +120,7 @@ export default (user: User, denom: string): PostPage<RecentSentUI> => {
 
   /* form */
   const validate = ({ input, to, memo }: Values) => ({
-    to: v.address(to),
+    to: v.address(to, true),
     input: v.input(input, { max: toInput(max.amount) }),
     memo:
       v.length(memo, { max: 256, label: t('Common:Tx:Memo') }) ||
@@ -120,8 +131,9 @@ export default (user: User, denom: string): PostPage<RecentSentUI> => {
   const initial = { to: '', input: '', memo: '' }
   const form = useForm<Values>(initial, validate)
   const { values, setValue, invalid, getDefaultProps, getDefaultAttrs } = form
-  const { to, input, memo } = values
+  const { to, input, memo: $memo } = values
   const amount = toAmount(input)
+  const toEthereum = ethers.utils.isAddress(to)
 
   /* render */
   const unit = format.denom(denom)
@@ -154,7 +166,8 @@ export default (user: User, denom: string): PostPage<RecentSentUI> => {
       label: `${t('Common:Tx:Memo')} (${t('Common:Form:Optional')})`,
       attrs: {
         ...getDefaultAttrs('memo'),
-        placeholder: t('Post:Send:Input memo')
+        placeholder: t('Post:Send:Input memo'),
+        hidden: toEthereum
       }
     }
   ]
@@ -189,6 +202,9 @@ export default (user: User, denom: string): PostPage<RecentSentUI> => {
     onSubmit: disabled ? undefined : onSubmit
   }
 
+  const recipient = !toEthereum ? to : shuttle
+  const memo = !toEthereum ? $memo : to
+
   const contents: ConfirmContent[] = ([] as ConfirmContent[])
     .concat([
       {
@@ -207,15 +223,15 @@ export default (user: User, denom: string): PostPage<RecentSentUI> => {
     .concat(
       tax ? { name: tax.label, displays: [format.display(tax.coin)] } : []
     )
-    .concat(memo ? { name: t('Common:Tx:Memo'), text: memo } : [])
+    .concat($memo ? { name: t('Common:Tx:Memo'), text: $memo } : [])
 
   const getConfirm = (bank: BankData): ConfirmProps => ({
     url: is.nativeDenom(denom)
-      ? `/bank/accounts/${to}/transfers`
+      ? `/bank/accounts/${recipient}/transfers`
       : `/wasm/contracts/${denom}`,
     payload: is.nativeDenom(denom)
       ? { coins: [{ amount, denom }] }
-      : { exec_msg: JSON.stringify({ transfer: { recipient: to, amount } }) },
+      : { exec_msg: JSON.stringify({ transfer: { recipient, amount } }) },
     memo,
     contents,
     feeDenom: {
