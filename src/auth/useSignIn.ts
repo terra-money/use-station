@@ -18,7 +18,7 @@ export default ({ list, test }: Props): SignIn => {
   const [incorrect, setIncorrect] = useState(false)
 
   const user = list[Number(index)]
-  const { name } = user
+  const name = user?.name
   const disabled = password.length < 10
 
   const fields: Field[] = [
