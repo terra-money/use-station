@@ -9,7 +9,7 @@ export default (initial?: string): CurrencyConfig => {
   const { loading, data } = useRateKRT()
   const [current, setCurrent] = useState<Currency | undefined>()
 
-  const list = data
+  const list = Array.isArray(data)
     ? [DefaultCurrency].concat(
         data.filter(({ denom }) => denom !== 'uluna').map(convert)
       )
