@@ -9,9 +9,11 @@ export default (initial?: string): CurrencyConfig => {
   const { loading, data } = useRateKRT()
   const [current, setCurrent] = useState<Currency | undefined>()
 
-  const list = [DefaultCurrency].concat(
-    data?.filter(({ denom }) => denom !== 'uluna').map(convert) ?? []
-  )
+  const list = data
+    ? [DefaultCurrency].concat(
+        data.filter(({ denom }) => denom !== 'uluna').map(convert)
+      )
+    : []
 
   const set = useCallback(
     (key: string) => {
