@@ -12,7 +12,7 @@ export default (initial: ChainOptions): ChainConfig => {
 
   useEffect(() => {
     set(initial)
-  }, [initial])
+  }, [initial.key])
 
   return { current, set }
 }
