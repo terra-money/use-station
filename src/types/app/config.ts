@@ -1,5 +1,3 @@
-import { SCClientSocket } from 'socketcluster-client'
-
 export interface Config {
   lang: LangConfig
   currency: CurrencyConfig
@@ -37,11 +35,11 @@ export interface CurrencyConfig {
 
 /* chain */
 export interface ChainOptions {
-  key: string
   name: string
-  lcd?: string
-  fcd?: string
-  ws: SCClientSocket.ClientOptions
+  chainID: string
+  lcd: string
+  fcd: string
+  ws: string
 }
 
 export interface ChainConfig {

@@ -33,7 +33,7 @@ export default (
   }
 
   const { chain } = useConfig()
-  const isMainnet = chain.current.key === 'columbus'
+  const isMainnet = chain.current.name === 'mainnet'
 
   /* error */
   const defaultErrorMessage = t('Common:Error:Oops! Something went wrong')

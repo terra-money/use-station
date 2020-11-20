@@ -47,11 +47,11 @@ const Dashboard = () => {
 }
 
 const chain = {
-  key: 'columbus',
-  name: 'columbus-3',
-  hostname: 'fcd.terra.dev',
-  port: 443,
-  secure: true
+  name: 'mainnet',
+  chainID: 'columbus-4',
+  lcd: 'https://lcd.terra.dev',
+  fcd: 'https://fcd.terra.dev',
+  ws: 'wss://fcd.terra.dev'
 }
 
 const App = () => {

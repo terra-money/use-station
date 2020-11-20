@@ -69,7 +69,7 @@ export default (user: User, denom: string): PostPage<RecentSentUI> => {
   const [submitted, setSubmitted] = useState(false)
   const [max, setMax] = useState<Coin>({ denom, amount: '0' })
   const { chain } = useConfig()
-  const isMainnet = chain.current.key === 'columbus'
+  const isMainnet = chain.current.name === 'mainnet'
 
   const calculateMax = async () => {
     if (bank) {

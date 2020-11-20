@@ -13,7 +13,7 @@ export default (initial: ChainOptions): ChainConfig => {
   useEffect(() => {
     set(initial)
     // eslint-disable-next-line
-  }, [initial.key])
+  }, [initial.name])
 
   return { current, set }
 }

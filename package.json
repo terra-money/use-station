@@ -1,10 +1,10 @@
 {
   "name": "@terra-money/use-station",
   "author": "Terra <engineering@terra.money> (https://terra.money)",
-  "version": "4.1.11",
-  "main": "dist/index.js",
+  "version": "4.2.0",
   "module": "dist/use-station.esm.js",
   "typings": "dist/index.d.ts",
+  "main": "dist/index.js",
   "files": [
     "dist"
   ],

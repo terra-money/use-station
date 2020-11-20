@@ -51,7 +51,16 @@ export default (): Socket => {
 }
 
 const getSocket = (options: ChainOptions) => {
-  const socket = socketCluster.create(options.ws)
+  const { ws } = options
+  const { hostname, port, protocol } = new URL(ws)
+  const secure = protocol === 'wss:'
+  const option = {
+    hostname,
+    port: !port && secure ? 443 : Number(port),
+    secure
+  }
+
+  const socket = socketCluster.create(option)
   socket.on('error', () => {}) // Do not report
   return socket
 }
