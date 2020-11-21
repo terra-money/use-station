@@ -13,6 +13,9 @@ export default {
   address: (string: string = ''): boolean =>
     string.length === 44 && string.startsWith('terra') && isBech32(string),
 
+  nativeDenom: (string = '') =>
+    string.startsWith('u') && (string === 'uluna' || string.length === 4),
+
   json: (param: any) => {
     try {
       JSON.parse(param)

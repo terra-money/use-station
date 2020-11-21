@@ -8,13 +8,14 @@ import { ConfirmContent, ConfirmProps } from '../types'
 import { is, format, find } from '../utils'
 import { gt, times, min, ceil, percent, minus } from '../utils/math'
 import { toAmount, toInput } from '../utils/format'
+import { useConfig } from '../contexts/ConfigContext'
+import useTokenBalance from '../cw20/useTokenBalance'
 import fcd from '../api/fcd'
 import useFCD from '../api/useFCD'
 import useBank from '../api/useBank'
 import useForm from '../hooks/useForm'
 import validateForm from './validateForm'
-import { isAvailable, getFeeDenomList } from './validateConfirm'
-import { useConfig } from '../contexts/ConfigContext'
+import { isAvailable, getFeeDenomList, isFeeAvailable } from './validateConfirm'
 import { calc } from './txHelpers'
 
 interface Values {
@@ -25,7 +26,10 @@ interface Values {
 
 export default (user: User, denom: string): PostPage<RecentSentUI> => {
   const { t } = useTranslation()
-  const { data: bank, loading, error } = useBank(user)
+  const { data: bank, loading: bankLoading, error } = useBank(user)
+  const tokenBalance = useTokenBalance(user.address)
+  const { list: tokens, loading: tokenLoading, whitelist } = tokenBalance
+  const loading = bankLoading || tokenLoading
   const v = validateForm(t)
 
   /* recent txs */
@@ -85,9 +89,13 @@ export default (user: User, denom: string): PostPage<RecentSentUI> => {
         } else {
           setMax({ denom, amount })
         }
-      } else {
+      } else if (is.nativeDenom(denom)) {
         const tax = await fetchTax({ amount, denom }, t)
         setMax({ denom, amount: minus(amount, tax.coin.amount) })
+      } else {
+        const amount =
+          tokens?.find(({ token }) => token === denom)?.balance ?? '0'
+        setMax({ denom, amount })
       }
     }
   }
@@ -166,7 +174,7 @@ export default (user: User, denom: string): PostPage<RecentSentUI> => {
       }
     }
 
-    denom === 'uluna' ? setSubmitted(true) : calcTax()
+    denom === 'uluna' || is.address(denom) ? setSubmitted(true) : calcTax()
   }
 
   const disabled = invalid || submitting
@@ -189,7 +197,11 @@ export default (user: User, denom: string): PostPage<RecentSentUI> => {
       },
       {
         name: t('Common:Tx:Amount'),
-        displays: [format.display({ amount, denom })]
+        displays: [
+          is.nativeDenom(denom)
+            ? format.display({ amount, denom })
+            : { value: input, unit: whitelist?.[denom].symbol ?? '' }
+        ]
       }
     ])
     .concat(
@@ -198,8 +210,12 @@ export default (user: User, denom: string): PostPage<RecentSentUI> => {
     .concat(memo ? { name: t('Common:Tx:Memo'), text: memo } : [])
 
   const getConfirm = (bank: BankData): ConfirmProps => ({
-    url: `/bank/accounts/${to}/transfers`,
-    payload: { coins: [{ amount, denom }] },
+    url: is.nativeDenom(denom)
+      ? `/bank/accounts/${to}/transfers`
+      : `/wasm/contracts/${denom}`,
+    payload: is.nativeDenom(denom)
+      ? { coins: [{ amount, denom }] }
+      : { exec_msg: JSON.stringify({ transfer: { recipient: to, amount } }) },
     memo,
     contents,
     feeDenom: {
@@ -207,7 +223,9 @@ export default (user: User, denom: string): PostPage<RecentSentUI> => {
       list: getFeeDenomList(bank.balance)
     },
     validate: (fee: Coin) =>
-      isAvailable({ amount, denom, fee, tax: tax?.coin }, bank.balance),
+      is.nativeDenom(denom)
+        ? isAvailable({ amount, denom, fee, tax: tax?.coin }, bank.balance)
+        : isFeeAvailable(fee, bank.balance),
     submitLabels: [t('Post:Send:Send'), t('Post:Send:Sending...')],
     message: t('Post:Send:Sent {{coin}} to {{address}}', {
       coin: format.coin({ amount, denom }),

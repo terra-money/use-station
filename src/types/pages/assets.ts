@@ -1,3 +1,4 @@
+import { Dictionary } from 'ramda'
 import { DisplayCoin, Card, BankAPI } from '..'
 
 export interface AssetsPage extends BankAPI {
@@ -7,14 +8,22 @@ export interface AssetsPage extends BankAPI {
 export interface AssetsUI {
   card?: Card
   available?: AvailableUI
+  tokens?: AvailableUI
   vesting?: VestingUI
 }
 
 export interface AvailableUI {
   title: string
-  list: { denom: string; display: DisplayCoin }[]
+  list: AvailableItem[]
   hideSmall: { label: string; checked: boolean; toggle: () => void }
   send: string
+}
+
+export interface AvailableItem {
+  icon?: string
+  denom?: string
+  token?: string
+  display: DisplayCoin
 }
 
 export interface VestingUI {
@@ -37,3 +46,16 @@ export interface ScheduleUI {
   duration: string
   width: string
 }
+
+/* cw20 */
+export interface Token {
+  symbol: string
+  icon?: string
+  token: string
+}
+
+export interface TokenBalance extends Token {
+  balance: string
+}
+
+export type Tokens = Dictionary<Token>
