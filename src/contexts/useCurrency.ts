@@ -13,7 +13,7 @@ export default (initial?: string): CurrencyConfig => {
     ? [DefaultCurrency].concat(
         data.filter(({ denom }) => denom !== 'uluna').map(convert)
       )
-    : []
+    : [DefaultCurrency]
 
   const set = useCallback(
     (key: string) => {
