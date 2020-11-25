@@ -5,7 +5,7 @@ const FINDER = 'https://finder.terra.money'
 
 export default (): FinderFunction | undefined => {
   const { chain } = useConfig()
-  const { name } = chain.current
+  const { chainID } = chain.current
   return ({ network, q, v }: FinderParams) =>
-    `${FINDER}/${network ?? name}/${q}/${v}`
+    `${FINDER}/${network ?? chainID}/${q}/${v}`
 }
