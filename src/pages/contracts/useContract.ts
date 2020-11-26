@@ -16,5 +16,5 @@ export default (param: string): ContractUI | undefined => {
     param && execute()
   }, [param])
 
-  return !error ? data && renderContract(data, getLink, t) : undefined
+  return param && data && !error ? renderContract(data, getLink, t) : undefined
 }
