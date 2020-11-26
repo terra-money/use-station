@@ -76,6 +76,7 @@ export { default as useGovernance } from './pages/governance/useGovernance'
 export { useProposalStatus } from './pages/governance/useGovernance'
 export { default as useProposal } from './pages/governance/useProposal'
 export { default as useContracts } from './pages/contracts/useContracts'
+export { default as useContract } from './pages/contracts/useContract'
 export { default as useQuery } from './pages/contracts/useQuery'
 
 /* hooks:tables */

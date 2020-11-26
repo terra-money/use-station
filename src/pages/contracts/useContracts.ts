@@ -1,8 +1,9 @@
 import { useTranslation } from 'react-i18next'
 import { ContractsPage, ContractsData } from '../../types'
-import { gt, format } from '../../utils'
+import { gt } from '../../utils'
 import useFCD from '../../api/useFCD'
 import useFinder from '../../hooks/useFinder'
+import renderContract from './renderContract'
 
 interface Params {
   page?: number
@@ -37,22 +38,8 @@ export default (params: Params): ContractsPage => {
           }
         : {
             search: { placeholder: t('Page:Contracts:Search') },
-            list: contracts.map(
-              ({ contract_address, timestamp, code, info }) => ({
-                address: contract_address,
-                link: getLink?.({ q: 'account', v: contract_address }),
-                date: format.date(timestamp, { toLocale: true }),
-                code: {
-                  label: t('Post:Contracts:Code'),
-                  value: code.info.name
-                },
-                contract: {
-                  label: t('Page:Contracts:Contract'),
-                  value: info.name
-                },
-                interact: t('Page:Contracts:Interact'),
-                query: t('Page:Contracts:Query')
-              })
+            list: contracts.map(contract =>
+              renderContract(contract, getLink, t)
             )
           }
     )
