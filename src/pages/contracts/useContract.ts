@@ -12,9 +12,10 @@ export default (param: string): ContractUI | undefined => {
   /* api */
   const url = `/v1/wasm/contract/${param}`
   const { execute, data, error } = useFCD<Contract>({ url }, false)
+
   useEffect(() => {
     param && execute()
-  }, [param])
+  }, [param, execute])
 
   return param && data && !error ? renderContract(data, getLink, t) : undefined
 }
