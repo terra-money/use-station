@@ -21,6 +21,7 @@ export interface StakingPersonal {
     title: string
     display: DisplayCoin
     table?: RewardsTable
+    desc: { header: string; contents: string[]; footer: string }
   }
   myDelegations?: MyDelegations
   myRewards?: MyDelegations
