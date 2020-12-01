@@ -294,7 +294,14 @@
 
       "No events": "Pas encore d’événements",
       "No delegators": "Pas encore de délégateurs",
-      "This validator has no claim history yet": "Ce validateur n'a pas encore d'antécédents de réclamation"
+      "This validator has no claim history yet": "Ce validateur n'a pas encore d'antécédents de réclamation",
+
+      "Pro Tip — your rewards will be automatically withdrawn in the following cases": "Bon à savoir: Vos récompenses sont automatiquement retirées dans les cas suivants",
+      "Delegating more to a validator you’ve already delegated to": "Délégation supplémentaires à un validateur auquel vous déléguez déjà",
+      "Undelegation of assets": "Retrait de délégation",
+      "Redelegation of assets": "Re-délégation",
+      "Mainnet upgrade": "Mise-à-jour du mainnet",
+      "This won’t appear in your transaction history, but your rewards will be reflected in your balance.": "Cette opération n'apparaîtra pas dans votre historique de transaction mais les récompenses seront visibles dans votre balance."
     },
 
     "Market": {

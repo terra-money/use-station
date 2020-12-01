@@ -124,7 +124,23 @@ export default (
                 value: t('Common:Tx:Amount')
               },
               contents: rewards.denoms.map(r => format.display(r))
-            }
+            },
+        desc: {
+          header: t(
+            'Page:Staking:Pro Tip — your rewards will be automatically withdrawn in the following cases'
+          ),
+          contents: [
+            t(
+              'Page:Staking:Delegating more to a validator you’ve already delegated to'
+            ),
+            t('Page:Staking:Undelegation of assets'),
+            t('Page:Staking:Redelegation of assets'),
+            t('Page:Staking:Mainnet upgrade')
+          ],
+          footer: t(
+            'Page:Staking:This won’t appear in your transaction history, but your rewards will be reflected in your balance.'
+          )
+        }
       },
       myDelegations: getMyDelegationsTable(
         t('Page:Staking:Delegated'),

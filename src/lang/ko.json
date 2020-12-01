@@ -294,7 +294,14 @@
 
       "No events": "아직 이벤트가 없습니다",
       "No delegators": "아직 위임자가 없습니다",
-      "This validator has no claim history yet": "이 검증인은 아직 청구 내역이 없습니다"
+      "This validator has no claim history yet": "이 검증인은 아직 청구 내역이 없습니다",
+
+     "Pro Tip— your rewards will be automatically withdrawn in the following cases": "팁 - 당신의 보상은 아래의 경우에서 자동으로 출금될 것입니다",
+     "Delegating more to a validator you’ve already delegated to": "이미 위임한 검증인에게 추가로 위임하는 경우",
+     "Undelegation of assets": "위임을 철회하는 경우",
+     "Redelegation of assets": "다른 검증인에게 재 위임하는 경우",
+     "Mainnet upgrade": "메인넷 업데이트 이후",
+     "This won’t appear in your transaction history, but your rewards will be reflected in your balance.": "해당 경우들을 통해 보상이 출금될 경우, 출금 기록이 트랜잭션으로 남지 않습니다."
     },
 
     "Market": {

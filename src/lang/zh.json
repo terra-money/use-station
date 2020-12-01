@@ -294,7 +294,14 @@
 
       "No events": "没有委托人",
       "No delegators": "没有事件",
-      "This validator has no claim history yet": "这个验证人还没有任何索取记录"
+      "This validator has no claim history yet": "这个验证人还没有任何索取记录",
+
+      "Pro Tip — your rewards will be automatically withdrawn in the following cases": "小贴士 -  在下列情况下, 未提取的奖励都应自动提取",
+      "Delegating more to a validator you’ve already delegated to": "增加委托",
+      "Undelegation of assets": "节点反质押",
+      "Redelegation of assets": "变更委托",
+      "Mainnet upgrade": "主网升级",
+      "This won’t appear in your transaction history, but your rewards will be reflected in your balance.": "自动提款的交易记录是不显示的。"
     },
 
     "Market": {
