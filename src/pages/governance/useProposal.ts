@@ -126,7 +126,7 @@ export default (id: string, user?: User): ProposalPage => {
         voting && tallyingParameters
           ? renderProgress({ list, ratio, params: tallyingParameters })
           : undefined,
-      notVoted: validatorsNotVoted
+      notVoted: validatorsNotVoted?.length
         ? {
             title: t(
               "Page:Governance:The following validators you've delegated to have not yet voted on this proposal"
