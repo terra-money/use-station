@@ -20,7 +20,7 @@ export default (): DashboardPage => {
 
     return {
       prices: {
-        title: t('Page:Market:Luna price'),
+        title: t('Page:Swap:Luna price'),
         display: {
           value: format.decimal(price ?? 0),
           unit: format.denom(denom)

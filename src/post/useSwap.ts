@@ -162,7 +162,7 @@ export default (user: User, actives: string[]): PostPage<SwapUI> => {
   const formUI: FormUI = {
     fields,
     disabled,
-    title: t('Page:Market:Swap coins'),
+    title: t('Page:Swap:Swap coins'),
     submitLabel: t('Common:Form:Next'),
     onSubmit: disabled ? undefined : () => setSubmitted(true)
   }

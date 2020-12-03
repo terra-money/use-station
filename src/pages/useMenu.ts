@@ -10,7 +10,7 @@ export default (): Dictionary<string> => {
     History: t('Page:Menu:History'),
     Staking: t('Page:Menu:Staking'),
     Validator: t('Page:Menu:Validator details'),
-    Market: t('Page:Menu:Market'),
+    Swap: t('Page:Menu:Swap'),
     Governance: t('Page:Menu:Governance'),
     Proposal: t('Page:Menu:Proposal details'),
     Contracts: t('Page:Menu:Contracts')
