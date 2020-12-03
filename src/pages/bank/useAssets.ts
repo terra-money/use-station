@@ -1,9 +1,10 @@
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { AssetsPage, BankData, Schedule, User } from '../../types'
+import { AssetsPage, BankData, Schedule, TokenBalance, User } from '../../types'
 import { format } from '../../utils'
-import { percent, gte } from '../../utils/math'
+import { percent, gte, gt } from '../../utils/math'
 import useBank from '../../api/useBank'
+import useTokenBalance from '../../cw20/useTokenBalance'
 
 const SMALL = '1000000'
 
@@ -14,11 +15,16 @@ interface Config {
 export default (user: User, config?: Config): AssetsPage => {
   const { t } = useTranslation()
   const bank = useBank(user)
+  const tokens = useTokenBalance(user.address)
   const [hideSmall, setHideSmall] = useState<boolean>(!!config?.hideSmall)
+  const [hideSmallTokens, setHideSmallTokens] = useState(true)
 
-  const render = ({ balance, vesting }: BankData) => ({
+  const render = (
+    { balance, vesting }: BankData,
+    tokenList: TokenBalance[]
+  ) => ({
     card:
-      !balance.length && !vesting.length
+      !balance.length && !tokenList.length && !vesting.length
         ? {
             title: t('Page:Bank:Wallet empty'),
             content: t("Page:Bank:This wallet doesn't hold any coins yet")
@@ -38,6 +44,24 @@ export default (user: User, config?: Config): AssetsPage => {
             label: t('Page:Bank:Hide small balances'),
             checked: hideSmall,
             toggle: () => setHideSmall(v => !v)
+          },
+          send: t('Post:Send:Send')
+        },
+    tokens: !tokenList?.filter(({ balance }) => gt(balance, 0)).length
+      ? undefined
+      : {
+          title: 'Tokens',
+          list: tokenList
+            .filter(({ balance }) => !hideSmallTokens || gt(balance, 0))
+            .map(({ token, symbol, icon, balance }) => ({
+              icon,
+              token,
+              display: { value: format.amount(balance), unit: symbol }
+            })),
+          hideSmall: {
+            label: t('Page:Bank:Hide small balances'),
+            checked: hideSmallTokens,
+            toggle: () => setHideSmallTokens(v => !v)
           },
           send: t('Post:Send:Send')
         },
@@ -76,7 +100,12 @@ export default (user: User, config?: Config): AssetsPage => {
     }
   }
 
-  return Object.assign({}, bank, bank.data && { ui: render(bank.data) })
+  return Object.assign(
+    {},
+    bank,
+    { loading: bank.loading || tokens.loading },
+    bank.data && tokens.list && { ui: render(bank.data, tokens.list) }
+  )
 }
 
 /* helper */
