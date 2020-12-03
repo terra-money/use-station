@@ -19,21 +19,25 @@ export default (
   useEffect(() => {
     if (address && whitelist) {
       const load = async () => {
-        const client = new ApolloClient({
-          uri: mantle,
-          cache: new InMemoryCache()
-        })
+        try {
+          const client = new ApolloClient({
+            uri: mantle,
+            cache: new InMemoryCache()
+          })
 
-        const queries = alias(
-          Object.values(whitelist).map(({ token }) => ({
-            token,
-            contract: token,
-            msg: { balance: { address } }
-          }))
-        )
+          const queries = alias(
+            Object.values(whitelist).map(({ token }) => ({
+              token,
+              contract: token,
+              msg: { balance: { address } }
+            }))
+          )
 
-        const { data } = await client.query({ query: queries })
-        setResult(parseResult(data))
+          const { data } = await client.query({ query: queries })
+          setResult(parseResult(data))
+        } catch (error) {
+          setResult({})
+        }
       }
 
       load()
