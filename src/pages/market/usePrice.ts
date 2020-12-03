@@ -30,7 +30,7 @@ export default (): PricePage => {
       set: (value: string) => setIntervalIndex(Number(value)),
       options: intervals.map(({ label }, index) => ({
         value: String(index),
-        children: t('Page:Market:' + label)
+        children: t('Page:Swap:' + label)
       }))
     }
   }
@@ -58,12 +58,12 @@ export default (): PricePage => {
       },
       chart: prices.length
         ? { data: prices.map(getPoint) }
-        : { message: t('Page:Market:Chart is not available') }
+        : { message: t('Page:Swap:Chart is not available') }
     }
   }
 
   return Object.assign(
-    { title: t('Page:Market:Luna price'), filter },
+    { title: t('Page:Swap:Luna price'), filter },
     response,
     response.data && denom && { ui: render(response.data, denom) }
   )

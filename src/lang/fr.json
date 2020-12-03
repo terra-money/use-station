@@ -181,7 +181,7 @@
       "History": "Historique",
       "Staking": "Staking",
       "Validator details": "Informations sur le validateur",
-      "Market": "Marché",
+      "Swap": "Échange",
       "Governance": "Gouvernance",
       "Proposal details": "Détails de la proposition",
       "Contracts": "Contrats"
@@ -242,7 +242,6 @@
       "Send": "Envoyer",
       "Receive": "Recevoir",
       "Staking": "Staking",
-      "Market": "Marché",
       "Swap": "Échange",
       "Governance": "Gouvernance",
       "Contract": "Contrat",
@@ -304,7 +303,7 @@
       "This won’t appear in your transaction history, but your rewards will be reflected in your balance.": "Cette opération n'apparaîtra pas dans votre historique de transaction mais les récompenses seront visibles dans votre balance."
     },
 
-    "Market": {
+    "Swap": {
       "Luna price": "Prix du Luna",
       "Chart is not available": "Graphique indisponible",
 

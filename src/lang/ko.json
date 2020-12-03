@@ -181,7 +181,7 @@
       "History": "이력",
       "Staking": "스테이킹",
       "Validator details": "검증인 세부 사항",
-      "Market": "마켓",
+      "Swap": "스왑",
       "Governance": "거버넌스",
       "Proposal details": "제안 세부 사항",
       "Contracts": "계약"
@@ -242,7 +242,6 @@
       "Send": "보냄",
       "Receive": "받음",
       "Staking": "스테이킹",
-      "Market": "마켓",
       "Swap": "스왑",
       "Governance": "거버넌스",
       "Contract": "계약",
@@ -304,7 +303,7 @@
       "This won’t appear in your transaction history, but your rewards will be reflected in your balance.": "해당 경우들을 통해 보상이 출금될 경우, 출금 기록이 트랜잭션으로 남지 않습니다."
     },
 
-    "Market": {
+    "Swap": {
       "Luna price": "루나 가격",
       "Chart is not available": "차트를 사용할 수 없습니다",
 

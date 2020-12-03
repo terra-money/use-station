@@ -181,7 +181,7 @@
       "History": "交易记录",
       "Staking": "权益质押",
       "Validator details": "验证人详情",
-      "Market": "市场",
+      "Swap": "兑换",
       "Governance": "治理",
       "Proposal details": "提案详情",
       "Contracts": "智能合约"
@@ -242,7 +242,6 @@
       "Send": "转出",
       "Receive": "收到",
       "Staking": "权益质押",
-      "Market": "市场",
       "Swap": "兑换",
       "Governance": "治理",
       "Contract": "智能合约",
@@ -304,7 +303,7 @@
       "This won’t appear in your transaction history, but your rewards will be reflected in your balance.": "自动提款的交易记录是不显示的。"
     },
 
-    "Market": {
+    "Swap": {
       "Luna price": "Luna 价格",
       "Chart is not available": "图表不可用",
 

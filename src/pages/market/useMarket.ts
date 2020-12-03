@@ -8,7 +8,7 @@ export default (): MarketPage => {
   const render = (actives: string[]) => ({ actives })
 
   return Object.assign(
-    { swap: t('Page:Market:Swap coins') },
+    { swap: t('Page:Swap:Swap coins') },
     response,
     response.data?.result && { ui: render(response.data.result) }
   )

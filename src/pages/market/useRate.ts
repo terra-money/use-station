@@ -29,7 +29,7 @@ export default (denoms: string[]): RatePage => {
   usePoll(response.execute, DAY)
 
   /* render */
-  const message = t('Page:Market:Chart is not available')
+  const message = t('Page:Swap:Chart is not available')
   const render = (list: Rate[]): RateUI =>
     list.length
       ? {
@@ -50,7 +50,7 @@ export default (denoms: string[]): RatePage => {
       : { message }
 
   return Object.assign(
-    { title: t('Page:Market:Terra exchange rate'), filter },
+    { title: t('Page:Swap:Terra exchange rate'), filter },
     denom ? { unit: format.denom(denom) } : { message },
     response,
     response.data && { ui: render(response.data) }
