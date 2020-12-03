@@ -29,6 +29,12 @@ export default (user: User, config?: Config): AssetsPage => {
             title: t('Page:Bank:Wallet empty'),
             content: t("Page:Bank:This wallet doesn't hold any coins yet")
           }
+        : !balance.length && !vesting.length
+        ? {
+            title: t('Page:Bank:Wallet empty'),
+            content:
+              'This wallet does not hold any native tokens, so the transaction could not be processed.'
+          }
         : undefined,
     available: !balance.length
       ? undefined
