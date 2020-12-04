@@ -13,7 +13,7 @@ export const useTxTypes = (): { key: TxType; label: string }[] => {
     { key: 'send', label: t('Page:Txs:Send') },
     { key: 'receive', label: t('Page:Txs:Receive') },
     { key: 'staking', label: t('Page:Txs:Staking') },
-    { key: 'market', label: t('Page:Txs:Market') },
+    { key: 'market', label: t('Page:Txs:Swap') },
     { key: 'governance', label: t('Page:Txs:Governance') },
     { key: 'contract', label: t('Page:Txs:Contract') }
   ]
