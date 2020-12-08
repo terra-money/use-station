@@ -2,6 +2,7 @@ import { TFunction } from 'i18next'
 import { CumulativeType } from '../../types'
 import { format, sum, minus } from '../../utils'
 import { Props } from './useChartCard'
+import { fix } from './datetime'
 
 interface Result {
   denom: string
@@ -45,10 +46,11 @@ export default (t: TFunction): Props<Result> => ({
   },
   getChart: (results, { denom }) => {
     const result = results.find(r => r.denom === denom)
+
     return {
       data:
         result?.data.map(({ datetime, txVolume }) => ({
-          t: new Date(datetime),
+          t: fix(datetime),
           y: format.amountN(txVolume)
         })) ?? [],
       tooltips:
@@ -57,7 +59,7 @@ export default (t: TFunction): Props<Result> => ({
             { amount: txVolume, denom: result.denom },
             { integer: true }
           ),
-          label: format.date(new Date(datetime), { short: true })
+          label: format.date(fix(datetime), { short: true })
         })) ?? []
     }
   }

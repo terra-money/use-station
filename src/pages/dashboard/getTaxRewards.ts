@@ -2,6 +2,7 @@ import { TFunction } from 'i18next'
 import { CumulativeType, Currency } from '../../types'
 import { format, sum, minus, times } from '../../utils'
 import { Props } from './useChartCard'
+import { fix } from './datetime'
 
 interface Result {
   datetime: number
@@ -36,7 +37,7 @@ export default (
     getChart: results => ({
       data:
         results?.map(({ datetime, blockReward }) => ({
-          t: new Date(datetime),
+          t: fix(datetime),
           y: format.amountN(exchange(blockReward))
         })) ?? [],
       tooltips:
@@ -45,7 +46,7 @@ export default (
             { amount: exchange(blockReward), denom },
             { integer: true }
           ),
-          label: format.date(new Date(datetime), { short: true })
+          label: format.date(fix(datetime), { short: true })
         })) ?? []
     })
   }

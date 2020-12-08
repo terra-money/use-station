@@ -2,6 +2,7 @@ import { TFunction } from 'i18next'
 import { CumulativeType, AccountType } from '../../types'
 import { format } from '../../utils'
 import { Props } from './useChartCard'
+import { fix } from './datetime'
 
 interface Result {
   datetime: number
@@ -28,13 +29,13 @@ export default (t: TFunction): Props<Result> => ({
   getChart: results => ({
     data:
       results?.map(({ datetime, value }) => ({
-        t: new Date(datetime),
+        t: fix(datetime),
         y: value
       })) ?? [],
     tooltips:
       results?.map(({ datetime, value }) => ({
         title: format.decimal(String(value), 0),
-        label: format.date(new Date(datetime), { short: true })
+        label: format.date(fix(datetime), { short: true })
       })) ?? []
   })
 })
