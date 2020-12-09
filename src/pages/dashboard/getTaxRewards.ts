@@ -45,7 +45,7 @@ export default (
             { amount: exchange(blockReward), denom },
             { integer: true }
           ),
-          label: format.date(new Date(datetime), { short: true })
+          label: new Date(datetime).toUTCString()
         })) ?? []
     })
   }

@@ -34,7 +34,7 @@ export default (t: TFunction): Props<Result> => ({
     tooltips:
       results?.map(({ datetime, value }) => ({
         title: format.decimal(String(value), 0),
-        label: format.date(new Date(datetime), { short: true })
+        label: new Date(datetime).toUTCString()
       })) ?? []
   })
 })

@@ -1,6 +1,6 @@
 import { TFunction } from 'i18next'
 import { CumulativeType } from '../../types'
-import { percent, toNumber, times, format } from '../../utils'
+import { percent, toNumber, times } from '../../utils'
 import { Props } from './useChartCard'
 
 interface Result {
@@ -41,7 +41,7 @@ export default (t: TFunction): Props<Result> => ({
       tooltips:
         results?.map(({ datetime, ...rest }) => ({
           title: percent(rest[key]),
-          label: format.date(new Date(datetime), { short: true })
+          label: new Date(datetime).toUTCString()
         })) ?? []
     }
   }
