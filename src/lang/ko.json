@@ -114,6 +114,7 @@
       "Confirm your password": "비밀번호를 다시 입력하세요",
       "Seed phrase": "시드 문구",
 
+      "{{word}} is an invalid word": "{{word}}은(는) 유효하지 않은 단어입니다.",
       "What if I lost my seed phrase?": "시드 문구를 잃어버리면 어떻게 하나요?",
       "We cannot recover your information for you. If you lose your seed phrase it's GONE FOREVER. Terra Station does not store your mnemonic.": "시드 문구를 잃어버리면 해당 지갑은 영원히 복구가 불가능합니다. 테라 스테이션은 니모닉을 저장하지 않습니다.",
       "I have securely <0>WRITTEN DOWN MY SEED</0>. I understand that lost seeds cannot be recovered.": "<0>내 시드 문구를 확실하게 적어두었습니다.</0> 잃어버린 시드 문구는 복구할 수 없다는 것을 알고 있습니다.",

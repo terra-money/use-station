@@ -114,6 +114,7 @@
       "Confirm your password": "请再次输入您的密码",
       "Seed phrase": "助记词",
 
+      "{{word}} is an invalid word": "{{word}}是无效的助记词",
       "What if I lost my seed phrase?": "如果我丢失了我的助记词怎么办？",
       "We cannot recover your information for you. If you lose your seed phrase it's GONE FOREVER. Terra Station does not store your mnemonic.": "如果您丢失了助记词，它将永远消失。我们将无法为您恢复信息。Station 将不会存储任何数据。",
       "I have securely <0>WRITTEN DOWN MY SEED</0>. I understand that lost seeds cannot be recovered.": "<1>我写下了我的助记词。</1> 我已了解丢失的助记词后将无法恢复。",

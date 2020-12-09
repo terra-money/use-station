@@ -114,6 +114,7 @@
       "Confirm your password": "Confirmez votre mot de passe",
       "Seed phrase": "Phrase d'amorce",
 
+      "{{word}} is an invalid word": "{{word}} est un mot invalide",
       "What if I lost my seed phrase?": "Et si je perdais ma phrase d'amorce?",
       "We cannot recover your information for you. If you lose your seed phrase it's GONE FOREVER. Terra Station does not store your mnemonic.": "Nous ne pouvons pas recouvrer vos informations pour vous. Si vous perdez votre phrase d'amorce, elle sera perdu POUR TOUJOURS. Terra Station ne la sauvegarde pas.",
       "I have securely <0>WRITTEN DOWN MY SEED</0>. I understand that lost seeds cannot be recovered.": "J'ai bien <0>ÉCRIT MA PHRASE D'AMORCE</0>. Je comprends que les phrases d'amorce perdues ne peuvent pas être récupérées.",

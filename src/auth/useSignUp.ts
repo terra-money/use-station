@@ -103,6 +103,8 @@ export default (props: Props): SignUp => {
     copy: phrase
   }
 
+  const invalidWord = seed.find(word => !wordlist.includes(word))
+
   const mnemonics = {
     title: t('Auth:SignUp:Seed phrase'),
     fields: seed.map((word, index) => {
@@ -115,6 +117,10 @@ export default (props: Props): SignUp => {
           setSeed(update(index, sanitize.word(value), seed))
       }
     }),
+    warning:
+      seed.every(word => word.length) && invalidWord
+        ? t('Auth:SignUp:{{word}} is an invalid word', { word: invalidWord })
+        : undefined,
     paste: (clipboard: string, index: number = 0) =>
       setSeed(paste(index, toArray(clipboard), seed)),
     suggest: (input: string): string[] => {

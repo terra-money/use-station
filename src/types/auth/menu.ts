@@ -47,6 +47,7 @@ export interface SignUpWarning {
 export interface Mnemonics {
   title: string
   fields: Field[]
+  warning?: string
   paste: (clipboard: string, index: number) => void
   suggest: (input: string) => string[]
 }
