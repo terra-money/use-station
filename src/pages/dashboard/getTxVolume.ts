@@ -57,7 +57,7 @@ export default (t: TFunction): Props<Result> => ({
             { amount: txVolume, denom: result.denom },
             { integer: true }
           ),
-          label: format.date(new Date(datetime), { short: true })
+          label: new Date(datetime).toUTCString()
         })) ?? []
     }
   }
