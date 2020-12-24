@@ -409,6 +409,7 @@
     "Send": {
       "Send {{unit}}": "{{unit}} 보내기",
       "Send to": "받는 이",
+      "Network": "네트워크",
       "Input receiver's wallet address": "받는 이의 지갑 주소를 입력하세요",
       "Input memo": "메모를 입력하세요",
       "Tax": "세금",

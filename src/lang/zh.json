@@ -409,6 +409,7 @@
     "Send": {
       "Send {{unit}}": "转出{{unit}}",
       "Send to": "接收方",
+      "Network": "网络",
       "Input receiver's wallet address": "请输入接收方的钱包地址",
       "Input memo": "请输入Memo",
       "Tax": "税金",

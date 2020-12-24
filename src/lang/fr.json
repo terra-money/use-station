@@ -409,6 +409,7 @@
     "Send": {
       "Send {{unit}}": "Envoyer du {{unit}}",
       "Send to": "Envoyer à",
+      "Network": "Réseau",
       "Input receiver's wallet address": "Saisir l'adresse du portefeuille destinataire",
       "Input memo": "Note de saisie",
       "Tax": "Frais",
