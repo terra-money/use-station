@@ -143,7 +143,7 @@ export default (user: User, denom: string): PostPage<RecentSentUI> => {
       label: t('Post:Send:Send to'),
       attrs: {
         ...getDefaultAttrs('to'),
-        placeholder: t("Post:Send:Input receiver's wallet address"),
+        placeholder: 'Terra address or Ethereum address',
         autoFocus: true
       }
     },
