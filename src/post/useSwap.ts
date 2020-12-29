@@ -19,11 +19,25 @@ interface Values {
   input: string
 }
 
+interface OracleParamsData {
+  result: {
+    whitelist: TobinTaxItem[]
+  }
+}
+
+interface TobinTaxItem {
+  name: string
+  tobin_tax: string
+}
+
 export default (user: User, actives: string[]): PostPage<SwapUI> => {
   const { t } = useTranslation()
   const v = validateForm(t)
   const { data: bank, loading, error } = useBank(user)
   const paramsResponse = useFCD<MarketData>({ url: '/market/parameters' })
+  const { data: oracle } = useFCD<OracleParamsData>({
+    url: '/oracle/parameters'
+  })
   const { data: params, error: paramsError } = paramsResponse
 
   const denoms = ['uluna', ...actives]
@@ -148,7 +162,17 @@ export default (user: User, actives: string[]): PostPage<SwapUI> => {
     },
     spread: {
       title: t('Post:Swap:Spread'),
-      text: params && getContent(params?.result, t),
+      text:
+        params &&
+        oracle &&
+        getContent(
+          {
+            result: params.result,
+            whitelist: oracle.result.whitelist,
+            denom: to
+          },
+          t
+        ),
       value: format.amount(minus(output, receive)),
       unit: format.denom(to)
     },
@@ -224,13 +248,18 @@ const fetchMinimum = async ({ from, to }: Values) => {
 interface MarketData {
   result: {
     min_spread: string
-    tobin_tax: string
-    illiquid_tobin_tax_list: { denom: string; tax_rate: string }[]
   }
 }
 
-const getContent = (result: MarketData['result'], t: TFunction) => {
-  const { min_spread, tobin_tax, illiquid_tobin_tax_list } = result
+interface Params {
+  result: MarketData['result']
+  whitelist: TobinTaxItem[]
+  denom: string
+}
+
+const getContent = (params: Params, t: TFunction) => {
+  const { result, whitelist, denom } = params
+  const { min_spread } = result
 
   const min = percent(min_spread)
   const minText = `${[
@@ -238,17 +267,11 @@ const getContent = (result: MarketData['result'], t: TFunction) => {
     t('Post:Swap:min.')
   ].join(': ')} ${min}`
 
-  const tobin = percent(tobin_tax)
-  let tobinText = `Terra ${t('Post:Swap:tobin tax')}: ${tobin}`
+  const tobinTax = whitelist?.find(list => list.name === denom)?.tobin_tax
 
-  if (illiquid_tobin_tax_list && illiquid_tobin_tax_list.length) {
-    const illiquid = illiquid_tobin_tax_list[0]
-
-    tobinText += ` (${t('Post:Swap:except for {{unit}} set at {{rate}}', {
-      unit: format.denom(illiquid.denom),
-      rate: percent(illiquid.tax_rate, 0)
-    })})`
-  }
+  const tobinText = `Terra ${t('Post:Swap:tobin tax')}: ${percent(
+    tobinTax ?? 0
+  )}`
 
   return [minText, tobinText].join('\n')
 }
