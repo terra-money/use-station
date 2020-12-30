@@ -418,7 +418,8 @@
       "Calculating tax...": "计算税金中",
       "Send": "转出",
       "Sending...": "转出中...",
-      "Sent {{coin}} to {{address}}": "发送{{coin}}到{{address}}"
+      "Sent {{coin}} to {{address}}": "发送{{coin}}到{{address}}",
+      "Please double check if the above transaction requires a memo": "如果转到交易所需要填写MEMO"
     },
 
     "Staking": {

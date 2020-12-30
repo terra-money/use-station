@@ -418,7 +418,8 @@
       "Calculating tax...": "Calcul des frais...",
       "Send": "Envoyer",
       "Sending...": "En cours d'envoi...",
-      "Sent {{coin}} to {{address}}": "Envoyé {{coin}} à {{address}}"
+      "Sent {{coin}} to {{address}}": "Envoyé {{coin}} à {{address}}",
+      "Please double check if the above transaction requires a memo": "Veuillez vérifier si la transaction ci-dessus nécessite un mémo."
     },
 
     "Staking": {

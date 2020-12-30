@@ -247,6 +247,9 @@ export default (user: User, denom: string): PostPage<RecentSentUI> => {
       coin: format.coin({ amount, denom }),
       address: to
     }),
+    warning: t(
+      'Post:Send:Please double check if the above transaction requires a memo'
+    ),
     cancel: () => setSubmitted(false)
   })
 

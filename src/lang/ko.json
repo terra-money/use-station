@@ -418,7 +418,8 @@
       "Calculating tax...": "세금을 계산하는 중...",
       "Send": "보내기",
       "Sending...": "보내는 중...",
-      "Sent {{coin}} to {{address}}": "{{address}}에게 {{coin}}를 보냈습니다"
+      "Sent {{coin}} to {{address}}": "{{address}}에게 {{coin}}를 보냈습니다",
+      "Please double check if the above transaction requires a memo": "이 트랜잭션에 메모가 필요한지 한 번 더 체크해보세요"
     },
 
     "Staking": {
