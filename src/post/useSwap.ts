@@ -2,21 +2,25 @@ import { useState, useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
 import { TFunction } from 'i18next'
 import { without } from 'ramda'
-import { PostPage, SwapUI, ConfirmProps, BankData } from '../types'
+import { PostPage, SwapUI, ConfirmProps, BankData, Denom } from '../types'
 import { User, Coin, Rate, Field, FormUI } from '../types'
 import { find, format, gt, times, gte, percent, minus } from '../utils'
 import { toInput, toAmount } from '../utils/format'
+import { useConfig } from '../contexts/ConfigContext'
 import useForm from '../hooks/useForm'
 import useFCD from '../api/useFCD'
 import useBank from '../api/useBank'
 import fcd from '../api/fcd'
 import validateForm from './validateForm'
 import { getFeeDenomList, isAvailable } from './validateConfirm'
+import { getTerraswapURL, simulate as simulateTerraswap } from './terraswap'
 
+type Mode = 'Default' | 'Terraswap'
 interface Values {
   from: string
   to: string
   input: string
+  mode: Mode
 }
 
 interface OracleParamsData {
@@ -33,6 +37,7 @@ interface TobinTaxItem {
 export default (user: User, actives: string[]): PostPage<SwapUI> => {
   const { t } = useTranslation()
   const v = validateForm(t)
+  const { chain } = useConfig()
   const { data: bank, loading, error } = useBank(user)
   const paramsResponse = useFCD<MarketData>({ url: '/market/parameters' })
   const { data: oracle } = useFCD<OracleParamsData>({
@@ -42,18 +47,6 @@ export default (user: User, actives: string[]): PostPage<SwapUI> => {
 
   const denoms = ['uluna', ...actives]
   const [firstActiveDenom] = actives
-
-  const [calculating, setCalculating] = useState(false)
-
-  /* receive */
-  const [receiveError, setReceiveError] = useState<Error>()
-  const [output, setOutput] = useState('0')
-  const [receive, setReceive] = useState('0')
-
-  const init = () => {
-    setOutput('0')
-    setReceive('0')
-  }
 
   /* max */
   const getMax = (denom: string): Coin => {
@@ -65,39 +58,78 @@ export default (user: User, actives: string[]): PostPage<SwapUI> => {
   const validate = ({ from, input }: Values) => ({
     input: v.input(input, { max: toInput(getMax(from).amount) }),
     from: '',
-    to: ''
+    to: '',
+    mode: ''
   })
 
-  const initial = { from: 'uluna', to: '', input: '' }
+  const initial = { from: 'uluna', to: '', input: '', mode: 'Default' as Mode }
   const [submitted, setSubmitted] = useState(false)
   const form = useForm<Values>(initial, validate)
-  const { values, setValue, invalid, getDefaultProps, getDefaultAttrs } = form
-  const { from, to, input } = values
+  const { values, setValue, setValues, invalid } = form
+  const { getDefaultProps, getDefaultAttrs } = form
+  const { from, to, input, mode } = values
   const amount = toAmount(input)
 
-  useEffect(() => {
-    const calculate = async () => {
-      const { swapped, rate } = await fetch(values)
-      setOutput(times(amount, rate))
-      setReceive(swapped)
-    }
+  // simulate on change
+  const [simulating, setSimulating] = useState(false)
+  const [receiveError, setReceiveError] = useState<Error>()
+  const [principalNative, setPrincipalNative] = useState('0')
+  const [returnNative, setReturnNative] = useState('0')
+  const [isEnough, setIsEnough] = useState(false)
+  const [returnTerraswap, setReturnTerraswap] = useState('0')
+  const [tradingFeeTerraswap, setTradingFeeTerraswap] = useState('0')
 
-    const effect = async () => {
-      try {
-        setCalculating(true)
-        from === to && setValue('to', '')
-        const isEnough = gte(amount, times(await fetchMinimum(values), '1.01'))
-        !invalid && from !== to && isEnough ? await calculate() : init()
-      } catch (error) {
-        setReceiveError(error)
-      } finally {
-        setCalculating(false)
+  const init = () => {
+    setValue('to', '')
+    setPrincipalNative('0')
+    setReturnNative('0')
+    setReturnTerraswap('0')
+    setTradingFeeTerraswap('0')
+  }
+
+  const pair = (from === 'uluna' ? to : from) as Denom
+  useEffect(() => {
+    const waitAll = async () => {
+      const { swapped, rate } = await fetchSimulate(values)
+      setPrincipalNative(times(amount, rate))
+      setReturnNative(swapped)
+
+      if ([from, to].includes('uluna')) {
+        const { result } = await simulateTerraswap(
+          { pair, offer: { amount, denom: from as Denom } },
+          chain.current
+        )
+
+        result && setReturnTerraswap(result.return_amount)
+        result && setTradingFeeTerraswap(result.commission_amount)
+
+        const isBetter = gt(result?.return_amount ?? 0, swapped)
+        setValue('mode', isBetter ? 'Terraswap' : 'Default')
+      } else {
+        setValue('mode', 'Default')
       }
     }
 
-    from && to && effect()
+    const simulate = async () => {
+      try {
+        setSimulating(true)
+        from === to ? init() : gt(amount, 0) && (await waitAll())
+        setIsEnough(gte(amount, times(await fetchMinimum(values), '1.01')))
+      } catch (error) {
+        setReceiveError(error)
+      } finally {
+        setSimulating(false)
+      }
+    }
+
+    from && to && simulate()
     // eslint-disable-next-line
-  }, [amount, from, to, invalid])
+  }, [amount, from, to])
+
+  useEffect(() => {
+    setValues(values => ({ ...values, input: '0' }))
+    // eslint-disable-next-line
+  }, [from])
 
   /* render */
   const fields: Field[] = [
@@ -122,7 +154,7 @@ export default (user: User, actives: string[]): PostPage<SwapUI> => {
       label: '',
       ...getDefaultProps('to'),
       element: 'select',
-      attrs: { ...getDefaultAttrs('to'), readOnly: true },
+      attrs: getDefaultAttrs('to'),
       options: [
         {
           value: '',
@@ -139,14 +171,35 @@ export default (user: User, actives: string[]): PostPage<SwapUI> => {
       label: '',
       element: 'input',
       attrs: {
-        id: output,
-        defaultValue: format.amount(output),
+        id: 'receive',
+        value: {
+          Default: format.amount(returnNative),
+          Terraswap: format.amount(returnTerraswap)
+        }[mode],
         readOnly: true
       }
+    },
+    {
+      label: '',
+      ...getDefaultProps('mode'),
+      element: 'select',
+      attrs: {
+        ...getDefaultAttrs('mode'),
+        hidden: ![from, to].includes('uluna')
+      },
+      options: ['Default', 'Terraswap'].map(value => ({
+        value,
+        children: value
+      }))
     }
   ]
 
-  const disabled = invalid || calculating || !!receiveError || !gt(receive, '0')
+  const disabled =
+    invalid ||
+    simulating ||
+    !!receiveError ||
+    !gt(returnNative, '0') ||
+    !isEnough
 
   const ui: SwapUI = {
     message:
@@ -161,26 +214,28 @@ export default (user: User, actives: string[]): PostPage<SwapUI> => {
       }
     },
     spread: {
-      title: t('Post:Swap:Spread'),
-      text:
-        params &&
-        oracle &&
-        getContent(
-          {
-            result: params.result,
-            whitelist: oracle.result.whitelist,
-            denom: to
-          },
-          t
-        ),
-      value: format.amount(minus(output, receive)),
-      unit: format.denom(to)
-    },
-    receive: {
-      title: t('Post:Swap:Receive'),
-      value: format.amount(receive),
-      unit: format.denom(to)
-    }
+      Default: {
+        title: t('Post:Swap:Spread'),
+        text:
+          params &&
+          oracle &&
+          getContent(
+            {
+              result: params.result,
+              whitelist: oracle.result.whitelist,
+              denom: to
+            },
+            t
+          ),
+        value: format.amount(minus(principalNative, returnNative)),
+        unit: format.denom(to)
+      },
+      Terraswap: {
+        title: 'Trading Fee',
+        value: format.amount(tradingFeeTerraswap),
+        unit: format.denom(to)
+      }
+    }[mode]
   }
 
   const formUI: FormUI = {
@@ -191,17 +246,37 @@ export default (user: User, actives: string[]): PostPage<SwapUI> => {
     onSubmit: disabled ? undefined : () => setSubmitted(true)
   }
 
+  const { url, payload } = getTerraswapURL(
+    { pair, offer: { amount, denom: from as Denom } },
+    chain.current
+  )
+
   const getConfirm = (bank: BankData): ConfirmProps => ({
-    url: '/market/swap',
-    payload: { ask_denom: to, offer_coin: { amount, denom: from } },
+    url: {
+      Default: '/market/swap',
+      Terraswap: url
+    }[mode],
+    payload: {
+      Default: { ask_denom: to, offer_coin: { amount, denom: from } },
+      Terraswap: payload
+    }[mode],
     contents: [
+      {
+        name: 'Mode',
+        text: mode
+      },
       {
         name: t('Common:Tx:Amount'),
         displays: [format.display({ amount, denom: from })]
       },
       {
         name: t('Post:Swap:Receive'),
-        displays: [format.display({ amount: receive, denom: to })]
+        displays: [
+          format.display({
+            amount: { Default: returnNative, Terraswap: returnTerraswap }[mode],
+            denom: to
+          })
+        ]
       }
     ],
     feeDenom: { defaultValue: from, list: getFeeDenomList(bank.balance) },
@@ -230,7 +305,7 @@ export default (user: User, actives: string[]): PostPage<SwapUI> => {
 
 /* fetch */
 type Result = { swapped: string; rate: string }
-const fetch = async ({ from, to, input }: Values): Promise<Result> => {
+const fetchSimulate = async ({ from, to, input }: Values): Promise<Result> => {
   const amount = toAmount(input)
   const params = { offer_coin: amount + from, ask_denom: to }
   const swapped = await fcd.get<{ result: Coin }>(`/market/swap`, { params })

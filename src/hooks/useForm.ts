@@ -23,8 +23,9 @@ export default <T>(
   const [touched, setTouched] = useState<Partial<Assign<T, boolean>>>({})
 
   const setValue = (name: keyof T, value: string) => {
-    setValues({ ...values, [name]: name === 'input' ? sanitize(value) : value })
-    setTouched({ ...touched, [name]: true })
+    const next = name === 'input' ? sanitize(value) : value
+    setValues(values => ({ ...values, [name]: next }))
+    setTouched(touched => ({ ...touched, [name]: true }))
   }
 
   const errors = validate(values)
