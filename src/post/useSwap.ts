@@ -14,6 +14,7 @@ import fcd from '../api/fcd'
 import validateForm from './validateForm'
 import { getFeeDenomList, isAvailable } from './validateConfirm'
 import { getTerraswapURL, simulate as simulateTerraswap } from './terraswap'
+import useFetchTax from './useFetchTax'
 
 type Mode = 'Default' | 'Terraswap'
 interface Values {
@@ -51,7 +52,8 @@ export default (user: User, actives: string[]): PostPage<SwapUI> => {
   /* max */
   const getMax = (denom: string): Coin => {
     const amount = find(`${denom}:available`, bank?.balance) ?? '0'
-    return { amount, denom }
+    const taxAmount = tax?.getCoin(amount).amount
+    return { amount: minus(amount, taxAmount), denom }
   }
 
   /* form */
@@ -69,6 +71,9 @@ export default (user: User, actives: string[]): PostPage<SwapUI> => {
   const { getDefaultProps, getDefaultAttrs } = form
   const { from, to, input, mode } = values
   const amount = toAmount(input)
+
+  // tax
+  const tax = useFetchTax(from, t)
 
   // simulate on change
   const [simulating, setSimulating] = useState(false)
@@ -268,8 +273,14 @@ export default (user: User, actives: string[]): PostPage<SwapUI> => {
       {
         name: t('Common:Tx:Amount'),
         displays: [format.display({ amount, denom: from })]
-      },
-      {
+      }
+    ]
+      .concat(
+        mode === 'Terraswap' && gt(tax.getCoin(amount).amount, 0)
+          ? { name: tax.label, displays: [format.display(tax.getCoin(amount))] }
+          : []
+      )
+      .concat({
         name: t('Post:Swap:Receive'),
         displays: [
           format.display({
@@ -277,8 +288,7 @@ export default (user: User, actives: string[]): PostPage<SwapUI> => {
             denom: to
           })
         ]
-      }
-    ],
+      }),
     feeDenom: { defaultValue: from, list: getFeeDenomList(bank.balance) },
     validate: (fee: Coin) =>
       isAvailable({ amount, denom: from, fee }, bank.balance),
