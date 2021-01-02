@@ -1,23 +1,22 @@
 import { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { TFunction } from 'i18next'
 import { Dictionary, last } from 'ramda'
 import { ethers } from 'ethers'
 import { BankData, TxsData, Tx, RecentSentUI, RecentSentItemUI } from '../types'
-import { PostPage, Result, Coin, User, Field } from '../types'
+import { PostPage, Coin, User, Field } from '../types'
 import { ConfirmContent, ConfirmProps } from '../types'
 import { is, format, find } from '../utils'
-import { gt, times, min, ceil, percent, minus } from '../utils/math'
+import { gt, minus } from '../utils/math'
 import { toAmount, toInput } from '../utils/format'
 import { useConfig } from '../contexts/ConfigContext'
 import useTokenBalance from '../cw20/useTokenBalance'
-import fcd from '../api/fcd'
 import useFCD from '../api/useFCD'
 import useBank from '../api/useBank'
 import useForm from '../hooks/useForm'
 import validateForm from './validateForm'
 import { isAvailable, getFeeDenomList, isFeeAvailable } from './validateConfirm'
 import { calc } from './txHelpers'
+import useFetchTax from './useFetchTax'
 
 const SHUTTLE: Dictionary<string> = {
   mainnet: 'terra13yxhrk08qvdf5zdc9ss5mwsg5sf7zva9xrgwgc',
@@ -79,12 +78,10 @@ export default (user: User, denom: string): PostPage<RecentSentUI> => {
   }
 
   /* tax */
-  const [tax, setTax] = useState<{ label: string; coin: Coin }>()
-  const [taxError, setTaxError] = useState<Error>()
-  const [submitting, setSubmitting] = useState(false)
   const [submitted, setSubmitted] = useState(false)
   const [max, setMax] = useState<Coin>({ denom, amount: '0' })
   const isMainnet = chain.current.name === 'mainnet'
+  const tax = useFetchTax(denom, t)
 
   const calculateMax = async () => {
     if (bank) {
@@ -101,8 +98,8 @@ export default (user: User, denom: string): PostPage<RecentSentUI> => {
           setMax({ denom, amount })
         }
       } else if (is.nativeDenom(denom)) {
-        const tax = await fetchTax({ amount, denom }, t)
-        setMax({ denom, amount: minus(amount, tax.coin.amount) })
+        const coin = tax.getCoin(amount)
+        setMax({ denom, amount: minus(amount, coin.amount) })
       } else {
         const amount =
           tokens?.find(({ token }) => token === denom)?.balance ?? '0'
@@ -172,34 +169,14 @@ export default (user: User, denom: string): PostPage<RecentSentUI> => {
     }
   ]
 
-  const onSubmit = () => {
-    const calcTax = async () => {
-      try {
-        setSubmitting(true)
-        setTax(undefined)
-        setTaxError(undefined)
-        setTax(await fetchTax({ amount, denom }, t))
-        setSubmitted(true)
-      } catch (error) {
-        setTaxError(error)
-      } finally {
-        setSubmitting(false)
-      }
-    }
-
-    denom === 'uluna' || is.address(denom) ? setSubmitted(true) : calcTax()
-  }
-
-  const disabled = invalid || submitting
+  const disabled = invalid
 
   const formUI = {
     title: t('Post:Send:Send {{unit}}', { unit }),
     fields,
     disabled,
-    submitLabel: !submitting
-      ? t('Common:Form:Next')
-      : t('Post:Send:Calculating tax...'),
-    onSubmit: disabled ? undefined : onSubmit
+    submitLabel: t('Common:Form:Next'),
+    onSubmit: disabled ? undefined : () => setSubmitted(true)
   }
 
   const recipient = !toEthereum ? to : shuttle
@@ -221,7 +198,9 @@ export default (user: User, denom: string): PostPage<RecentSentUI> => {
       }
     ])
     .concat(
-      tax ? { name: tax.label, displays: [format.display(tax.coin)] } : []
+      gt(tax.getCoin(amount).amount, 0)
+        ? { name: tax.label, displays: [format.display(tax.getCoin(amount))] }
+        : []
     )
     .concat($memo ? { name: t('Common:Tx:Memo'), text: $memo } : [])
 
@@ -240,7 +219,10 @@ export default (user: User, denom: string): PostPage<RecentSentUI> => {
     },
     validate: (fee: Coin) =>
       is.nativeDenom(denom)
-        ? isAvailable({ amount, denom, fee, tax: tax?.coin }, bank.balance)
+        ? isAvailable(
+            { amount, denom, fee, tax: tax.getCoin(amount) },
+            bank.balance
+          )
         : isFeeAvailable(fee, bank.balance),
     submitLabels: [t('Post:Send:Send'), t('Post:Send:Sending...')],
     message: t('Post:Send:Sent {{coin}} to {{address}}', {
@@ -254,29 +236,12 @@ export default (user: User, denom: string): PostPage<RecentSentUI> => {
   })
 
   return {
-    error: error || taxError,
+    error,
     loading,
     submitted,
     form: formUI,
     confirm: bank && getConfirm(bank),
     ui: txsResponse.data && renderRecent(txsResponse.data)
-  }
-}
-
-/* fetch */
-const fetchTax = async ({ amount, denom }: Coin, t: TFunction) => {
-  type R = Result<string>
-  const { data: rateData } = await fcd.get<R>('/treasury/tax_rate')
-  const { data: capData } = await fcd.get<R>(`/treasury/tax_cap/${denom}`)
-  const { result: rate } = rateData
-  const { result: cap } = capData
-
-  return {
-    coin: { amount: ceil(min([times(amount, rate), cap])), denom },
-    label: t('Post:Send:Tax ({{percent}}, Max {{max}})', {
-      percent: percent(rate, 3),
-      max: format.coin({ amount: cap, denom })
-    })
   }
 }
 
