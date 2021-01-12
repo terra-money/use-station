@@ -1,5 +1,5 @@
 import { TFunction } from 'i18next'
-import { Contract, ContractUI, FinderFunction } from 'types'
+import { Contract, ContractUI, FinderFunction } from '../../types'
 import { format } from '../../utils'
 
 export default (
