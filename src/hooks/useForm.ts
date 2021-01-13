@@ -24,8 +24,8 @@ export default <T>(
 
   const setValue = (name: keyof T, value: string) => {
     const next = name === 'input' ? sanitize(value) : value
-    setValues(values => ({ ...values, [name]: next }))
-    setTouched(touched => ({ ...touched, [name]: true }))
+    setValues((values) => ({ ...values, [name]: next }))
+    setTouched((touched) => ({ ...touched, [name]: true }))
   }
 
   const errors = validate(values)
@@ -34,19 +34,19 @@ export default <T>(
     values,
     setValue,
     setValues,
-    invalid: Object.values(errors).some(v => !!v),
-    getDefaultProps: name => ({
+    invalid: Object.values(errors).some((v) => !!v),
+    getDefaultProps: (name) => ({
       element: 'input',
-      setValue: value => setValue(name, value),
-      error: touched[name] ? errors[name] : ''
+      setValue: (value) => setValue(name, value),
+      error: touched[name] ? errors[name] : '',
     }),
-    getDefaultAttrs: name => ({
+    getDefaultAttrs: (name) => ({
       type: 'text' as const,
       id: name,
       name,
       value: String(values[name]),
-      autoComplete: 'off'
-    })
+      autoComplete: 'off',
+    }),
   }
 }
 

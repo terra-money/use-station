@@ -1,6 +1,9 @@
+import { Dictionary } from 'ramda'
+import { AccAddress } from '@terra-money/terra.js'
 import BigNumber from 'bignumber.js'
 import { DateTime } from 'luxon'
-import { Coin, DisplayCoin } from '../types'
+import { Coin, DisplayCoin, Token } from '../types'
+import tokens from '../cw20/tokens.json'
 import currencies from './currencies.json'
 
 interface Config {
@@ -24,10 +27,18 @@ export const amountN = (amount: string, config?: Config): number => {
 }
 
 export const denom = (denom: string): string => {
-  const invalid = !denom || !denom.startsWith('u')
+  const valid = denom && (denom.startsWith('u') || AccAddress.validate(denom))
   const unit = denom.slice(1).toUpperCase()
-  return invalid
+
+  const whitelist = Object.values(tokens).reduce<Dictionary<Token>>(
+    (acc, cur) => ({ ...acc, ...cur }),
+    {}
+  )
+
+  return !valid
     ? ''
+    : AccAddress.validate(denom)
+    ? whitelist[denom].symbol
     : unit === 'LUNA'
     ? 'Luna'
     : currencies.includes(unit)

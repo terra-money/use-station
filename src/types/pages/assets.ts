@@ -52,6 +52,7 @@ export interface Token {
   symbol: string
   icon?: string
   token: string
+  pair: string
 }
 
 export interface TokenBalance extends Token {

@@ -1,16 +1,19 @@
 import { useState, useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
+import { Dictionary } from 'ramda'
 import { TFunction } from 'i18next'
-import { without } from 'ramda'
+import { AccAddress } from '@terra-money/terra.js'
 import { PostPage, SwapUI, ConfirmProps, BankData, Denom } from '../types'
-import { User, Coin, Rate, Field, FormUI } from '../types'
-import { find, format, gt, times, gte, percent, minus } from '../utils'
+import { User, Coin, Token, Rate, Field, FormUI } from '../types'
+import { find, format, gt, times, percent, minus } from '../utils'
 import { toInput, toAmount } from '../utils/format'
 import { useConfig } from '../contexts/ConfigContext'
 import useForm from '../hooks/useForm'
 import useFCD from '../api/useFCD'
 import useBank from '../api/useBank'
 import fcd from '../api/fcd'
+import useTokenBalance from '../cw20/useTokenBalance'
+import whitelists from '../cw20/tokens.json'
 import validateForm from './validateForm'
 import { getFeeDenomList, isAvailable } from './validateConfirm'
 import { getTerraswapURL, simulate as simulateTerraswap } from './terraswap'
@@ -35,25 +38,54 @@ interface TobinTaxItem {
   tobin_tax: string
 }
 
+const LUNA_PAIRS: Dictionary<Record<Denom, string>> = {
+  mainnet: {
+    ukrw: 'terra1zw0kfxrxgrs5l087mjm79hcmj3y8z6tljuhpmc',
+    umnt: 'terra1sndgzq62wp23mv20ndr4sxg6k8xcsudsy87uph',
+    usdr: 'terra1vs2vuks65rq7xj78mwtvn7vvnm2gn7adjlr002',
+    uusd: 'terra1tndcaqxkpc5ce9qee5ggqf430mr2z3pefe5wj6',
+  },
+
+  testnet: {
+    ukrw: 'terra1rfzwcdhhu502xws6r5pxw4hx8c6vms772d6vyu',
+    umnt: 'terra18x2ld35r4vn5rlygjzpjenyh2rfmvqgqk9lrnn',
+    usdr: 'terra1dmrn07plsrr8p7qqq6dmue8ydw0smxfza6f8sc',
+    uusd: 'terra156v8s539wtz0sjpn8y8a8lfg8fhmwa7fy22aff',
+  },
+}
+
 export default (user: User, actives: string[]): PostPage<SwapUI> => {
   const { t } = useTranslation()
   const v = validateForm(t)
   const { chain } = useConfig()
   const { data: bank, loading, error } = useBank(user)
+  const cw20Tokens = useTokenBalance(user.address)
   const paramsResponse = useFCD<MarketData>({ url: '/market/parameters' })
-  const { data: oracle } = useFCD<OracleParamsData>({
-    url: '/oracle/parameters'
-  })
+  const oracleResponse = useFCD<OracleParamsData>({ url: '/oracle/parameters' })
   const { data: params, error: paramsError } = paramsResponse
+  const { data: oracle } = oracleResponse
 
-  const denoms = ['uluna', ...actives]
-  const [firstActiveDenom] = actives
+  /* token options */
+  const nativeTokensOptions = ['uluna', ...actives].map((denom) => ({
+    value: denom,
+    children: format.denom(denom),
+    balance: find(`${denom}:available`, bank?.balance) ?? '0',
+  }))
+
+  const cw20TokensList =
+    cw20Tokens.list?.map(({ token, symbol, balance }) => ({
+      value: token,
+      children: symbol,
+      balance,
+    })) ?? []
+
+  const tokens = [...nativeTokensOptions, ...cw20TokensList]
 
   /* max */
-  const getMax = (denom: string): Coin => {
-    const amount = find(`${denom}:available`, bank?.balance) ?? '0'
-    const taxAmount = tax?.getCoin(amount).amount
-    return { amount: minus(amount, taxAmount), denom }
+  const getMax = (token: string): Coin => {
+    const { balance, value } = tokens.find(({ value }) => value === token)!
+    const taxAmount = tax?.getCoin(balance).amount
+    return { amount: minus(balance, taxAmount), denom: value }
   }
 
   /* form */
@@ -61,7 +93,7 @@ export default (user: User, actives: string[]): PostPage<SwapUI> => {
     input: v.input(input, { max: toInput(getMax(from).amount) }),
     from: '',
     to: '',
-    mode: ''
+    mode: '',
   })
 
   const initial = { from: 'uluna', to: '', input: '', mode: 'Default' as Mode }
@@ -77,10 +109,13 @@ export default (user: User, actives: string[]): PostPage<SwapUI> => {
 
   // simulate on change
   const [simulating, setSimulating] = useState(false)
-  const [receiveError, setReceiveError] = useState<Error>()
-  const [principalNative, setPrincipalNative] = useState('0')
+
+  // simulate: Native
   const [returnNative, setReturnNative] = useState('0')
-  const [isEnough, setIsEnough] = useState(false)
+  const [principalNative, setPrincipalNative] = useState('0')
+  const [errorNative, setErrorNative] = useState<Error>()
+
+  // simulate: Terraswap
   const [returnTerraswap, setReturnTerraswap] = useState('0')
   const [tradingFeeTerraswap, setTradingFeeTerraswap] = useState('0')
 
@@ -92,26 +127,45 @@ export default (user: User, actives: string[]): PostPage<SwapUI> => {
     setTradingFeeTerraswap('0')
   }
 
-  const pair = (from === 'uluna' ? to : from) as Denom
+  const whitelist: Dictionary<Token> =
+    whitelists[chain.current.name as 'mainnet' | 'testnet']
+
+  const ismAsset =
+    (from === 'uusd' && AccAddress.validate(to)) ||
+    (to === 'uusd' && AccAddress.validate(from))
+
+  const pair = [from, to].includes('uluna')
+    ? LUNA_PAIRS[chain.current.name]![(from === 'uluna' ? to : from) as Denom]
+    : ismAsset
+    ? whitelist[from === 'uusd' ? to : from].pair
+    : undefined
+
+  const token = ismAsset
+    ? whitelist[from === 'uusd' ? to : from].token
+    : undefined
+
+  const terraswapParams = { pair, token, offer: { amount, from } }
+
   useEffect(() => {
     const waitAll = async () => {
-      const { swapped, rate } = await fetchSimulate(values)
-      setPrincipalNative(times(amount, rate))
-      setReturnNative(swapped)
+      try {
+        if (pair) {
+          const { result } = await simulateTerraswap(
+            terraswapParams,
+            chain.current
+          )
 
-      if ([from, to].includes('uluna')) {
-        const { result } = await simulateTerraswap(
-          { pair, offer: { amount, denom: from as Denom } },
-          chain.current
-        )
+          result && setReturnTerraswap(result.return_amount)
+          result && setTradingFeeTerraswap(result.commission_amount)
+        }
 
-        result && setReturnTerraswap(result.return_amount)
-        result && setTradingFeeTerraswap(result.commission_amount)
-
-        const isBetter = gt(result?.return_amount ?? 0, swapped)
-        setValue('mode', isBetter ? 'Terraswap' : 'Default')
-      } else {
-        setValue('mode', 'Default')
+        if (![from, to].some(AccAddress.validate)) {
+          const { swapped, rate } = await fetchSimulate(values)
+          setPrincipalNative(times(amount, rate))
+          setReturnNative(swapped)
+        }
+      } catch (error) {
+        // ...
       }
     }
 
@@ -119,9 +173,8 @@ export default (user: User, actives: string[]): PostPage<SwapUI> => {
       try {
         setSimulating(true)
         from === to ? init() : gt(amount, 0) && (await waitAll())
-        setIsEnough(gte(amount, times(await fetchMinimum(values), '1.01')))
       } catch (error) {
-        setReceiveError(error)
+        setErrorNative(error)
       } finally {
         setSimulating(false)
       }
@@ -132,7 +185,15 @@ export default (user: User, actives: string[]): PostPage<SwapUI> => {
   }, [amount, from, to])
 
   useEffect(() => {
-    setValues(values => ({ ...values, input: '0' }))
+    const isTerraswapBetter = gt(returnTerraswap, returnNative)
+    setValues((values) => ({
+      ...values,
+      mode: isTerraswapBetter ? 'Terraswap' : 'Default',
+    }))
+  }, [returnTerraswap, returnNative, setValues])
+
+  useEffect(() => {
+    setValues((values) => ({ ...values, input: '0', to: '' }))
     // eslint-disable-next-line
   }, [from])
 
@@ -143,17 +204,13 @@ export default (user: User, actives: string[]): PostPage<SwapUI> => {
       ...getDefaultProps('from'),
       element: 'select',
       attrs: getDefaultAttrs('from'),
-      options: denoms.map(denom => ({
-        value: denom,
-        children: format.denom(denom),
-        disabled: !gt(find(`${denom}:available`, bank?.balance) ?? '0', '0')
-      }))
+      options: tokens.filter(({ balance }) => gt(balance, 0)),
     },
     {
       label: '',
       ...getDefaultProps('input'),
       attrs: { ...getDefaultAttrs('input'), placeholder: '0' },
-      unit: format.denom(from)
+      unit: format.denom(from),
     },
     {
       label: '',
@@ -164,13 +221,23 @@ export default (user: User, actives: string[]): PostPage<SwapUI> => {
         {
           value: '',
           children: t('Post:Swap:Select a coin...'),
-          disabled: true
+          disabled: true,
         },
-        ...without([from], denoms).map(denom => ({
-          value: denom,
-          children: format.denom(denom)
-        }))
-      ]
+        ...tokens
+          .filter(({ value }) => value !== from)
+          .map((item) => {
+            const disabledFromUST =
+              from !== 'uusd' &&
+              !nativeTokensOptions.find((native) => native.value === item.value)
+
+            const disabledFromCW20 =
+              cw20TokensList.find((cw20) => cw20.value === from) &&
+              item.value !== 'uusd'
+
+            const disabled = disabledFromUST || disabledFromCW20
+            return { ...item, disabled }
+          }),
+      ],
     },
     {
       label: '',
@@ -179,10 +246,10 @@ export default (user: User, actives: string[]): PostPage<SwapUI> => {
         id: 'receive',
         value: {
           Default: format.amount(returnNative),
-          Terraswap: format.amount(returnTerraswap)
+          Terraswap: format.amount(returnTerraswap),
         }[mode],
-        readOnly: true
-      }
+        readOnly: true,
+      },
     },
     {
       label: '',
@@ -190,33 +257,33 @@ export default (user: User, actives: string[]): PostPage<SwapUI> => {
       element: 'select',
       attrs: {
         ...getDefaultAttrs('mode'),
-        hidden: ![from, to].includes('uluna')
+        hidden: ![from, to].includes('uluna'),
       },
-      options: ['Default', 'Terraswap'].map(value => ({
+      options: ['Default', 'Terraswap'].map((value) => ({
         value,
-        children: value
-      }))
-    }
+        children: value,
+      })),
+    },
   ]
 
   const disabled =
     invalid ||
     simulating ||
-    !!receiveError ||
-    !gt(returnNative, '0') ||
-    !isEnough
+    !!errorNative ||
+    !(mode !== 'Default' || gt(returnNative, '0'))
 
+  const [firstActiveDenom] = actives
   const ui: SwapUI = {
     message:
-      !firstActiveDenom || receiveError
+      !firstActiveDenom || errorNative
         ? t('Post:Swap:Swapping is not available at the moment')
         : t('Post:Swap:Select a coin to swap'),
     max: {
       title: t('Post:Swap:Current balance'),
       display: format.display(getMax(from)),
       attrs: {
-        onClick: () => setValue('input', toInput(getMax(from).amount))
-      }
+        onClick: () => setValue('input', toInput(getMax(from).amount)),
+      },
     },
     spread: {
       Default: {
@@ -228,19 +295,19 @@ export default (user: User, actives: string[]): PostPage<SwapUI> => {
             {
               result: params.result,
               whitelist: oracle.result.whitelist,
-              denom: to
+              denom: to,
             },
             t
           ),
         value: format.amount(minus(principalNative, returnNative)),
-        unit: format.denom(to)
+        unit: format.denom(to),
       },
       Terraswap: {
         title: 'Trading Fee',
         value: format.amount(tradingFeeTerraswap),
-        unit: format.denom(to)
-      }
-    }[mode]
+        unit: format.denom(to),
+      },
+    }[mode],
   }
 
   const formUI: FormUI = {
@@ -248,32 +315,31 @@ export default (user: User, actives: string[]): PostPage<SwapUI> => {
     disabled,
     title: t('Page:Swap:Swap coins'),
     submitLabel: t('Common:Form:Next'),
-    onSubmit: disabled ? undefined : () => setSubmitted(true)
+    onSubmit: disabled ? undefined : () => setSubmitted(true),
   }
 
-  const { url, payload } = getTerraswapURL(
-    { pair, offer: { amount, denom: from as Denom } },
-    chain.current
-  )
+  const terraswap = pair
+    ? getTerraswapURL(terraswapParams, chain.current)
+    : undefined
 
   const getConfirm = (bank: BankData): ConfirmProps => ({
     url: {
       Default: '/market/swap',
-      Terraswap: url
+      Terraswap: terraswap?.url ?? '',
     }[mode],
     payload: {
       Default: { ask_denom: to, offer_coin: { amount, denom: from } },
-      Terraswap: payload
+      Terraswap: terraswap?.payload,
     }[mode],
     contents: [
       {
         name: 'Mode',
-        text: mode
+        text: mode,
       },
       {
         name: t('Common:Tx:Amount'),
-        displays: [format.display({ amount, denom: from })]
-      }
+        displays: [format.display({ amount, denom: from })],
+      },
     ]
       .concat(
         mode === 'Terraswap' && gt(tax.getCoin(amount).amount, 0)
@@ -285,31 +351,31 @@ export default (user: User, actives: string[]): PostPage<SwapUI> => {
         displays: [
           format.display({
             amount: { Default: returnNative, Terraswap: returnTerraswap }[mode],
-            denom: to
-          })
-        ]
+            denom: to,
+          }),
+        ],
       }),
     feeDenom: { defaultValue: from, list: getFeeDenomList(bank.balance) },
     validate: (fee: Coin) =>
-      isAvailable({ amount, denom: from, fee }, bank.balance),
+      ismAsset || isAvailable({ amount, denom: from, fee }, bank.balance),
     submitLabels: [t('Post:Swap:Swap'), t('Post:Swap:Swapping...')],
     message: t('Post:Swap:Swapped {{coin}} to {{unit}}', {
       coin: format.coin({ amount, denom: from }),
-      unit: format.denom(to)
+      unit: format.denom(to),
     }),
     warning: t(
       'Post:Swap:Final amount you receive in {{unit}} may vary due to the swap rate changes',
       { unit: format.denom(to) }
-    )
+    ),
   })
 
   return {
     ui,
-    error: error || paramsError || receiveError,
+    error: error || paramsError || errorNative,
     loading,
     submitted,
     form: formUI,
-    confirm: bank && getConfirm(bank)
+    confirm: bank && getConfirm(bank),
   }
 }
 
@@ -322,12 +388,6 @@ const fetchSimulate = async ({ from, to, input }: Values): Promise<Result> => {
   const rateList = await fcd.get<Rate[]>(`/v1/market/swaprate/${from}`)
   const rate = find(`${to}:swaprate`, rateList.data) ?? '0'
   return { swapped: swapped.data.result.amount, rate }
-}
-
-const fetchMinimum = async ({ from, to }: Values) => {
-  const rateList = await fcd.get<Rate[]>(`/v1/market/swaprate/${to}`)
-  const rate = find(`${from}:swaprate`, rateList.data) ?? '0'
-  return rate
 }
 
 interface MarketData {
@@ -349,10 +409,10 @@ const getContent = (params: Params, t: TFunction) => {
   const min = percent(min_spread)
   const minText = `${[
     t('Post:Swap:Luna swap spread'),
-    t('Post:Swap:min.')
+    t('Post:Swap:min.'),
   ].join(': ')} ${min}`
 
-  const tobinTax = whitelist?.find(list => list.name === denom)?.tobin_tax
+  const tobinTax = whitelist?.find((list) => list.name === denom)?.tobin_tax
 
   const tobinText = `Terra ${t('Post:Swap:tobin tax')}: ${percent(
     tobinTax ?? 0

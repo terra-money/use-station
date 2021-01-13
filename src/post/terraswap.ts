@@ -1,50 +1,51 @@
+import { AccAddress } from '@terra-money/terra.js'
 import axios from 'axios'
-import { Dictionary } from 'ramda'
-import { ChainOptions, Denom } from '../types'
-
-const PAIRS: Dictionary<Record<Denom, string>> = {
-  mainnet: {
-    ukrw: 'terra1zw0kfxrxgrs5l087mjm79hcmj3y8z6tljuhpmc',
-    umnt: 'terra1sndgzq62wp23mv20ndr4sxg6k8xcsudsy87uph',
-    usdr: 'terra1vs2vuks65rq7xj78mwtvn7vvnm2gn7adjlr002',
-    uusd: 'terra1tndcaqxkpc5ce9qee5ggqf430mr2z3pefe5wj6'
-  },
-
-  testnet: {
-    ukrw: 'terra1rfzwcdhhu502xws6r5pxw4hx8c6vms772d6vyu',
-    umnt: 'terra18x2ld35r4vn5rlygjzpjenyh2rfmvqgqk9lrnn',
-    usdr: 'terra1dmrn07plsrr8p7qqq6dmue8ydw0smxfza6f8sc',
-    uusd: 'terra156v8s539wtz0sjpn8y8a8lfg8fhmwa7fy22aff'
-  }
-}
+import { ChainOptions } from '../types'
 
 interface Params {
-  pair: Denom // pair
-  offer: { amount: string; denom: Denom }
+  pair?: string
+  token?: string
+  offer: { amount: string; from: string }
 }
 
 export const getTerraswapURL = (
-  { pair, offer }: Params,
-  { name, lcd: baseURL }: ChainOptions
+  { pair, token, offer }: Params,
+  { lcd: baseURL }: ChainOptions
 ) => {
-  const pairAddress = PAIRS[name][pair]
-  const path = `/wasm/contracts/${pairAddress}/store`
+  const shouldHook = AccAddress.validate(offer.from)
+  const simulatePath = `/wasm/contracts/${pair}/store`
+  const url = `/wasm/contracts/${shouldHook ? token : pair}`
+
   const offerMessage = {
     offer_asset: {
       amount: offer.amount,
-      info: { native_token: { denom: offer.denom } }
-    }
+      info: AccAddress.validate(offer.from)
+        ? { token: { contract_addr: offer.from } }
+        : { native_token: { denom: offer.from } },
+    },
   }
 
   const params = { query_msg: { simulation: offerMessage } }
 
   return {
-    query: { baseURL, path, params },
-    url: `/wasm/contracts/${pairAddress}`,
+    query: { baseURL, path: simulatePath, params },
+    url,
     payload: {
-      exec_msg: JSON.stringify({ swap: offerMessage }),
-      coins: [offer]
-    }
+      exec_msg: JSON.stringify(
+        shouldHook
+          ? {
+              send: {
+                amount: offer.amount,
+                contract: pair,
+                msg: toBase64({ swap: offerMessage }),
+              },
+            }
+          : { swap: offerMessage }
+      ),
+      coins: AccAddress.validate(offer.from)
+        ? []
+        : [{ amount: offer.amount, denom: offer.from }],
+    },
   }
 }
 
@@ -62,5 +63,14 @@ export const simulate = async (params: Params, chain: ChainOptions) => {
     return { success: true, result: data.result }
   } catch (error) {
     return { success: false, message: error.message }
+  }
+}
+
+/* utils */
+const toBase64 = (object: object) => {
+  try {
+    return Buffer.from(JSON.stringify(object)).toString('base64')
+  } catch (error) {
+    return ''
   }
 }
