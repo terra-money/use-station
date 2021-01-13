@@ -5,7 +5,11 @@ import useFCD from '../../api/useFCD'
 export default (): MarketPage => {
   const { t } = useTranslation()
   const response = useFCD<OracleData>({ url: '/oracle/denoms/actives' })
-  const render = (actives: string[]) => ({ actives })
+  const render = (actives: string[]) => ({
+    actives: actives.sort(
+      (a, b) => Number(b === 'uusd') - Number(a === 'uusd')
+    ),
+  })
 
   return Object.assign(
     { swap: t('Page:Swap:Swap coins') },
