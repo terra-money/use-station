@@ -83,9 +83,12 @@ export default (user: User, actives: string[]): PostPage<SwapUI> => {
 
   /* max */
   const getMax = (token: string): Coin => {
-    const { balance, value } = tokens.find(({ value }) => value === token)!
-    const taxAmount = tax?.getCoin(balance).amount
-    return { amount: minus(balance, taxAmount), denom: value }
+    const tokenInfo = tokens.find(({ value }) => value === token)
+    const taxAmount = tax?.getCoin(tokenInfo?.balance ?? '0').amount
+    return {
+      amount: minus(tokenInfo?.balance ?? '0', taxAmount),
+      denom: tokenInfo?.value ?? '',
+    }
   }
 
   /* form */
@@ -96,7 +99,7 @@ export default (user: User, actives: string[]): PostPage<SwapUI> => {
     mode: '',
   })
 
-  const initial = { from: 'uluna', to: '', input: '', mode: 'Default' as Mode }
+  const initial = { from: '', to: '', input: '', mode: 'Default' as Mode }
   const [submitted, setSubmitted] = useState(false)
   const form = useForm<Values>(initial, validate)
   const { values, setValue, setValues, invalid } = form
@@ -193,7 +196,7 @@ export default (user: User, actives: string[]): PostPage<SwapUI> => {
   }, [returnTerraswap, returnNative, setValues])
 
   useEffect(() => {
-    setValues((values) => ({ ...values, input: '0', to: '' }))
+    setValues((values) => ({ ...values, input: '', to: '' }))
     // eslint-disable-next-line
   }, [from])
 
@@ -204,7 +207,14 @@ export default (user: User, actives: string[]): PostPage<SwapUI> => {
       ...getDefaultProps('from'),
       element: 'select',
       attrs: getDefaultAttrs('from'),
-      options: tokens.filter(({ balance }) => gt(balance, 0)),
+      options: [
+        {
+          value: '',
+          children: t('Post:Swap:Select a coin...'),
+          disabled: true,
+        },
+        ...tokens.filter(({ balance }) => gt(balance, 0)),
+      ],
     },
     {
       label: '',
