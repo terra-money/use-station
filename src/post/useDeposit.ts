@@ -29,7 +29,7 @@ export default (
 
   /* form */
   const validate = ({ input }: Values) => ({
-    input: v.input(input, { max: toInput(max.amount) })
+    input: v.input(input, { max: toInput(max.amount) }),
   })
 
   const initial = { input: '' }
@@ -47,14 +47,14 @@ export default (
       button: {
         label: t('Common:Account:Available'),
         display: format.display(max),
-        attrs: { onClick: () => setValue('input', toInput(max.amount)) }
+        attrs: { onClick: () => setValue('input', toInput(max.amount)) },
       },
       attrs: {
         ...getDefaultAttrs('input'),
-        placeholder: '0'
+        placeholder: '0',
       },
-      unit
-    }
+      unit,
+    },
   ]
 
   const disabled = invalid
@@ -64,7 +64,7 @@ export default (
     fields,
     disabled,
     submitLabel: t('Common:Form:Next'),
-    onSubmit: disabled ? undefined : () => setSubmitted(true)
+    onSubmit: disabled ? undefined : () => setSubmitted(true),
   }
 
   const getConfirm = (bank: BankData): ConfirmProps => ({
@@ -73,23 +73,23 @@ export default (
     contents: [
       {
         name: t('Page:Governance:Deposit'),
-        displays: [format.display({ amount, denom })]
-      }
+        displays: [format.display({ amount, denom })],
+      },
     ],
     feeDenom: {
       defaultValue: denom,
-      list: getFeeDenomList(bank.balance)
+      list: getFeeDenomList(bank.balance),
     },
     validate: (fee: Coin) => isAvailable({ amount, denom, fee }, bank.balance),
     submitLabels: [
       t('Post:Governance:Deposit'),
-      t('Post:Governance:Depositing...')
+      t('Post:Governance:Depositing...'),
     ],
     message: t('Post:Governance:Deposited {{coin}} to {{title}}', {
       coin: format.coin({ amount, denom }),
-      title
+      title,
     }),
-    cancel: () => setSubmitted(false)
+    cancel: () => setSubmitted(false),
   })
 
   return {
@@ -97,6 +97,6 @@ export default (
     loading,
     submitted,
     form: formUI,
-    confirm: bank && getConfirm(bank)
+    confirm: bank && getConfirm(bank),
   }
 }

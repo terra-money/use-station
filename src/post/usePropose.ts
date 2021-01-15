@@ -15,7 +15,7 @@ enum TypeKey {
   T = 'tax_rate_update',
   R = 'reward_weight_update',
   C = 'community_pool_spend',
-  P = 'param_change'
+  P = 'param_change',
 }
 
 interface Change {
@@ -63,28 +63,28 @@ export default (user: User): PostPage => {
     {
       key: TypeKey.DEFAULT,
       title: t('Post:Governance:Text Proposal'),
-      url: '/gov/proposals'
+      url: '/gov/proposals',
     },
     {
       key: TypeKey.T,
       title: t('Post:Governance:Tax-rate Update'),
-      url: '/gov/proposals/tax_rate_update'
+      url: '/gov/proposals/tax_rate_update',
     },
     {
       key: TypeKey.R,
       title: t('Post:Governance:Reward-weight Update'),
-      url: '/gov/proposals/reward_weight_update'
+      url: '/gov/proposals/reward_weight_update',
     },
     {
       key: TypeKey.C,
       title: t('Post:Governance:Community-pool Spend'),
-      url: '/gov/proposals/community_pool_spend'
+      url: '/gov/proposals/community_pool_spend',
     },
     {
       key: TypeKey.P,
       title: t('Post:Governance:Parameter-change'),
-      url: '/gov/proposals/param_change'
-    }
+      url: '/gov/proposals/param_change',
+    },
   ]
 
   /* max */
@@ -99,16 +99,16 @@ export default (user: User): PostPage => {
     return {
       title: !title.length
         ? t('Common:Validate:{{label}} is required', {
-            label: t('Post:Governance:Title')
+            label: t('Post:Governance:Title'),
           })
         : v.length(title, { max: 140, label: t('Post:Governance:Title') }),
       description: !description.length
         ? t('Common:Validate:{{label}} is required', {
-            label: t('Post:Governance:Description')
+            label: t('Post:Governance:Description'),
           })
         : v.length(description, {
             max: 5000,
-            label: t('Post:Governance:Description')
+            label: t('Post:Governance:Description'),
           }),
       input:
         !input || input === '0'
@@ -120,14 +120,14 @@ export default (user: User): PostPage => {
         key === TypeKey.T
           ? v.between(updates.tax_rate, {
               range: [0, 1],
-              label: t('Post:Governance:Tax-rate')
+              label: t('Post:Governance:Tax-rate'),
             })
           : '',
       reward_weight:
         key === TypeKey.R
           ? v.between(updates.reward_weight, {
               range: [0, 1],
-              label: t('Post:Governance:Reward-weight')
+              label: t('Post:Governance:Reward-weight'),
             })
           : '',
       recipient: key === TypeKey.C ? v.address(updates.recipient) : '',
@@ -135,23 +135,23 @@ export default (user: User): PostPage => {
         key === TypeKey.C
           ? !lunaPool
             ? t("Common:Validate:{{label}} doesn't exist", {
-                label: t('Post:Governance:Community pool')
+                label: t('Post:Governance:Community pool'),
               })
             : v.between(updates.amount, {
                 range: [0, lunaPool],
-                label: t('Post:Governance:Community pool')
+                label: t('Post:Governance:Community pool'),
               })
           : '',
       changes:
         key === TypeKey.P
           ? !updates.changes
             ? t('Common:Validate:{{label}} are required', {
-                label: t('Post:Governance:Changes')
+                label: t('Post:Governance:Changes'),
               })
             : !validateChanges(updates.changes)
             ? t('Common:Validate:Invalid')
             : ''
-          : ''
+          : '',
     }
   }
 
@@ -166,7 +166,7 @@ export default (user: User): PostPage => {
     reward_weight: '',
     recipient: '',
     amount: '',
-    changes: ''
+    changes: '',
   }
 
   const [submitted, setSubmitted] = useState(false)
@@ -184,28 +184,28 @@ export default (user: User): PostPage => {
       {
         ...getDefaultProps('tax_rate'),
         label: t('Post:Governance:Tax-rate'),
-        attrs: { ...getDefaultAttrs('tax_rate'), placeholder: '0' }
-      }
+        attrs: { ...getDefaultAttrs('tax_rate'), placeholder: '0' },
+      },
     ],
     [TypeKey.R]: [
       {
         ...getDefaultProps('reward_weight'),
         label: t('Post:Governance:Reward-weight'),
-        attrs: { ...getDefaultAttrs('reward_weight'), placeholder: '0' }
-      }
+        attrs: { ...getDefaultAttrs('reward_weight'), placeholder: '0' },
+      },
     ],
     [TypeKey.C]: [
       {
         ...getDefaultProps('recipient'),
         label: t('Post:Governance:Recipient'),
-        attrs: { ...getDefaultAttrs('recipient'), placeholder: '0' }
+        attrs: { ...getDefaultAttrs('recipient'), placeholder: '0' },
       },
       {
         ...getDefaultProps('amount'),
         label: t('Common:Tx:Amount'),
         attrs: { ...getDefaultAttrs('amount'), placeholder: '0' },
-        unit
-      }
+        unit,
+      },
     ],
     [TypeKey.P]: [
       {
@@ -214,10 +214,10 @@ export default (user: User): PostPage => {
         element: 'textarea' as const,
         attrs: {
           ...getDefaultAttrs('changes'),
-          placeholder: CHANGES_PLACEHOLDER
-        }
-      }
-    ]
+          placeholder: CHANGES_PLACEHOLDER,
+        },
+      },
+    ],
   }[TypesList[typeIndex].key]
 
   const fields: Field[] = [
@@ -228,38 +228,38 @@ export default (user: User): PostPage => {
       attrs: getDefaultAttrs('typeIndex'),
       options: TypesList.map(({ title }, index) => ({
         value: String(index),
-        children: title
-      }))
+        children: title,
+      })),
     },
     {
       ...getDefaultProps('title'),
       label: t('Post:Governance:Title'),
-      attrs: { ...getDefaultAttrs('title'), autoFocus: true }
+      attrs: { ...getDefaultAttrs('title'), autoFocus: true },
     },
     {
       ...getDefaultProps('description'),
       label: t('Post:Governance:Description'),
       element: 'textarea',
-      attrs: getDefaultAttrs('description')
+      attrs: getDefaultAttrs('description'),
     },
     {
       ...getDefaultProps('input'),
       label: [
         t('Post:Governance:Initial deposit'),
-        `(${t('Common:Form:Optional')})`
+        `(${t('Common:Form:Optional')})`,
       ].join(' '),
       button: {
         label: t('Common:Account:Available'),
         display: format.display(max),
-        attrs: { onClick: () => setValue('input', toInput(max.amount)) }
+        attrs: { onClick: () => setValue('input', toInput(max.amount)) },
       },
       attrs: {
         ...getDefaultAttrs('input'),
-        placeholder: '0'
+        placeholder: '0',
       },
-      unit
+      unit,
     },
-    ...customField
+    ...customField,
   ]
 
   const getConfirm = (bank: BankData): ConfirmProps => ({
@@ -271,24 +271,24 @@ export default (user: User): PostPage => {
       [(!typeIndex ? 'initial_' : '') + 'deposit']: gt(amount, 0)
         ? [{ amount, denom }]
         : [],
-      ...sanitize(TypesList[typeIndex].key, values)
+      ...sanitize(TypesList[typeIndex].key, values),
     },
     contents: input
       ? [
           {
             name: t('Post:Governance:Initial deposit'),
-            displays: [format.display({ amount, denom })]
-          }
+            displays: [format.display({ amount, denom })],
+          },
         ]
       : [],
     feeDenom: {
       defaultValue: denom,
-      list: getFeeDenomList(bank.balance)
+      list: getFeeDenomList(bank.balance),
     },
     validate: (fee: Coin) => isAvailable({ amount, denom, fee }, bank.balance),
     submitLabels: [
       t('Post:Governance:Propose'),
-      t('Post:Governance:Proposing...')
+      t('Post:Governance:Proposing...'),
     ],
     message: t(
       input
@@ -296,7 +296,7 @@ export default (user: User): PostPage => {
         : 'Post:Governance:Created proposal {{title}} without deposit',
       { title, coin: format.coin({ amount, denom }) }
     ),
-    cancel: () => setSubmitted(false)
+    cancel: () => setSubmitted(false),
   })
 
   const disabled = invalid
@@ -306,7 +306,7 @@ export default (user: User): PostPage => {
     disabled,
     title: t('Page:Governance:New proposal'),
     submitLabel: t('Common:Form:Next'),
-    onSubmit: disabled ? undefined : () => setSubmitted(true)
+    onSubmit: disabled ? undefined : () => setSubmitted(true),
   }
 
   return {
@@ -314,7 +314,7 @@ export default (user: User): PostPage => {
     loading: loading || poolLoading,
     submitted,
     form: formUI,
-    confirm: bank && getConfirm(bank)
+    confirm: bank && getConfirm(bank),
   }
 }
 
@@ -322,7 +322,7 @@ export default (user: User): PostPage => {
 const validateChanges = (changes: string) => {
   try {
     const parsed: Change[] = JSON.parse(changes)
-    return Array.isArray(parsed) && parsed.every(o => typeof o === 'object')
+    return Array.isArray(parsed) && parsed.every((o) => typeof o === 'object')
   } catch {
     return false
   }
@@ -338,10 +338,10 @@ const sanitize = (typeKey: TypeKey, values: Values) => {
     [TypeKey.R]: { reward_weight },
     [TypeKey.C]: {
       recipient,
-      amount: [{ denom: 'uluna', amount: toAmount(amount) }]
+      amount: [{ denom: 'uluna', amount: toAmount(amount) }],
     },
     [TypeKey.P]: {
-      changes: validateChanges(changes) ? JSON.parse(changes) : []
-    }
+      changes: validateChanges(changes) ? JSON.parse(changes) : [],
+    },
   }[typeKey]
 }

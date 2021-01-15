@@ -28,16 +28,16 @@ export default (
       const amount = exchange(
         type === CumulativeType.C
           ? minus(tail, head)
-          : sum(results.slice(1).map(d => d.blockReward))
+          : sum(results.slice(1).map((d) => d.blockReward))
       )
 
       return format.display({ amount, denom })
     },
-    getChart: results => ({
+    getChart: (results) => ({
       data:
         results?.map(({ datetime, blockReward }) => ({
           t: new Date(datetime),
-          y: format.amountN(exchange(blockReward))
+          y: format.amountN(exchange(blockReward)),
         })) ?? [],
       tooltips:
         results?.map(({ datetime, blockReward }) => ({
@@ -45,8 +45,8 @@ export default (
             { amount: exchange(blockReward), denom },
             { integer: true }
           ),
-          label: new Date(datetime).toUTCString()
-        })) ?? []
-    })
+          label: new Date(datetime).toUTCString(),
+        })) ?? [],
+    }),
   }
 }

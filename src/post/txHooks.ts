@@ -17,36 +17,40 @@ export const useCoinsFields = (denoms: string[]): CoinFields => {
         label: '',
         element: 'select',
         attrs: { id: 'denom', value: denom },
-        setValue: value =>
-          setCoinInputs(cur => update<CoinInput>(cur, index, { denom: value })),
-        options: denoms.map(denom => ({
+        setValue: (value) =>
+          setCoinInputs((cur) =>
+            update<CoinInput>(cur, index, { denom: value })
+          ),
+        options: denoms.map((denom) => ({
           value: denom,
-          children: format.denom(denom)
-        }))
+          children: format.denom(denom),
+        })),
       },
       input: {
         label: '',
         element: 'input',
         attrs: { id: 'input', value: input },
-        setValue: value =>
-          setCoinInputs(cur => update<CoinInput>(cur, index, { input: value }))
+        setValue: (value) =>
+          setCoinInputs((cur) =>
+            update<CoinInput>(cur, index, { input: value })
+          ),
       },
       button: index
         ? {
             children: '-',
-            onClick: () => setCoinInputs(remove(index, 1, coinInputs))
+            onClick: () => setCoinInputs(remove(index, 1, coinInputs)),
           }
         : {
             children: '+',
-            onClick: () => setCoinInputs([...coinInputs, InitialCoinInput])
-          }
+            onClick: () => setCoinInputs([...coinInputs, InitialCoinInput]),
+          },
     })),
     coins: coinInputs
       .filter(({ input }) => !!input)
       .map(({ denom, input }) => ({ denom, amount: toAmount(input) })),
     invalid: coinInputs
       .filter(({ input }) => !!input)
-      .some(({ input }) => !gt(input, '0'))
+      .some(({ input }) => !gt(input, '0')),
   }
 }
 

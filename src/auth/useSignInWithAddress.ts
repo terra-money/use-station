@@ -27,9 +27,9 @@ export default (): SignInWithAddress => {
       attrs: {
         ...getDefaultAttrs('address'),
         placeholder: t('Auth:SignIn:Input your wallet address'),
-        autoFocus: true
-      }
-    }
+        autoFocus: true,
+      },
+    },
   ]
 
   const onSubmit = () => signIn({ address })
@@ -40,7 +40,7 @@ export default (): SignInWithAddress => {
       fields,
       disabled,
       submitLabel: t('Auth:SignIn:Browse'),
-      onSubmit: disabled ? undefined : onSubmit
-    }
+      onSubmit: disabled ? undefined : onSubmit,
+    },
   }
 }

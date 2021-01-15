@@ -8,7 +8,7 @@ const GAS_PRICES_MAINNET: Dictionary<string> = {
   uusd: '0.0015',
   usdr: '0.00102',
   ukrw: '1.7805',
-  umnt: '4.31626'
+  umnt: '4.31626',
 }
 
 const GAS_PRICES_TESTNET: Dictionary<string> = {
@@ -16,7 +16,7 @@ const GAS_PRICES_TESTNET: Dictionary<string> = {
   uusd: '0.15',
   usdr: '0.1018',
   ukrw: '178.05',
-  umnt: '431.6259'
+  umnt: '431.6259',
 }
 
 const getGasPrices = (denom: string, isMainnet: boolean) =>
@@ -26,12 +26,12 @@ export const config = { headers: { 'Content-Type': 'application/json' } }
 export const calc = {
   gasPrice: (denom: string, isMainnet: boolean) => ({
     amount: getGasPrices(denom, isMainnet),
-    denom
+    denom,
   }),
   fee: (denom: string, gas: string, isMainnet: boolean): string =>
     ceil(times(gas, getGasPrices(denom, isMainnet))),
   gas: (denom: string, fee: string, isMainnet: boolean): string =>
-    floor(div(fee, getGasPrices(denom, isMainnet)))
+    floor(div(fee, getGasPrices(denom, isMainnet))),
 }
 
 /* base */
@@ -49,7 +49,7 @@ export const getBase = async (from: string): Promise<Base> => {
     from,
     chain_id,
     account_number: String(account_number),
-    sequence: String(sequence)
+    sequence: String(sequence),
   }
 }
 

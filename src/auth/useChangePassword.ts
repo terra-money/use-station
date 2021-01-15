@@ -29,7 +29,7 @@ export default ({ name, test, changePassword }: Props): ChangePassword => {
 
   const validate = ({ current, password, confirm }: Values) => ({
     current: v.password(current),
-    ...validateConfirm({ password, confirm }, t)
+    ...validateConfirm({ password, confirm }, t),
   })
 
   const form = useForm<Values>(initial, validate)
@@ -42,7 +42,7 @@ export default ({ name, test, changePassword }: Props): ChangePassword => {
       {
         element: 'input',
         label: t('Auth:SignUp:Wallet name'),
-        attrs: { id: 'name', value: name, readOnly: true }
+        attrs: { id: 'name', value: name, readOnly: true },
       },
       {
         ...getDefaultProps('current'),
@@ -51,13 +51,13 @@ export default ({ name, test, changePassword }: Props): ChangePassword => {
           ...getDefaultAttrs('current'),
           type: 'password',
           placeholder: t('Auth:Form:Must be at least 10 characters'),
-          autoFocus: true
+          autoFocus: true,
         },
-        setValue: value => {
+        setValue: (value) => {
           setIncorrect(false)
           setValue('current', value)
         },
-        error: incorrect ? t('Auth:Form:Incorrect password') : undefined
+        error: incorrect ? t('Auth:Form:Incorrect password') : undefined,
       },
       {
         ...getDefaultProps('password'),
@@ -65,8 +65,8 @@ export default ({ name, test, changePassword }: Props): ChangePassword => {
         attrs: {
           ...getDefaultAttrs('password'),
           type: 'password',
-          placeholder: t('Auth:Form:Must be at least 10 characters')
-        }
+          placeholder: t('Auth:Form:Must be at least 10 characters'),
+        },
       },
       {
         ...getDefaultProps('confirm'),
@@ -74,9 +74,9 @@ export default ({ name, test, changePassword }: Props): ChangePassword => {
         attrs: {
           ...getDefaultAttrs('confirm'),
           type: 'password',
-          placeholder: t('Auth:SignUp:Confirm your password')
-        }
-      }
+          placeholder: t('Auth:SignUp:Confirm your password'),
+        },
+      },
     ],
     disabled: invalid,
     submitLabel: t('Auth:Manage:Change password'),
@@ -84,6 +84,6 @@ export default ({ name, test, changePassword }: Props): ChangePassword => {
       test({ name, password: current })
         ? changePassword({ current, password })
         : setIncorrect(true)
-    }
+    },
   }
 }

@@ -21,7 +21,7 @@ export default (address: string): PostPage<QueryResult> => {
     address: '',
     json: !is.json(json)
       ? t('Common:Validate:{{label}} is invalid', { label: 'JSON' })
-      : ''
+      : '',
   })
   const initial = { address, json: '' }
   const form = useForm<Values>(initial, validate)
@@ -46,14 +46,14 @@ export default (address: string): PostPage<QueryResult> => {
     {
       ...getDefaultProps('address'),
       label: t('Post:Contracts:Contract address'),
-      attrs: { ...getDefaultAttrs('address'), readOnly: true }
+      attrs: { ...getDefaultAttrs('address'), readOnly: true },
     },
     {
       ...getDefaultProps('json'),
       element: 'textarea',
       label: t('Post:Contracts:QueryMsg JSON'),
-      attrs: getDefaultAttrs('json')
-    }
+      attrs: getDefaultAttrs('json'),
+    },
   ]
 
   const disabled = invalid
@@ -63,7 +63,7 @@ export default (address: string): PostPage<QueryResult> => {
     fields,
     disabled,
     submitLabel: t('Common:Form:Next'),
-    onSubmit: disabled ? undefined : () => submit()
+    onSubmit: disabled ? undefined : () => submit(),
   }
 
   return {
@@ -75,7 +75,7 @@ export default (address: string): PostPage<QueryResult> => {
       : {
           title: t('Post:Contracts:Query result'),
           label: t('Post:Contracts:JSON output'),
-          content: output
-        }
+          content: output,
+        },
   }
 }

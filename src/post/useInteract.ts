@@ -29,7 +29,7 @@ export default (
     address: '',
     json: !is.json(json)
       ? t('Common:Validate:{{label}} is invalid', { label: 'JSON' })
-      : ''
+      : '',
   })
   const initial = { address, json: '' }
   const form = useForm<Values>(initial, validate)
@@ -42,14 +42,14 @@ export default (
     {
       ...getDefaultProps('address'),
       label: t('Post:Contracts:Contract address'),
-      attrs: { ...getDefaultAttrs('address'), readOnly: true }
+      attrs: { ...getDefaultAttrs('address'), readOnly: true },
     },
     {
       ...getDefaultProps('json'),
       element: 'textarea',
       label: t('Post:Contracts:HandleMsg JSON'),
-      attrs: getDefaultAttrs('json')
-    }
+      attrs: getDefaultAttrs('json'),
+    },
   ]
 
   const disabled = invalid || coinsFields.invalid
@@ -59,7 +59,7 @@ export default (
     fields,
     disabled,
     submitLabel: t('Common:Form:Next'),
-    onSubmit: disabled ? undefined : () => setSubmitted(true)
+    onSubmit: disabled ? undefined : () => setSubmitted(true),
   }
 
   const getConfirm = (bank: BankData): ConfirmProps => ({
@@ -68,15 +68,15 @@ export default (
     contents: [],
     feeDenom: {
       defaultValue: 'uluna',
-      list: getFeeDenomList(bank.balance)
+      list: getFeeDenomList(bank.balance),
     },
     validate: (fee: Coin) => isFeeAvailable(fee, bank.balance),
     submitLabels: [
       t('Post:Contracts:Interact'),
-      t('Post:Contracts:Interacting...')
+      t('Post:Contracts:Interacting...'),
     ],
     message: t(`Post:Contracts:Interacted with {{address}}`, { address }),
-    cancel: () => setSubmitted(false)
+    cancel: () => setSubmitted(false),
   })
 
   return {
@@ -85,6 +85,6 @@ export default (
     submitted,
     form: formUI,
     confirm: bank && getConfirm(bank),
-    ui: coinsFields
+    ui: coinsFields,
   }
 }

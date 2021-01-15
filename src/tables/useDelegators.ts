@@ -25,30 +25,30 @@ export default (
         pagination: {
           totalCnt: Number(totalCnt),
           page: Number(page),
-          limit: Number(limit)
-        }
+          limit: Number(limit),
+        },
       },
       !delegators || !gt(totalCnt, 0)
         ? {
             card: {
-              content: t('Page:Staking:No delegators')
-            }
+              content: t('Page:Staking:No delegators'),
+            },
           }
         : {
             table: {
               headings: {
                 address: t('Common:Account:Address'),
                 display: t('Common:Tx:Amount'),
-                weight: t('Common:Weight')
+                weight: t('Common:Weight'),
               },
 
               contents: delegators.map(({ address, amount, weight }) => ({
                 link: getLink!({ q: 'account', v: address }),
                 address,
                 display: format.display({ amount, denom: 'uluna' }),
-                weight: percent(weight)
-              }))
-            }
+                weight: percent(weight),
+              })),
+            },
           }
     )
   }

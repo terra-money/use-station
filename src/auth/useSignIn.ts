@@ -28,13 +28,13 @@ export default ({ list, test }: Props): SignIn => {
       attrs: {
         id: 'name',
         name: 'name',
-        value: index
+        value: index,
       },
       options: list.map(({ name }, index) => ({
         value: String(index),
-        children: name
+        children: name,
       })),
-      setValue: setIndex
+      setValue: setIndex,
     },
     {
       label: t('Auth:Form:Password'),
@@ -46,14 +46,14 @@ export default ({ list, test }: Props): SignIn => {
         value: password,
         placeholder: t('Auth:Form:Must be at least 10 characters'),
         autoComplete: 'off',
-        autoFocus: true
+        autoFocus: true,
       },
-      setValue: value => {
+      setValue: (value) => {
         setIncorrect(false)
         setPassword(value)
       },
-      error: incorrect ? t('Auth:Form:Incorrect password') : undefined
-    }
+      error: incorrect ? t('Auth:Form:Incorrect password') : undefined,
+    },
   ]
 
   const onSubmit = () => {
@@ -66,11 +66,11 @@ export default ({ list, test }: Props): SignIn => {
       fields,
       disabled,
       submitLabel: t('Common:Form:Next'),
-      onSubmit: disabled ? undefined : onSubmit
+      onSubmit: disabled ? undefined : onSubmit,
     },
     manage: [
       t('Auth:Manage:Manage wallets'),
-      t('Auth:Manage:Change password or delete wallet')
-    ] as [string, string]
+      t('Auth:Manage:Change password or delete wallet'),
+    ] as [string, string],
   }
 }

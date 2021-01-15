@@ -18,14 +18,14 @@ export default (user: User, { from, amounts }: WithdrawProps): PostPage => {
       contents: [{ name: t('Common:Tx:Amount'), displays: amounts }],
       feeDenom: {
         defaultValue: 'uluna',
-        list: getFeeDenomList(bank.balance)
+        list: getFeeDenomList(bank.balance),
       },
-      validate: fee => isFeeAvailable(fee, bank.balance),
+      validate: (fee) => isFeeAvailable(fee, bank.balance),
       submitLabels: [
         t('Post:Staking:Withdraw'),
-        t('Post:Staking:Withdrawing...')
+        t('Post:Staking:Withdrawing...'),
       ],
-      message: t('Post:Staking:Withdrew to {{to}}', { to })
-    }
+      message: t('Post:Staking:Withdrew to {{to}}', { to }),
+    },
   }
 }

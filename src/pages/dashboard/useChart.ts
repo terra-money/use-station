@@ -39,7 +39,7 @@ export default (key: ChartKey): ChartCard => {
       additionalInfo.loading
     ),
     TaxRewards: getTaxRewards(t, currency.current!),
-    TotalAccounts: getTotalAccounts(t)
+    TotalAccounts: getTotalAccounts(t),
   }
 
   const chart = useChartCard(props[key])

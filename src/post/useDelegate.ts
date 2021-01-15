@@ -24,7 +24,7 @@ interface Props {
 enum TxType {
   D = 'Delegate',
   R = 'Redelegate',
-  U = 'Undelegate'
+  U = 'Undelegate',
 }
 
 const denom = 'uluna'
@@ -43,14 +43,14 @@ export default (
   const { data: staking, ...stakingResponse } = useFCD<StakingData>({ url })
   const { loading: stakingLoading, error: stakingError } = stakingResponse
   const sources = staking?.myDelegations?.filter(
-    d => d.validatorAddress !== validatorAddress
+    (d) => d.validatorAddress !== validatorAddress
   )
 
   const findDelegationFromSources = (address: string) =>
-    staking?.myDelegations?.find(d => d.validatorAddress === address)
+    staking?.myDelegations?.find((d) => d.validatorAddress === address)
 
   const findDelegationFromValidators = (address: string) =>
-    staking?.validators?.find(d => d.operatorAddress === address)
+    staking?.validators?.find((d) => d.operatorAddress === address)
 
   /* max */
   const getMax = (address: string): Coin => {
@@ -64,9 +64,9 @@ export default (
   /* form */
   const validate = ({ input, from }: Values) => ({
     input: v.input(input, {
-      max: toInput(getMax(isUndelegation ? validatorAddress : from).amount)
+      max: toInput(getMax(isUndelegation ? validatorAddress : from).amount),
     }),
-    from: ''
+    from: '',
   })
 
   /*
@@ -99,25 +99,25 @@ export default (
       ? {
           ...getDefaultProps('from'),
           label: t('Post:Staking:Source ({{length}})', {
-            length: sourceLength
+            length: sourceLength,
           }),
           element: (hasSources ? 'select' : 'input') as FieldElement,
           attrs: {
             ...getDefaultAttrs('from'),
-            readOnly: !hasSources
+            readOnly: !hasSources,
           },
           options: !hasSources
             ? undefined
             : [
                 {
                   value: address,
-                  children: `${t('Page:Bank:My wallet')} - ${address}`
+                  children: `${t('Page:Bank:My wallet')} - ${address}`,
                 },
                 ...sources!.map(({ validatorName, validatorAddress }) => ({
                   value: validatorAddress,
-                  children: `${validatorName} - ${validatorAddress}`
-                }))
-              ]
+                  children: `${validatorName} - ${validatorAddress}`,
+                })),
+              ],
         }
       : {
           label: t('Post:Staking:Undelegate from'),
@@ -125,8 +125,8 @@ export default (
           attrs: {
             id: 'to',
             defaultValue: validatorAddress,
-            readOnly: true
-          }
+            readOnly: true,
+          },
         },
     {
       ...getDefaultProps('input'),
@@ -141,16 +141,16 @@ export default (
             setValue(
               'input',
               toInput(getMax(isUndelegation ? validatorAddress : from).amount)
-            )
-        }
+            ),
+        },
       },
       attrs: {
         ...getDefaultAttrs('input'),
         placeholder: '0',
-        autoFocus: true
+        autoFocus: true,
       },
-      unit
-    }
+      unit,
+    },
   ].concat(
     !isUndelegation
       ? {
@@ -159,8 +159,8 @@ export default (
           attrs: {
             id: 'to',
             defaultValue: validatorAddress,
-            readOnly: true
-          }
+            readOnly: true,
+          },
         }
       : []
   )
@@ -171,7 +171,7 @@ export default (
     const contents = [{ name: t('Common:Tx:Amount'), displays: [display] }]
     const feeDenom = {
       defaultValue: denom,
-      list: getFeeDenomList(bank.balance)
+      list: getFeeDenomList(bank.balance),
     }
     const cancel = () => setSubmitted(false)
 
@@ -184,21 +184,21 @@ export default (
         payload: {
           delegator_address: from,
           validator_address: validatorAddress,
-          amount: { amount, denom }
+          amount: { amount, denom },
         },
         validate: (fee: Coin) =>
           isDelegatable({ amount, denom, fee }, bank.balance),
         submitLabels: [
           t('Post:Staking:Delegate'),
-          t('Post:Staking:Delegating...')
+          t('Post:Staking:Delegating...'),
         ],
         message: t('Post:Staking:Delegated {{coin}} to {{moniker}}', {
           coin,
-          moniker
+          moniker,
         }),
         warning: t(
           'Post:Staking:Remember to leave a small of tokens undelegated, as subsequent transactions (e.g. redelegation) require fees to be paid.'
-        )
+        ),
       },
       [TxType.R]: {
         contents,
@@ -209,20 +209,20 @@ export default (
           delegator_address: address,
           validator_src_address: from,
           validator_dst_address: validatorAddress,
-          amount: { amount, denom }
+          amount: { amount, denom },
         },
         validate: (fee: Coin) => isFeeAvailable(fee, bank.balance),
         submitLabels: [
           t('Post:Staking:Redelegate'),
-          t('Post:Staking:Redelegating...')
+          t('Post:Staking:Redelegating...'),
         ],
         message: t('Post:Staking:Redelegated {{coin}} to {{moniker}}', {
           coin,
-          moniker
+          moniker,
         }),
         warning: t(
           'Post:Staking:Redelegation to the same validator will be prohibited for 21 days. Please make sure you input the right amount of luna to delegate.'
-        )
+        ),
       },
       [TxType.U]: {
         contents,
@@ -232,21 +232,21 @@ export default (
         payload: {
           delegator_address: from,
           validator_address: validatorAddress,
-          amount: { amount, denom }
+          amount: { amount, denom },
         },
         validate: (fee: Coin) => isFeeAvailable(fee, bank.balance),
         submitLabels: [
           t('Post:Staking:Undelegate'),
-          t('Post:Staking:Undelegating...')
+          t('Post:Staking:Undelegating...'),
         ],
         message: t('Post:Staking:Undelegated {{coin}} from {{moniker}}', {
           coin,
-          moniker
+          moniker,
         }),
         warning: t(
           'Post:Staking:Undelegation takes 21 days to complete. You would not get rewards in the meantime.'
-        )
-      }
+        ),
+      },
     }[type]
   }
 
@@ -257,7 +257,7 @@ export default (
     disabled,
     title: t('Post:Staking:' + type),
     submitLabel: t('Common:Form:Next'),
-    onSubmit: disabled ? undefined : () => setSubmitted(true)
+    onSubmit: disabled ? undefined : () => setSubmitted(true),
   }
 
   return {
@@ -265,6 +265,6 @@ export default (
     loading: loading || stakingLoading,
     submitted,
     form: formUI,
-    confirm: bank && getConfirm(bank)
+    confirm: bank && getConfirm(bank),
   }
 }

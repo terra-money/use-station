@@ -22,20 +22,20 @@ import useFetchTax from './useFetchTax'
 enum RecipientNetwork {
   Terra = 'Terra',
   Ethereum = 'Ethereum',
-  BSC = 'Binance Smart Chain'
+  BSC = 'Binance Smart Chain',
 }
 
 const SHUTTLES: Dictionary<Record<RecipientNetwork, string>> = {
   mainnet: {
     [RecipientNetwork.Terra]: '',
     [RecipientNetwork.Ethereum]: 'terra13yxhrk08qvdf5zdc9ss5mwsg5sf7zva9xrgwgc',
-    [RecipientNetwork.BSC]: 'terra1g6llg3zed35nd3mh9zx6n64tfw3z67w2c48tn2'
+    [RecipientNetwork.BSC]: 'terra1g6llg3zed35nd3mh9zx6n64tfw3z67w2c48tn2',
   },
   testnet: {
     [RecipientNetwork.Terra]: '',
     [RecipientNetwork.Ethereum]: 'terra10a29fyas9768pw8mewdrar3kzr07jz8f3n73t3',
-    [RecipientNetwork.BSC]: 'terra1paav7jul3dzwzv78j0k59glmevttnkfgmgzv2r'
-  }
+    [RecipientNetwork.BSC]: 'terra1paav7jul3dzwzv78j0k59glmevttnkfgmgzv2r',
+  },
 }
 
 interface Values {
@@ -61,7 +61,7 @@ export default (user: User, denom: string): PostPage<RecentSentUI> => {
 
   const renderRecentItem = ({
     date,
-    values
+    values,
   }: RecentSentItem): RecentSentItemUI => {
     const { to, input, memo: $memo } = values
 
@@ -81,15 +81,16 @@ export default (user: User, denom: string): PostPage<RecentSentUI> => {
         { title: t('Post:Send:Send to'), content: recipient },
         { title: t('Post:Send:Network'), content: network },
         { title: t('Common:Tx:Amount'), content: `${input} ${unit}` },
-        { title: t('Common:Tx:Memo'), content: memo }
+        { title: t('Common:Tx:Memo'), content: memo },
       ].filter(({ content }) => content),
-      onClick: () => form.setValues({ ...values, to: recipient, network, memo })
+      onClick: () =>
+        form.setValues({ ...values, to: recipient, network, memo }),
     }
   }
 
   const renderRecent = ({
     totalCnt,
-    txs
+    txs,
   }: TxsData): RecentSentUI | undefined => {
     const recent = !gt(totalCnt, 0) ? undefined : findRecent(txs, denom)
 
@@ -97,7 +98,7 @@ export default (user: User, denom: string): PostPage<RecentSentUI> => {
       ? undefined
       : {
           title: t('Post:Send:Recent transactions', { unit }),
-          contents: recent.map(renderRecentItem)
+          contents: recent.map(renderRecentItem),
         }
   }
 
@@ -116,7 +117,7 @@ export default (user: User, denom: string): PostPage<RecentSentUI> => {
         if (bank.balance.length === 1) {
           setMax({
             denom,
-            amount: minus(amount, calc.fee(denom, '100000', isMainnet))
+            amount: minus(amount, calc.fee(denom, '100000', isMainnet)),
           })
         } else {
           setMax({ denom, amount })
@@ -149,16 +150,16 @@ export default (user: User, denom: string): PostPage<RecentSentUI> => {
       v.includes(memo, '>'),
     network: !network
       ? t('Common:Validate:{{label}} is required', {
-          label: t('Post:Send:Network')
+          label: t('Post:Send:Network'),
         })
-      : ''
+      : '',
   })
 
   const initial = {
     to: '',
     input: '',
     memo: '',
-    network: RecipientNetwork.Terra
+    network: RecipientNetwork.Terra,
   }
 
   const form = useForm<Values>(initial, validate)
@@ -174,11 +175,11 @@ export default (user: User, denom: string): PostPage<RecentSentUI> => {
   useEffect(() => {
     toEthereum &&
       network === RecipientNetwork.Terra &&
-      setValues(values => ({ ...values, network: RecipientNetwork.Ethereum }))
+      setValues((values) => ({ ...values, network: RecipientNetwork.Ethereum }))
 
     toTerra &&
       network !== RecipientNetwork.Terra &&
-      setValues(values => ({ ...values, network: RecipientNetwork.Terra }))
+      setValues((values) => ({ ...values, network: RecipientNetwork.Terra }))
   }, [toTerra, toEthereum, network, setValues])
 
   /* render */
@@ -189,14 +190,14 @@ export default (user: User, denom: string): PostPage<RecentSentUI> => {
       element: 'select',
       label: t('Post:Send:Network'),
       attrs: { ...getDefaultAttrs('network') },
-      options: Object.values(RecipientNetwork).map(value => {
+      options: Object.values(RecipientNetwork).map((value) => {
         const disabled = {
           [RecipientNetwork.Terra]: toEthereum,
           [RecipientNetwork.Ethereum]: toTerra,
-          [RecipientNetwork.BSC]: toTerra
+          [RecipientNetwork.BSC]: toTerra,
         }[value]
         return { value, children: value, disabled }
-      })
+      }),
     },
     {
       ...getDefaultProps('to'),
@@ -204,8 +205,8 @@ export default (user: User, denom: string): PostPage<RecentSentUI> => {
       attrs: {
         ...getDefaultAttrs('to'),
         placeholder: 'Terra address or Ethereum address',
-        autoFocus: true
-      }
+        autoFocus: true,
+      },
     },
     {
       ...getDefaultProps('input'),
@@ -213,13 +214,13 @@ export default (user: User, denom: string): PostPage<RecentSentUI> => {
       button: {
         label: t('Common:Account:Available'),
         display: format.display(max),
-        attrs: { onClick: () => setValue('input', toInput(max.amount)) }
+        attrs: { onClick: () => setValue('input', toInput(max.amount)) },
       },
       attrs: {
         ...getDefaultAttrs('input'),
-        placeholder: '0'
+        placeholder: '0',
       },
-      unit
+      unit,
     },
     {
       ...getDefaultProps('memo'),
@@ -227,9 +228,9 @@ export default (user: User, denom: string): PostPage<RecentSentUI> => {
       attrs: {
         ...getDefaultAttrs('memo'),
         placeholder: t('Post:Send:Input memo'),
-        hidden: toEthereum
-      }
-    }
+        hidden: toEthereum,
+      },
+    },
   ]
 
   const disabled = invalid
@@ -239,7 +240,7 @@ export default (user: User, denom: string): PostPage<RecentSentUI> => {
     fields,
     disabled,
     submitLabel: t('Common:Form:Next'),
-    onSubmit: disabled ? undefined : () => setSubmitted(true)
+    onSubmit: disabled ? undefined : () => setSubmitted(true),
   }
 
   const recipient = !toEthereum ? to : shuttle
@@ -249,16 +250,16 @@ export default (user: User, denom: string): PostPage<RecentSentUI> => {
     .concat([
       {
         name: t('Post:Send:Send to'),
-        text: to
+        text: to,
       },
       {
         name: t('Common:Tx:Amount'),
         displays: [
           is.nativeDenom(denom)
             ? format.display({ amount, denom })
-            : { value: input, unit: whitelist?.[denom].symbol ?? '' }
-        ]
-      }
+            : { value: input, unit: whitelist?.[denom].symbol ?? '' },
+        ],
+      },
     ])
     .concat(
       gt(tax.getCoin(amount).amount, 0)
@@ -278,7 +279,7 @@ export default (user: User, denom: string): PostPage<RecentSentUI> => {
     contents,
     feeDenom: {
       defaultValue: denom,
-      list: getFeeDenomList(bank.balance)
+      list: getFeeDenomList(bank.balance),
     },
     validate: (fee: Coin) =>
       is.nativeDenom(denom)
@@ -290,12 +291,12 @@ export default (user: User, denom: string): PostPage<RecentSentUI> => {
     submitLabels: [t('Post:Send:Send'), t('Post:Send:Sending...')],
     message: t('Post:Send:Sent {{coin}} to {{address}}', {
       coin: format.coin({ amount, denom }),
-      address: to
+      address: to,
     }),
     warning: t(
       'Post:Send:Please double check if the above transaction requires a memo'
     ),
-    cancel: () => setSubmitted(false)
+    cancel: () => setSubmitted(false),
   })
 
   return {
@@ -304,7 +305,7 @@ export default (user: User, denom: string): PostPage<RecentSentUI> => {
     submitted,
     form: formUI,
     confirm: bank && getConfirm(bank),
-    ui: txsResponse.data && renderRecent(txsResponse.data)
+    ui: txsResponse.data && renderRecent(txsResponse.data),
   }
 }
 
@@ -322,8 +323,8 @@ const findRecent = (txs: Tx[], denom: string): RecentSentItem[] | undefined => {
               ...acc,
               [to]: {
                 date: format.date(timestamp),
-                values: { to, input: toInput(coin.amount), memo }
-              }
+                values: { to, input: toInput(coin.amount), memo },
+              },
             }
           : acc
       },

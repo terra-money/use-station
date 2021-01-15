@@ -17,7 +17,7 @@ export default (initial?: string): CurrencyConfig => {
 
   const set = useCallback(
     (key: string) => {
-      const item = list?.find(item => item.key === key) ?? DefaultCurrency
+      const item = list?.find((item) => item.key === key) ?? DefaultCurrency
       setCurrent(item)
     },
     // eslint-disable-next-line
@@ -41,5 +41,5 @@ const useRateKRT = (): API<Rate[]> => {
 const convert = ({ denom, swaprate }: Rate): Currency => ({
   key: denom,
   value: format(denom),
-  krwRate: swaprate
+  krwRate: swaprate,
 })

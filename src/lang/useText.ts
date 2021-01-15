@@ -10,6 +10,6 @@ export default () => {
     WITH_AUTH: t('Auth:Common:Please connect with wallet or ledger to execute'),
     COPY: t('Common:Copy'),
     COPIED: t('Common:Copied'),
-    VIEW_ADDRESS: t('Page:Bank:Verify this address on your Ledger')
+    VIEW_ADDRESS: t('Page:Bank:Verify this address on your Ledger'),
   }
 }

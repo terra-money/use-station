@@ -16,7 +16,7 @@ export default (
   filterConfig: { type: { initial: CumulativeType.C } },
   cumulativeLabel: {
     [CumulativeType.C]: t('Page:Chart:Annualized'),
-    [CumulativeType.P]: t('Page:Chart:Daily')
+    [CumulativeType.P]: t('Page:Chart:Daily'),
   },
   getValue: (data, { type }) => {
     const results = loading ? [] : modifyData(data)
@@ -26,7 +26,7 @@ export default (
 
     return [
       percent(results.length ? results[results.length - 1][key] : 0),
-      unit
+      unit,
     ]
   },
   getChart: (data, { type }) => {
@@ -36,13 +36,13 @@ export default (
       data:
         results?.map(({ datetime, ...rest }) => ({
           t: new Date(datetime),
-          y: toNumber(times(rest[key], 100))
+          y: toNumber(times(rest[key], 100)),
         })) ?? [],
       tooltips:
         results?.map(({ datetime, ...rest }) => ({
           title: percent(rest[key]),
-          label: new Date(datetime).toUTCString()
-        })) ?? []
+          label: new Date(datetime).toUTCString(),
+        })) ?? [],
     }
-  }
+  },
 })

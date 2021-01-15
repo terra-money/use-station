@@ -4,7 +4,7 @@ const input = [
   { denom: 'uluna', available: '1' },
   { denom: 'ukrw', available: '2' },
   { denom: 'usdr', available: '3' },
-  { denom: 'uusd', available: '4' }
+  { denom: 'uusd', available: '4' },
 ]
 
 describe('find', () => {

@@ -20,7 +20,7 @@ export default (): Socket => {
   useEffect(() => {
     const channel = {
       height: socket?.subscribe('latestBlockHeight'),
-      status: socket?.subscribe('stationStatus')
+      status: socket?.subscribe('stationStatus'),
     }
 
     channel.height?.watch(setHeight)
@@ -38,7 +38,7 @@ export default (): Socket => {
   const block = height
     ? {
         formatted: `#${numeral(height).format()}`,
-        link: getLink!({ q: 'blocks', v: height! })
+        link: getLink!({ q: 'blocks', v: height! }),
       }
     : undefined
 
@@ -57,7 +57,7 @@ const getSocket = (options: ChainOptions) => {
   const option = {
     hostname,
     port: !port && secure ? 443 : Number(port),
-    secure
+    secure,
   }
 
   const socket = socketCluster.create(option)

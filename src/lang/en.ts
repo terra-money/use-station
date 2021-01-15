@@ -8,7 +8,7 @@ const mirror = (obj: Obj | Depth1): Obj =>
   Object.entries(obj).reduce(
     (acc, [key, value]) => ({
       ...acc,
-      [key]: typeof value === 'string' ? key : mirror(value)
+      [key]: typeof value === 'string' ? key : mirror(value),
     }),
     {}
   )

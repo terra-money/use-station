@@ -14,25 +14,25 @@ export default (link: string): SharePage => {
     {
       key: 'twitter',
       label: t('Page:Twitter'),
-      href: 'https://twitter.com/share?url=' + link
+      href: 'https://twitter.com/share?url=' + link,
     },
     {
       key: 'telegram',
       label: t('Page:Telegram'),
-      href: 'https://telegram.me/share/?url=' + link
+      href: 'https://telegram.me/share/?url=' + link,
     },
     {
       key: 'mail',
       label: t('Page:Mail'),
-      href: 'mailto:?subject=From Terra Station&body=' + link
-    }
+      href: 'mailto:?subject=From Terra Station&body=' + link,
+    },
   ]
 
   const field: Field = {
     label: t('Page:Copy link'),
     element: 'input',
     attrs: { type: 'text', id: 'link', defaultValue: link, readOnly: true },
-    copy: link
+    copy: link,
   }
 
   return { title: t('Page:Share'), list, field }

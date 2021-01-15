@@ -17,24 +17,24 @@ export const useVoteOptions = (
   return [
     {
       key: '',
-      label: `${t('Common:All')} (${total})`
+      label: `${t('Common:All')} (${total})`,
     },
     {
       key: 'Yes',
-      label: `${t('Page:Governance:Yes')} (${Yes})`
+      label: `${t('Page:Governance:Yes')} (${Yes})`,
     },
     {
       key: 'No',
-      label: `${t('Page:Governance:No')} (${No})`
+      label: `${t('Page:Governance:No')} (${No})`,
     },
     {
       key: 'NoWithVeto',
-      label: `${t('Page:Governance:NoWithVeto')} (${NoWithVeto})`
+      label: `${t('Page:Governance:NoWithVeto')} (${NoWithVeto})`,
     },
     {
       key: 'Abstain',
-      label: `${t('Page:Governance:Abstain')} (${Abstain})`
-    }
+      label: `${t('Page:Governance:Abstain')} (${Abstain})`,
+    },
   ]
 }
 
@@ -60,31 +60,31 @@ export default ({ id, option, page }: Params): VotesPage => {
         pagination: {
           totalCnt: Number(totalCnt),
           page: Number(page),
-          limit: Number(limit)
-        }
+          limit: Number(limit),
+        },
       },
       !gt(totalCnt, 0)
         ? {
             card: {
-              content: t('Page:Governance:No votes yet')
-            }
+              content: t('Page:Governance:No votes yet'),
+            },
           }
         : {
             table: {
               headings: {
                 voter: t('Page:Governance:Voter'),
                 answer: t('Page:Governance:Answer'),
-                hash: t('Common:Tx:Tx')
+                hash: t('Common:Tx:Tx'),
               },
               contents: votes.map(({ voter, answer, txhash }: VoteItem) => ({
                 voter: getVoter(voter, getLink),
                 answer: t('Page:Governance:' + answer),
                 hash: {
                   link: getLink?.({ q: 'tx', v: txhash }) ?? '',
-                  text: txhash
-                }
-              }))
-            }
+                  text: txhash,
+                },
+              })),
+            },
           }
     )
 

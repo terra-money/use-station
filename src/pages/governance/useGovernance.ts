@@ -19,7 +19,7 @@ export const useProposalStatus = (): {
     { key: 'Deposit', label: t('Page:Governance:Deposit') },
     { key: 'Voting', label: t('Page:Governance:Voting') },
     { key: 'Passed', label: t('Page:Governance:Passed') },
-    { key: 'Rejected', label: t('Page:Governance:Rejected') }
+    { key: 'Rejected', label: t('Page:Governance:Rejected') },
   ]
 }
 
@@ -44,8 +44,8 @@ export default ({ status }: { status: string }): GovernancePage => {
           proposer:
             proposer.moniker ??
             format.truncate(proposer.accountAddress, [5, 5]),
-          date: format.date(submitTime)
-        })
+          date: format.date(submitTime),
+        }),
       },
       status === 'Deposit' && {
         deposit: {
@@ -56,17 +56,17 @@ export default ({ status }: { status: string }): GovernancePage => {
           contents: [
             {
               title: t('Page:Governance:Deposit'),
-              content: percent(calcDepositRatio(deposit))
+              content: percent(calcDepositRatio(deposit)),
             },
             {
               title: t('Page:Governance:Ends in'),
-              content: format.date(deposit.depositEndTime)
-            }
-          ]
-        }
+              content: format.date(deposit.depositEndTime),
+            },
+          ],
+        },
       },
       proposal.status === 'Voting' && {
-        vote: vote && renderVote(vote)
+        vote: vote && renderVote(vote),
       }
     )
   }
@@ -80,14 +80,14 @@ export default ({ status }: { status: string }): GovernancePage => {
           mostVoted
             ? {
                 title: t('Page:Governance:Most voted on'),
-                content: `${mostVoted.label} (${percent(mostVoted.ratio)})`
+                content: `${mostVoted.label} (${percent(mostVoted.ratio)})`,
               }
             : []
         )
         .concat({
           title: t('Page:Governance:Ends in'),
-          content: format.date(votingEndTime)
-        })
+          content: format.date(votingEndTime),
+        }),
     }
   }
 
@@ -97,16 +97,16 @@ export default ({ status }: { status: string }): GovernancePage => {
     const params: GovernanceParamUI[] = [
       {
         title: t('Page:Governance:Voting period'),
-        content: t('Page:Chart:{{d}} days', { d: formatNS(votingPeriod) })
+        content: t('Page:Chart:{{d}} days', { d: formatNS(votingPeriod) }),
       },
       {
         title: t('Page:Governance:Minimum deposit'),
-        displays: minDeposit.map(coin => format.display(coin))
+        displays: minDeposit.map((coin) => format.display(coin)),
       },
       {
         title: t('Page:Governance:Maximum deposit period'),
-        content: t('Page:Chart:{{d}} days', { d: formatNS(maxDepositPeriod) })
-      }
+        content: t('Page:Chart:{{d}} days', { d: formatNS(maxDepositPeriod) }),
+      },
     ]
 
     return Object.assign(

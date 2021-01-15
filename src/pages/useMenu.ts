@@ -13,6 +13,6 @@ export default (): Dictionary<string> => {
     Swap: t('Page:Menu:Swap'),
     Governance: t('Page:Menu:Governance'),
     Proposal: t('Page:Menu:Proposal details'),
-    Contracts: t('Page:Menu:Contracts')
+    Contracts: t('Page:Menu:Contracts'),
   }
 }

@@ -24,14 +24,14 @@ export default (
         pagination: {
           totalCnt: Number(totalCnt),
           page: Number(page),
-          limit: Number(limit)
-        }
+          limit: Number(limit),
+        },
       },
       !events || !gt(totalCnt, 0)
         ? {
             card: {
-              content: t('Page:Staking:No events')
-            }
+              content: t('Page:Staking:No events'),
+            },
           }
         : {
             table: {
@@ -39,7 +39,7 @@ export default (
                 hash: t('Common:Tx:Tx Hash'),
                 type: t('Common:Type'),
                 change: t('Common:Change'),
-                date: t('Common:Time')
+                date: t('Common:Time'),
               },
 
               contents: events.map(({ txhash, type, amount, timestamp }) => ({
@@ -47,9 +47,9 @@ export default (
                 hash: format.truncate(txhash, [6, 6]),
                 type: t('Post:Staking:' + type),
                 display: format.display(amount),
-                date: format.date(timestamp)
-              }))
-            }
+                date: format.date(timestamp),
+              })),
+            },
           }
     )
   }

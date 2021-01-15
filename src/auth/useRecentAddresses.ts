@@ -9,9 +9,9 @@ export default (recentAddresses: string[]): RecentAddresses => {
   return {
     title: t('Auth:Manage:Recent addresses'),
     deleteAll: t('Auth:Manage:Delete all'),
-    buttons: recentAddresses.map(address => ({
+    buttons: recentAddresses.map((address) => ({
       onClick: () => signIn({ address }),
-      children: address
-    }))
+      children: address,
+    })),
   }
 }

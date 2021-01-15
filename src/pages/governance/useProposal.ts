@@ -37,14 +37,14 @@ export default (id: string, user?: User): ProposalPage => {
       details: [
         { title: `${t('Page:Governance:Proposal')} ID`, content: id },
         { title: t('Common:Type'), content: t('Post:Governance:' + type) },
-        ...content.map(c => ({
+        ...content.map((c) => ({
           title: capitalize(t('Page:Governance:' + c.key)),
-          content: stringify(c)
+          content: stringify(c),
         })),
         {
           title: t('Page:Governance:Submit time'),
-          content: format.date(submitTime)
-        }
+          content: format.date(submitTime),
+        },
       ],
       deposit: renderDeposit(deposit),
       vote:
@@ -52,7 +52,7 @@ export default (id: string, user?: User): ProposalPage => {
       tallying:
         status === 'Voting' && tallyingParameters
           ? renderTallying(tallyingParameters)
-          : undefined
+          : undefined,
     }
   }
 
@@ -64,17 +64,17 @@ export default (id: string, user?: User): ProposalPage => {
       {
         title: t('Page:Governance:Total'),
         displays: totalDeposit.length
-          ? totalDeposit.map(c => format.display(c))
-          : [format.display(defaultCoin)]
+          ? totalDeposit.map((c) => format.display(c))
+          : [format.display(defaultCoin)],
       },
       {
         title: t('Page:Governance:Minimum deposit'),
-        displays: minDeposit.map(c => format.display(c))
+        displays: minDeposit.map((c) => format.display(c)),
       },
       {
         title: t('Page:Governance:Deposit end time'),
-        content: format.date(depositEndTime)
-      }
+        content: format.date(depositEndTime),
+      },
     ]
 
     return {
@@ -86,10 +86,10 @@ export default (id: string, user?: User): ProposalPage => {
       percent: percent(calcDepositRatio(deposit)),
       total: [
         contents[0]['title'],
-        format.coin(totalDeposit[0] ?? defaultCoin, { integer: true })
+        format.coin(totalDeposit[0] ?? defaultCoin, { integer: true }),
       ].join(' '),
       contents,
-      depositing: DateTime.fromISO(deposit.depositEndTime) > DateTime.local()
+      depositing: DateTime.fromISO(deposit.depositEndTime) > DateTime.local(),
     }
   }
 
@@ -108,18 +108,18 @@ export default (id: string, user?: User): ProposalPage => {
       count,
       total: {
         title: t('Page:Governance:Total'),
-        display: format.display({ amount: total, denom: 'uluna' })
+        display: format.display({ amount: total, denom: 'uluna' }),
       },
       end: {
         title: t('Page:Governance:Voting end time'),
-        date: format.date(votingEndTime)
+        date: format.date(votingEndTime),
       },
       voted: [
         `${t('Page:Governance:Percent voting')}: ${percent(ratio)}`,
         t('Page:Governance:{{n}} of {{d}} has voted', {
           n: format0a(total),
-          d: format0a(stakedLuna)
-        })
+          d: format0a(stakedLuna),
+        }),
       ],
       voting,
       progress:
@@ -134,19 +134,19 @@ export default (id: string, user?: User): ProposalPage => {
             list: validatorsNotVoted.map(
               ({ operatorAddress, description: { moniker } }) => ({
                 operatorAddress,
-                moniker
+                moniker,
               })
             ),
-            button: t('Page:Governance:Request to vote')
+            button: t('Page:Governance:Request to vote'),
           }
-        : undefined
+        : undefined,
     }
   }
 
   const renderProgress = ({
     list,
     ratio,
-    params: { threshold, quorum }
+    params: { threshold, quorum },
   }: {
     list: VoteOption[]
     ratio: string
@@ -168,10 +168,10 @@ export default (id: string, user?: User): ProposalPage => {
 
     return {
       flag: showFlag ? { percent: left, text } : undefined,
-      list: list.map(item => ({
+      list: list.map((item) => ({
         percent: percent(times(ratio, item.ratio)),
-        color: item.color
-      }))
+        color: item.color,
+      })),
     }
   }
 
@@ -183,17 +183,17 @@ export default (id: string, user?: User): ProposalPage => {
       contents: [
         {
           title: t('Page:Governance:Quorum'),
-          content: percent(quorum)
+          content: percent(quorum),
         },
         {
           title: t('Page:Governance:Pass threshold'),
-          content: percent(threshold)
+          content: percent(threshold),
         },
         {
           title: t('Page:Governance:Veto threshold'),
-          content: percent(veto)
-        }
-      ]
+          content: percent(veto),
+        },
+      ],
     }
   }
 
@@ -213,8 +213,6 @@ const stringify = ({ key, value }: ProposalDetail): string =>
     : value
 
 const format0a = (s: string) =>
-  numeral(format.amountN(s))
-    .format('0a')
-    .toUpperCase()
+  numeral(format.amountN(s)).format('0a').toUpperCase()
 
 const capitalize = (s: string) => s.charAt(0).toUpperCase() + s.slice(1)

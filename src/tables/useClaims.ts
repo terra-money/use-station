@@ -20,14 +20,16 @@ export default (address: string, { page }: { page?: number }): ClaimsPage => {
         pagination: {
           totalCnt: Number(totalCnt),
           page: Number(page),
-          limit: Number(limit)
-        }
+          limit: Number(limit),
+        },
       },
       !claims || !gt(totalCnt, 0)
         ? {
             card: {
-              content: t('Page:Staking:This validator has no claim history yet')
-            }
+              content: t(
+                'Page:Staking:This validator has no claim history yet'
+              ),
+            },
           }
         : {
             table: {
@@ -35,17 +37,17 @@ export default (address: string, { page }: { page?: number }): ClaimsPage => {
                 hash: t('Common:Tx:Tx Hash'),
                 type: t('Common:Type'),
                 displays: t('Common:Tx:Amount'),
-                date: t('Common:Time')
+                date: t('Common:Time'),
               },
 
               contents: claims.map(({ txhash, type, amounts, timestamp }) => ({
                 link: getLink!({ q: 'tx', v: txhash }),
                 hash: format.truncate(txhash, [6, 6]),
                 type: t('Page:Staking:' + type),
-                displays: amounts?.map(coin => format.display(coin)) ?? [],
-                date: format.date(timestamp)
-              }))
-            }
+                displays: amounts?.map((coin) => format.display(coin)) ?? [],
+                date: format.date(timestamp),
+              })),
+            },
           }
     )
 

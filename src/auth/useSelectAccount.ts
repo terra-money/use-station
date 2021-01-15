@@ -14,7 +14,7 @@ export default ({ accounts, signUp }: SignUpNext): SelectAccount => {
       const badges: [string, (Vesting | Delegation | Unbonding)[]][] = [
         [t('Auth:SignUp:Vested'), bank.vesting],
         [t('Auth:SignUp:Delegated'), bank.delegations],
-        [t('Auth:SignUp:Undelegated'), bank.unbondings]
+        [t('Auth:SignUp:Undelegated'), bank.unbondings],
       ]
 
       return {
@@ -24,7 +24,7 @@ export default ({ accounts, signUp }: SignUpNext): SelectAccount => {
           type: 'radio',
           name: 'account',
           id: address,
-          checked: selected === bip
+          checked: selected === bip,
         },
         setValue: () => setSelected(bip),
         ui: {
@@ -36,8 +36,8 @@ export default ({ accounts, signUp }: SignUpNext): SelectAccount => {
             ? bank.balance.map(({ available, denom }) =>
                 format.coin({ amount: available, denom })
               )
-            : t('Auth:SignUp:No balance')
-        }
+            : t('Auth:SignUp:No balance'),
+        },
       }
     }
   )
@@ -56,17 +56,17 @@ export default ({ accounts, signUp }: SignUpNext): SelectAccount => {
     fields,
     disabled,
     submitLabel: t('Common:Form:Confirm'),
-    onSubmit: disabled ? undefined : onSubmit
+    onSubmit: disabled ? undefined : onSubmit,
   }
 
   const card = {
     title: t('Auth:SignUp:Wallet recovered successfully!'),
     content: t('Auth:SignUp:Welcome back to Terra Station.'),
-    button: t('Auth:SignUp:Explore the Terra Network')
+    button: t('Auth:SignUp:Explore the Terra Network'),
   }
 
   return {
     form: !accounts ? undefined : form,
-    result: !submitted ? undefined : card
+    result: !submitted ? undefined : card,
   }
 }

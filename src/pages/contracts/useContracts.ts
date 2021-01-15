@@ -26,28 +26,28 @@ export default (params: Params): ContractsPage => {
         pagination: {
           totalCnt: Number(totalCnt),
           page: Number(page),
-          limit: Number(limit)
-        }
+          limit: Number(limit),
+        },
       },
       !gt(totalCnt, 0)
         ? {
             card: {
               title: t('Page:Contracts:No contracts'),
-              content: t('Page:Contracts:No contracts yet')
-            }
+              content: t('Page:Contracts:No contracts yet'),
+            },
           }
         : {
             search: { placeholder: t('Page:Contracts:Search') },
-            list: contracts.map(contract =>
+            list: contracts.map((contract) =>
               renderContract(contract, getLink, t)
-            )
+            ),
           }
     )
 
   return Object.assign(
     {
       create: { attrs: { children: t('Page:Contracts:Create') } },
-      upload: { attrs: { children: t('Page:Contracts:Upload') } }
+      upload: { attrs: { children: t('Page:Contracts:Upload') } },
     },
     response,
     response.data && { ui: render(response.data) }

@@ -26,7 +26,7 @@ export default (user: User): PostPage => {
     wasm: !wasm ? 'No wasm' : '',
     name: '',
     desc: '',
-    repo: ''
+    repo: '',
   })
 
   const initial = { wasm: '', name: '', desc: '', repo: '' }
@@ -41,25 +41,25 @@ export default (user: User): PostPage => {
       label: t('Post:Contracts:File'),
       attrs: {
         ...getDefaultAttrs('wasm'),
-        placeholder: t('Post:Contracts:Choose a file')
+        placeholder: t('Post:Contracts:Choose a file'),
       },
-      ui: { size: t('Post:Contracts:Size') }
+      ui: { size: t('Post:Contracts:Size') },
     },
     {
       ...getDefaultProps('name'),
       label: t('Post:Contracts:Name'),
-      attrs: getDefaultAttrs('name')
+      attrs: getDefaultAttrs('name'),
     },
     {
       ...getDefaultProps('desc'),
       label: t('Post:Contracts:Description'),
-      attrs: getDefaultAttrs('desc')
+      attrs: getDefaultAttrs('desc'),
     },
     {
       ...getDefaultProps('repo'),
       label: t('Post:Contracts:Repo URL'),
-      attrs: getDefaultAttrs('repo')
-    }
+      attrs: getDefaultAttrs('repo'),
+    },
   ]
 
   const disabled = invalid
@@ -69,7 +69,7 @@ export default (user: User): PostPage => {
     fields,
     disabled,
     submitLabel: t('Common:Form:Next'),
-    onSubmit: disabled ? undefined : () => setSubmitted(true)
+    onSubmit: disabled ? undefined : () => setSubmitted(true),
   }
 
   const getConfirm = (bank: BankData): ConfirmProps => ({
@@ -79,15 +79,15 @@ export default (user: User): PostPage => {
     contents: [],
     feeDenom: {
       defaultValue: 'uluna',
-      list: getFeeDenomList(bank.balance)
+      list: getFeeDenomList(bank.balance),
     },
     validate: (fee: Coin) => isFeeAvailable(fee, bank.balance),
     submitLabels: [
       t('Post:Contracts:Upload'),
-      t('Post:Contracts:Uploading...')
+      t('Post:Contracts:Uploading...'),
     ],
     message: t('Post:Contracts:Uploaded code'),
-    cancel: () => setSubmitted(false)
+    cancel: () => setSubmitted(false),
   })
 
   return {
@@ -95,6 +95,6 @@ export default (user: User): PostPage => {
     loading,
     submitted,
     form: formUI,
-    confirm: bank && getConfirm(bank)
+    confirm: bank && getConfirm(bank),
   }
 }

@@ -6,7 +6,7 @@ export const Languages: { [key in LangKey]: { name: string } } = {
   en: { name: 'English' },
   zh: { name: 'Chinese' },
   fr: { name: 'French' },
-  ko: { name: 'Korean' }
+  ko: { name: 'Korean' },
 }
 
 export default (initial?: LangKey): LangConfig => {

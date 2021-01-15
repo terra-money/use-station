@@ -10,14 +10,14 @@ export default (): Download => {
       {
         key: 'mac',
         label: t('Auth:Download:For Mac'),
-        link: 'https://www.terra.dev/station/Terra%20Station-1.1.0.dmg'
+        link: 'https://www.terra.dev/station/Terra%20Station-1.1.0.dmg',
       },
       {
         key: 'win',
         label: t('Auth:Download:For Windows'),
         link:
-          'https://www.terra.dev/station/Terra%20Station%20Setup%201.1.0.exe'
-      }
-    ]
+          'https://www.terra.dev/station/Terra%20Station%20Setup%201.1.0.exe',
+      },
+    ],
   }
 }

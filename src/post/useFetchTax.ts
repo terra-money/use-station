@@ -34,12 +34,12 @@ const useFetchTax = (denom: string, t: TFunction) => {
   return {
     getCoin: (amount: string) => ({
       amount: ceil(min([times(amount, rate), cap])),
-      denom
+      denom,
     }),
     label: t('Post:Send:Tax ({{percent}}, Max {{max}})', {
       percent: percent(rate, 3),
-      max: format.coin({ amount: cap, denom })
-    })
+      max: format.coin({ amount: cap, denom }),
+    }),
   }
 }
 

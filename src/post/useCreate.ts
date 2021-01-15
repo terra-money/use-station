@@ -27,14 +27,14 @@ export default (user: User, denoms: string[]): PostPage<CoinFields> => {
   const validate = ({ code, json }: Values) => ({
     code: !code.length
       ? t('Common:Validate:{{label}} is required', {
-          label: t('Post:Contracts:Code')
+          label: t('Post:Contracts:Code'),
         })
       : '',
     json: !is.json(json)
       ? t('Common:Validate:{{label}} is invalid', { label: 'JSON' })
       : '',
     name: '',
-    desc: ''
+    desc: '',
   })
   const initial = { code: '', json: '', name: '', desc: '' }
   const form = useForm<Values>(initial, validate)
@@ -48,24 +48,24 @@ export default (user: User, denoms: string[]): PostPage<CoinFields> => {
     {
       ...getDefaultProps('code'),
       label: t('Post:Contracts:Code'),
-      attrs: getDefaultAttrs('code')
+      attrs: getDefaultAttrs('code'),
     },
     {
       ...getDefaultProps('json'),
       element: 'textarea',
       label: t('Post:Contracts:InitMsg JSON'),
-      attrs: getDefaultAttrs('json')
+      attrs: getDefaultAttrs('json'),
     },
     {
       ...getDefaultProps('name'),
       label: t('Post:Contracts:Name'),
-      attrs: getDefaultAttrs('name')
+      attrs: getDefaultAttrs('name'),
     },
     {
       ...getDefaultProps('desc'),
       label: t('Post:Contracts:Description'),
-      attrs: getDefaultAttrs('desc')
-    }
+      attrs: getDefaultAttrs('desc'),
+    },
   ]
 
   const disabled = invalid || coinsFields.invalid
@@ -75,25 +75,25 @@ export default (user: User, denoms: string[]): PostPage<CoinFields> => {
     fields,
     disabled,
     submitLabel: t('Common:Form:Next'),
-    onSubmit: disabled ? undefined : () => setSubmitted(true)
+    onSubmit: disabled ? undefined : () => setSubmitted(true),
   }
 
   const getConfirm = (bank: BankData): ConfirmProps => ({
     url: `/wasm/codes/${code}`,
     payload: {
       init_coins: coinsFields.coins,
-      init_msg: format.sanitizeJSON(json)
+      init_msg: format.sanitizeJSON(json),
     },
     memo: stringify({ name, description }),
     contents: [],
     feeDenom: {
       defaultValue: 'uluna',
-      list: getFeeDenomList(bank.balance)
+      list: getFeeDenomList(bank.balance),
     },
     validate: (fee: Coin) => isFeeAvailable(fee, bank.balance),
     submitLabels: [t('Post:Contracts:Create'), t('Post:Contracts:Creating...')],
     message: t('Post:Contracts:Created contract'),
-    cancel: () => setSubmitted(false)
+    cancel: () => setSubmitted(false),
   })
 
   return {
@@ -102,6 +102,6 @@ export default (user: User, denoms: string[]): PostPage<CoinFields> => {
     submitted,
     form: formUI,
     confirm: bank && getConfirm(bank),
-    ui: coinsFields
+    ui: coinsFields,
   }
 }

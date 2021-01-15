@@ -14,11 +14,11 @@ export default (denoms: string[]): RatePage => {
     denom: {
       value: denom,
       set: setDenom,
-      options: denoms.map(denom => ({
+      options: denoms.map((denom) => ({
         value: denom,
-        children: format.denom(denom)
-      }))
-    }
+        children: format.denom(denom),
+      })),
+    },
   }
 
   /* api */
@@ -38,14 +38,14 @@ export default (denoms: string[]): RatePage => {
               variation: {
                 amount: format.decimalN(variation.oneDayVariation),
                 value: format.decimal(variation.oneDayVariation),
-                percent: percent(variation.oneDayVariationRate)
+                percent: percent(variation.oneDayVariationRate),
               },
               display: {
                 value: format.decimal(swaprate),
-                unit: format.denom(denom)
-              }
+                unit: format.denom(denom),
+              },
             })
-          )
+          ),
         }
       : { message }
 

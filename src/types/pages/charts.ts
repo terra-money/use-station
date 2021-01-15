@@ -8,12 +8,12 @@ export type ChartKey =
 
 export enum CumulativeType {
   C = 'cumulative',
-  P = 'periodic'
+  P = 'periodic',
 }
 
 export enum AccountType {
   A = 'active',
-  T = 'total'
+  T = 'total',
 }
 
 export interface ChartCard {

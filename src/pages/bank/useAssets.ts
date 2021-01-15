@@ -27,13 +27,13 @@ export default (user: User, config?: Config): AssetsPage => {
       !balance.length && !tokenList.length && !vesting.length
         ? {
             title: t('Page:Bank:Wallet empty'),
-            content: t("Page:Bank:This wallet doesn't hold any coins yet")
+            content: t("Page:Bank:This wallet doesn't hold any coins yet"),
           }
         : !balance.length && !vesting.length
         ? {
             title: t('Page:Bank:Wallet empty'),
             content:
-              'This wallet does not hold any native tokens, so the transaction could not be processed.'
+              'This wallet does not hold any native tokens, so the transaction could not be processed.',
           }
         : undefined,
     available: !balance.length
@@ -44,14 +44,14 @@ export default (user: User, config?: Config): AssetsPage => {
             .filter(({ available }) => !hideSmall || gte(available, SMALL))
             .map(({ available, denom }) => ({
               denom,
-              display: format.display({ amount: available, denom })
+              display: format.display({ amount: available, denom }),
             })),
           hideSmall: {
             label: t('Page:Bank:Hide small balances'),
             checked: hideSmall,
-            toggle: () => setHideSmall(v => !v)
+            toggle: () => setHideSmall((v) => !v),
           },
-          send: t('Post:Send:Send')
+          send: t('Post:Send:Send'),
         },
     tokens: !tokenList?.filter(({ balance }) => gt(balance, 0)).length
       ? undefined
@@ -62,14 +62,14 @@ export default (user: User, config?: Config): AssetsPage => {
             .map(({ token, symbol, icon, balance }) => ({
               icon,
               token,
-              display: { value: format.amount(balance), unit: symbol }
+              display: { value: format.amount(balance), unit: symbol },
             })),
           hideSmall: {
             label: t('Page:Bank:Hide small balances'),
             checked: hideSmallTokens,
-            toggle: () => setHideSmallTokens(v => !v)
+            toggle: () => setHideSmallTokens((v) => !v),
           },
-          send: t('Post:Send:Send')
+          send: t('Post:Send:Send'),
         },
     vesting: !vesting.length
       ? undefined
@@ -80,9 +80,9 @@ export default (user: User, config?: Config): AssetsPage => {
           ),
           list: vesting.map(({ total, denom, schedules }) => ({
             display: format.display({ amount: total, denom }),
-            schedule: schedules.map(item => getSchedule(item, denom))
-          }))
-        }
+            schedule: schedules.map((item) => getSchedule(item, denom)),
+          })),
+        },
   })
 
   const getSchedule = (schedule: Schedule, denom: string) => {
@@ -101,8 +101,8 @@ export default (user: User, config?: Config): AssetsPage => {
         : releasing
         ? t('Page:Bank:Releasing')
         : t('Page:Bank:Release on'),
-      duration: [startTime, endTime].map(t => `${toISO(t)}`).join(' ~ '),
-      width: percent(freedRate, 0)
+      duration: [startTime, endTime].map((t) => `${toISO(t)}`).join(' ~ '),
+      width: percent(freedRate, 0),
     }
   }
 

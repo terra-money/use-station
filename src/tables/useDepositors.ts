@@ -24,8 +24,8 @@ export default (id: string, { page }: { page?: number }): DepositorsPage => {
         pagination: {
           totalCnt: Number(totalCnt),
           page: Number(page),
-          limit: Number(limit)
-        }
+          limit: Number(limit),
+        },
       },
       !deposits || !gt(totalCnt, 0)
         ? { card: { content: t('Page:Governance:No deposits yet') } }
@@ -34,18 +34,18 @@ export default (id: string, { page }: { page?: number }): DepositorsPage => {
               headings: {
                 depositor: t('Page:Governance:Depositor'),
                 displays: t('Common:Tx:Amount'),
-                hash: t('Common:Tx:Tx')
+                hash: t('Common:Tx:Tx'),
               },
 
               contents: deposits.map(({ txhash, deposit, depositor }) => ({
                 depositor: getVoter(depositor, getLink),
-                displays: deposit.map(coin => format.display(coin)),
+                displays: deposit.map((coin) => format.display(coin)),
                 hash: {
                   link: getLink?.({ q: 'tx', v: txhash }) ?? '',
-                  text: txhash
-                }
-              }))
-            }
+                  text: txhash,
+                },
+              })),
+            },
           }
     )
   }

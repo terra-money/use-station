@@ -23,8 +23,8 @@ export default (): DashboardPage => {
         title: t('Page:Swap:Luna price'),
         display: {
           value: format.decimal(price ?? 0),
-          unit: format.denom(denom)
-        }
+          unit: format.denom(denom),
+        },
       },
       taxRate: {
         title: t('Page:Dashboard:Tax rate'),
@@ -34,8 +34,8 @@ export default (): DashboardPage => {
             .filter(({ denom }) => denom === 'usdr')
             .map(formatTaxCap)
             .join(' / '),
-          interpolation: { escapeValue: false }
-        })
+          interpolation: { escapeValue: false },
+        }),
       },
       issuance: getSelector(t('Page:Dashboard:Issuance'), issuances),
       communityPool: getSelector(
@@ -49,10 +49,10 @@ export default (): DashboardPage => {
           staked: format.coin(
             { amount: stakingPool.bondedTokens, denom: 'uluna' },
             { integer: true }
-          )
+          ),
         }),
-        desc: t('Page:Dashboard:Staked Luna / Total Luna')
-      }
+        desc: t('Page:Dashboard:Staked Luna / Total Luna'),
+      },
     }
   }
 
@@ -75,10 +75,10 @@ const getSelector = (
   title,
   select: {
     defaultValue: 'Luna',
-    options: Object.keys(data).map(denom => {
+    options: Object.keys(data).map((denom) => {
       const label = format.denom(denom)
       return { value: label, children: label }
-    })
+    }),
   },
   displays: Object.entries(data).reduce(
     (acc, [denom, amount]) => ({
@@ -86,8 +86,8 @@ const getSelector = (
       [format.denom(denom)]: format.display(
         { denom, amount },
         { integer: true }
-      )
+      ),
     }),
     {}
-  )
+  ),
 })

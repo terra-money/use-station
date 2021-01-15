@@ -12,7 +12,7 @@ const intervals = [
   { interval: MINUTE * 15, label: '15m' },
   { interval: MINUTE * 30, label: '30m' },
   { interval: HOUR * 1, label: '1h' },
-  { interval: DAY * 1, label: '1d' }
+  { interval: DAY * 1, label: '1d' },
 ]
 
 export default (): PricePage => {
@@ -30,9 +30,9 @@ export default (): PricePage => {
       set: (value: string) => setIntervalIndex(Number(value)),
       options: intervals.map(({ label }, index) => ({
         value: String(index),
-        children: t('Page:Swap:' + label)
-      }))
-    }
+        children: t('Page:Swap:' + label),
+      })),
+    },
   }
 
   /* api */
@@ -54,11 +54,11 @@ export default (): PricePage => {
       variation: {
         amount: format.decimalN(rest.oneDayVariation),
         value: format.decimal(rest.oneDayVariation),
-        percent: percent(rest.oneDayVariationRate)
+        percent: percent(rest.oneDayVariationRate),
       },
       chart: prices.length
         ? { data: prices.map(getPoint) }
-        : { message: t('Page:Swap:Chart is not available') }
+        : { message: t('Page:Swap:Chart is not available') },
     }
   }
 
@@ -72,5 +72,5 @@ export default (): PricePage => {
 /* helper */
 const getPoint = ({ datetime, price }: Partial<Price>): Point => ({
   t: datetime ? new Date(datetime) : new Date(),
-  y: format.decimalN(String(price))
+  y: format.decimalN(String(price)),
 })

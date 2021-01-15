@@ -8,14 +8,14 @@ export default ({ address }: User): BankAPI => {
   const fixAvailable = (balance: Balance[]): Balance[] =>
     balance.map(({ available, ...rest }) => ({
       ...rest,
-      available: lt(available, 0) ? '0' : available
+      available: lt(available, 0) ? '0' : available,
     }))
 
   return Object.assign(
     {},
     rest,
     data && {
-      data: Object.assign({}, data, { balance: fixAvailable(data.balance) })
+      data: Object.assign({}, data, { balance: fixAvailable(data.balance) }),
     }
   )
 }

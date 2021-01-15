@@ -15,7 +15,7 @@ export const useTxTypes = (): { key: TxType; label: string }[] => {
     { key: 'staking', label: t('Page:Txs:Staking') },
     { key: 'market', label: t('Page:Txs:Swap') },
     { key: 'governance', label: t('Page:Txs:Governance') },
-    { key: 'contract', label: t('Page:Txs:Contract') }
+    { key: 'contract', label: t('Page:Txs:Contract') },
   ]
 }
 
@@ -38,8 +38,8 @@ export default (
         pagination: {
           totalCnt: Number(totalCnt),
           page: Number(page),
-          limit: Number(limit)
-        }
+          limit: Number(limit),
+        },
       },
       !gt(totalCnt, 0)
         ? {
@@ -47,8 +47,8 @@ export default (
               title: t('Page:Txs:No transaction history'),
               content: t(
                 "Page:Txs:Looks like you haven't made any transaction yet"
-              )
-            }
+              ),
+            },
           }
         : {
             list: txs.map(({ chainId, txhash, timestamp, msgs, ...tx }) => {
@@ -60,18 +60,18 @@ export default (
                 messages: msgs.map(({ tag, text }) => ({
                   tag: t('Page:Txs:' + tag),
                   text,
-                  success
+                  success,
                 })),
                 details: [
                   {
                     title: t('Common:Tx:Tx fee'),
-                    content: txFee?.map(coin => format.coin(coin)).join(', ')
+                    content: txFee?.map((coin) => format.coin(coin)).join(', '),
                   },
                   { title: t('Common:Tx:Memo'), content: memo },
-                  { title: t('Common:Tx:Log'), content: errorMessage }
-                ].filter(({ content }) => !!content)
+                  { title: t('Common:Tx:Log'), content: errorMessage },
+                ].filter(({ content }) => !!content),
               }
-            })
+            }),
           }
     )
 

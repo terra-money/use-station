@@ -18,23 +18,23 @@ export default (t: TFunction): Props<Result> => ({
   url: ({ account }) =>
     ({
       [AccountType.A]: '/v1/dashboard/active_accounts',
-      [AccountType.T]: '/v1/dashboard/registered_accounts'
+      [AccountType.T]: '/v1/dashboard/registered_accounts',
     }[account!]),
   filterConfig: {
     type: { initial: CumulativeType.C },
-    account: { initial: AccountType.T }
+    account: { initial: AccountType.T },
   },
   getValue: (_, __, total) => ({ value: format.decimal(total, 0), unit }),
-  getChart: results => ({
+  getChart: (results) => ({
     data:
       results?.map(({ datetime, value }) => ({
         t: new Date(datetime),
-        y: value
+        y: value,
       })) ?? [],
     tooltips:
       results?.map(({ datetime, value }) => ({
         title: format.decimal(String(value), 0),
-        label: new Date(datetime).toUTCString()
-      })) ?? []
-  })
+        label: new Date(datetime).toUTCString(),
+      })) ?? [],
+  }),
 })

@@ -20,7 +20,7 @@ export default (
   const { t } = useTranslation()
   const renderValidatorItem = useValidatorItem()
   const calcUndelegationTotal = (undelegations?: Undelegation[]) =>
-    undelegations?.length ? sum(undelegations.map(u => u.amount)) : '0'
+    undelegations?.length ? sum(undelegations.map((u) => u.amount)) : '0'
 
   /* api */
   const url = user ? `/v1/staking/${user.address}` : '/v1/staking'
@@ -39,7 +39,7 @@ export default (
     const getMyDelegationsTable = (title: string, sortKey: SortKey) => {
       const getChart = (d: StakingDelegation) => ({
         label: d.validatorName,
-        data: format.amountN(d[sortKey] ?? '0')
+        data: format.amountN(d[sortKey] ?? '0'),
       })
 
       const sorted = myDelegations?.sort(compareWith(sortKey)) ?? []
@@ -50,7 +50,7 @@ export default (
       const others = { label: 'Others', data: format.amountN(othersSum) }
 
       const calcSum = (): string => {
-        const src = sorted.map(d => d[sortKey] ?? '0').filter(isFinite)
+        const src = sorted.map((d) => d[sortKey] ?? '0').filter(isFinite)
         return src.length ? sum(src) : '0'
       }
 
@@ -63,19 +63,22 @@ export default (
               headings: {
                 name: t('Page:Staking:Validator'),
                 delegated: `${t('Page:Staking:Delegated')} (Luna)`,
-                rewards: `${t('Page:Staking:Rewards')} (Luna)`
+                rewards: `${t('Page:Staking:Rewards')} (Luna)`,
               },
-              contents: sorted.map(d => ({
+              contents: sorted.map((d) => ({
                 address: d.validatorAddress,
                 name: d.validatorName,
                 delegated: format.display({ amount: d.amountDelegated, denom }),
-                rewards: format.display({ amount: d.totalReward ?? '0', denom })
-              }))
+                rewards: format.display({
+                  amount: d.totalReward ?? '0',
+                  denom,
+                }),
+              })),
             },
             chart:
               sorted.length <= 5
                 ? converted
-                : converted.slice(0, 4).concat(others)
+                : converted.slice(0, 4).concat(others),
           }
     }
 
@@ -83,17 +86,17 @@ export default (
       withdrawAll: {
         attrs: {
           children: t('Page:Staking:Withdraw all rewards'),
-          disabled: !(rewards && gte(rewards.total, 1))
+          disabled: !(rewards && gte(rewards.total, 1)),
         },
-        amounts: rewards?.denoms.map(coin => format.display(coin)) ?? []
+        amounts: rewards?.denoms.map((coin) => format.display(coin)) ?? [],
       },
       available: {
         title: t('Page:Staking:Available for delegation'),
-        display: format.display({ amount: availableLuna ?? '0', denom })
+        display: format.display({ amount: availableLuna ?? '0', denom }),
       },
       delegated: {
         title: t('Page:Staking:Delegated assets'),
-        display: format.display({ amount: delegationTotal ?? '0', denom })
+        display: format.display({ amount: delegationTotal ?? '0', denom }),
       },
       undelegated: {
         title: t('Page:Staking:Undelegated assets'),
@@ -104,14 +107,14 @@ export default (
               headings: {
                 name: t('Page:Staking:Validator'),
                 display: `${t('Common:Tx:Amount')} (Luna)`,
-                date: t('Page:Staking:Release time')
+                date: t('Page:Staking:Release time'),
               },
-              contents: undelegations.map(u => ({
+              contents: undelegations.map((u) => ({
                 name: u.validatorName,
                 display: format.display({ amount: u.amount, denom }),
-                date: format.date(u.releaseTime)
-              }))
-            }
+                date: format.date(u.releaseTime),
+              })),
+            },
       },
       rewards: {
         title: t('Page:Staking:Rewards'),
@@ -121,9 +124,9 @@ export default (
           : {
               headings: {
                 unit: t('Common:Coin'),
-                value: t('Common:Tx:Amount')
+                value: t('Common:Tx:Amount'),
               },
-              contents: rewards.denoms.map(r => format.display(r))
+              contents: rewards.denoms.map((r) => format.display(r)),
             },
         desc: {
           header: t(
@@ -135,54 +138,57 @@ export default (
             ),
             t('Page:Staking:Undelegation of assets'),
             t('Page:Staking:Redelegation of assets'),
-            t('Page:Staking:Mainnet upgrade')
+            t('Page:Staking:Mainnet upgrade'),
           ],
           footer: t(
             'Page:Staking:This won’t appear in your transaction history, but your rewards will be reflected in your balance.'
-          )
-        }
+          ),
+        },
       },
       myDelegations: getMyDelegationsTable(
         t('Page:Staking:Delegated'),
         'amountDelegated'
       ),
-      myRewards: getMyDelegationsTable(t('Page:Staking:Rewards'), 'totalReward')
+      myRewards: getMyDelegationsTable(
+        t('Page:Staking:Rewards'),
+        'totalReward'
+      ),
     }
   }
 
   /* validators */
   const headings: ValidatorListHeadings = {
     rank: {
-      title: t('Page:Staking:Rank')
+      title: t('Page:Staking:Rank'),
     },
     moniker: {
       title: t('Page:Staking:Moniker'),
-      sorter: { prop: 'description.moniker', isString: true }
+      sorter: { prop: 'description.moniker', isString: true },
     },
     votingPower: {
       title: t('Page:Staking:Voting power'),
-      sorter: { prop: 'votingPower.weight' }
+      sorter: { prop: 'votingPower.weight' },
     },
     selfDelegation: {
       title: t('Page:Staking:Self-delegation'),
-      sorter: { prop: 'selfDelegation.weight' }
+      sorter: { prop: 'selfDelegation.weight' },
     },
     commission: {
       title: t('Page:Staking:Validator commission'),
-      sorter: { prop: 'commissionInfo.rate' }
+      sorter: { prop: 'commissionInfo.rate' },
     },
     delegationReturn: {
       title: t('Page:Staking:Delegation return'),
-      sorter: { prop: 'stakingReturn' }
+      sorter: { prop: 'stakingReturn' },
     },
     uptime: {
       title: t('Page:Staking:Uptime'),
-      sorter: { prop: 'upTime' }
+      sorter: { prop: 'upTime' },
     },
     myDelegation: {
       title: t('Page:Staking:My delegations'),
-      sorter: { prop: 'myDelegation' }
-    }
+      sorter: { prop: 'myDelegation' },
+    },
   }
 
   const getInitialSorter = (by: string) => {
@@ -208,7 +214,7 @@ export default (
     const total = plus(delegationTotal, undelegationTotal)
 
     const sorted = validators
-      .filter(v => {
+      .filter((v) => {
         const delegated = v.myDelegation && gt(v.myDelegation, 0)
         const hidden =
           (v.status === 'jailed' && !delegated) || v.status === 'inactive'
@@ -233,7 +239,7 @@ export default (
         .filter(({ isNewValidator }) => !isNewValidator)
         .map((validator, index) =>
           renderValidatorItem(validator, { index, total })
-        )
+        ),
     ]
 
     return {
@@ -242,10 +248,10 @@ export default (
         set: (sorter, asc) => {
           setSorter(sorter)
           setAsc(asc)
-        }
+        },
       },
       headings,
-      contents: grouped
+      contents: grouped,
     }
   }
 

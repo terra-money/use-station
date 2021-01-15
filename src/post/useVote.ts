@@ -18,23 +18,23 @@ export default (
     {
       key: 'yes',
       label: t('Page:Governance:Yes'),
-      color: optionColors['Yes']
+      color: optionColors['Yes'],
     },
     {
       key: 'no',
       label: t('Page:Governance:No'),
-      color: optionColors['No']
+      color: optionColors['No'],
     },
     {
       key: 'no_with_veto',
       label: t('Page:Governance:No\nWithVeto'),
-      color: optionColors['NoWithVeto']
+      color: optionColors['NoWithVeto'],
     },
     {
       key: 'abstain',
       label: t('Page:Governance:Abstain'),
-      color: optionColors['Abstain']
-    }
+      color: optionColors['Abstain'],
+    },
   ]
 
   const [submitted, setSubmitted] = useState(false)
@@ -52,10 +52,10 @@ export default (
         type: 'radio',
         name: 'option',
         id: key,
-        checked: optionIndex === index
+        checked: optionIndex === index,
       },
       setValue: () => setOptionIndex(index),
-      ui: { color }
+      ui: { color },
     })
   )
 
@@ -66,7 +66,7 @@ export default (
     disabled,
     title: t('Post:Governance:Vote'),
     submitLabel: t('Common:Form:Next'),
-    onSubmit: disabled ? undefined : () => setSubmitted(true)
+    onSubmit: disabled ? undefined : () => setSubmitted(true),
   }
 
   const getConfirm = (
@@ -78,15 +78,15 @@ export default (
     contents: [{ name: t('Page:Governance:Answer'), text: label }],
     feeDenom: {
       defaultValue: 'uluna',
-      list: getFeeDenomList(bank.balance)
+      list: getFeeDenomList(bank.balance),
     },
     validate: (fee: Coin) => isFeeAvailable(fee, bank.balance),
     submitLabels: [t('Post:Governance:Vote'), t('Post:Governance:Voting...')],
     message: t('Post:Governance:Voted {{answer}} for {{title}}', {
       answer: label,
-      title
+      title,
     }),
-    cancel: () => setSubmitted(false)
+    cancel: () => setSubmitted(false),
   })
 
   return {
@@ -97,6 +97,6 @@ export default (
     confirm:
       bank && typeof optionIndex === 'number'
         ? getConfirm(bank, OptionsList[optionIndex])
-        : undefined
+        : undefined,
   }
 }

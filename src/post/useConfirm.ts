@@ -29,7 +29,7 @@ export default (
 
   const SUCCESS = {
     title: t('Post:Confirm:Success!'),
-    button: t('Common:Form:Ok')
+    button: t('Common:Form:Ok'),
   }
 
   const { chain } = useConfig()
@@ -44,8 +44,8 @@ export default (
   const getFeeDenom = (amount: string) => {
     const { defaultValue, list } = feeDenom
     const available: string[] = list
-      .filter(d => d !== denom) // People would prefer other denoms for paying fee
-      .filter(denom => validate({ amount, denom }))
+      .filter((d) => d !== denom) // People would prefer other denoms for paying fee
+      .filter((denom) => validate({ amount, denom }))
     return available.length === 0 ? defaultValue : available[0]
   }
 
@@ -158,13 +158,13 @@ export default (
       value: password,
       placeholder: t('Post:Confirm:Input your password to confirm'),
       autoComplete: 'off',
-      autoFocus: true
+      autoFocus: true,
     },
-    setValue: v => {
+    setValue: (v) => {
       setPasswordError(undefined)
       setPassword(v)
     },
-    error: passwordError
+    error: passwordError,
   }
 
   const disabled = !ready || !valid || !(!name || password)
@@ -180,16 +180,16 @@ export default (
       label: t('Common:Tx:Fee'),
       status: simulating ? t('Post:Confirm:Simulating...') : undefined,
       select: {
-        options: feeDenom.list.map(denom => ({
+        options: feeDenom.list.map((denom) => ({
           value: denom,
-          children: format.denom(denom)
+          children: format.denom(denom),
         })),
         attrs: { id: 'denom', value: denom, disabled: !ready },
-        setValue: (value: string) => setDenom(value)
+        setValue: (value: string) => setDenom(value),
       },
       input: {
         attrs: { id: 'input', value: input, disabled: !ready || !denom },
-        setValue: (value: string) => setInput(value)
+        setValue: (value: string) => setInput(value),
       },
       message:
         estimated && lt(fee.amount, estimated)
@@ -197,7 +197,7 @@ export default (
               'Post:Confirm:Recommended fee is {{fee}} or higher.\nTransactions with low fee might fail to proceed.',
               { fee: format.coin({ amount: estimated, denom: fee.denom }) }
             )
-          : undefined
+          : undefined,
     },
 
     form: {
@@ -219,21 +219,21 @@ export default (
         ? submitLabels[1]
         : submitLabels[0],
       onSubmit: disabled ? undefined : onSubmit,
-      submitting
+      submitting,
     },
 
     ledger: confirming
       ? {
           card: {
             title: t('Post:Confirm:Confirm with ledger'),
-            content: t('Post:Confirm:Please confirm in your\nLedger Wallet')
+            content: t('Post:Confirm:Please confirm in your\nLedger Wallet'),
           },
           retry: ledgerError
             ? {
                 attrs: { onClick: submit, children: t('Common:Form:Retry') },
-                message: ledgerError
+                message: ledgerError,
               }
-            : undefined
+            : undefined,
         }
       : undefined,
 
@@ -243,6 +243,6 @@ export default (
       ? { ...ERROR, content: errorMessage }
       : submitted
       ? { ...SUCCESS, content: message }
-      : undefined
+      : undefined,
   }
 }

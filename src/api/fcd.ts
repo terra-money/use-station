@@ -3,7 +3,7 @@ import axios from 'axios'
 const instance = axios.create()
 
 export const intercept = ({ height }: { height: string }) => {
-  instance.interceptors.request.use(config => {
+  instance.interceptors.request.use((config) => {
     const BLOCK_HEIGHT = 'block-height'
     const prev = config.headers[BLOCK_HEIGHT]
 

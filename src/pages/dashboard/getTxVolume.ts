@@ -17,10 +17,10 @@ export default (t: TFunction): Props<Result> => ({
   filterConfig: {
     type: { initial: CumulativeType.P },
     duration: { initial: 1, list: [0, 1, 7, 14, 30] },
-    denom: { initial: 'ukrw' }
+    denom: { initial: 'ukrw' },
   },
   getValue: (results, { type, denom, duration }) => {
-    const result = results.find(r => r.denom === denom)
+    const result = results.find((r) => r.denom === denom)
 
     const render = (result: Result) => {
       const { denom, data } = result
@@ -33,7 +33,7 @@ export default (t: TFunction): Props<Result> => ({
 
       const value = isCumulative
         ? minus(tail, head)
-        : sum(data.slice(1).map(d => d.txVolume))
+        : sum(data.slice(1).map((d) => d.txVolume))
 
       const lastDayValue = isCumulative ? minus(tail, secondTail) : tail
       const amount = duration !== 1 ? value : lastDayValue
@@ -44,12 +44,12 @@ export default (t: TFunction): Props<Result> => ({
     return result ? render(result) : undefined
   },
   getChart: (results, { denom }) => {
-    const result = results.find(r => r.denom === denom)
+    const result = results.find((r) => r.denom === denom)
     return {
       data:
         result?.data.map(({ datetime, txVolume }) => ({
           t: new Date(datetime),
-          y: format.amountN(txVolume)
+          y: format.amountN(txVolume),
         })) ?? [],
       tooltips:
         result?.data.map(({ datetime, txVolume }) => ({
@@ -57,8 +57,8 @@ export default (t: TFunction): Props<Result> => ({
             { amount: txVolume, denom: result.denom },
             { integer: true }
           ),
-          label: new Date(datetime).toUTCString()
-        })) ?? []
+          label: new Date(datetime).toUTCString(),
+        })) ?? [],
     }
-  }
+  },
 })

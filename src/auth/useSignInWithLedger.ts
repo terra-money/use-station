@@ -26,13 +26,13 @@ export default (getAddress: () => Promise<string>): ConfirmLedger => {
   return {
     card: {
       title: t('Auth:Menu:Select wallet'),
-      content: t('Auth:SignIn:Please plug in your\nLedger Wallet')
+      content: t('Auth:SignIn:Please plug in your\nLedger Wallet'),
     },
     retry: error
       ? {
           attrs: { onClick: request, children: t('Common:Form:Retry') },
-          message: error.message
+          message: error.message,
         }
-      : undefined
+      : undefined,
   }
 }

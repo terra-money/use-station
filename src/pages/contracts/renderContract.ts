@@ -10,17 +10,17 @@ export default (
   address: contract?.contract_address,
   link: getLink?.({
     q: 'account',
-    v: contract?.contract_address
+    v: contract?.contract_address,
   }),
   date: format.date(contract?.timestamp, { toLocale: true }),
   code: {
     label: t('Post:Contracts:Code'),
-    value: contract?.code.info.name
+    value: contract?.code.info.name,
   },
   contract: {
     label: t('Page:Contracts:Contract'),
-    value: contract?.info.name
+    value: contract?.info.name,
   },
   interact: t('Page:Contracts:Interact'),
-  query: t('Page:Contracts:Query')
+  query: t('Page:Contracts:Query'),
 })

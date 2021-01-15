@@ -51,7 +51,7 @@ export default (props: Props): SignUp => {
       : isNameExists(name)
       ? t('Common:Validate:{{label}} already exists', { label: ID })
       : '',
-    ...validateConfirm({ password, confirm }, t)
+    ...validateConfirm({ password, confirm }, t),
   })
 
   const form = useForm<Values>(initial, validate)
@@ -64,9 +64,9 @@ export default (props: Props): SignUp => {
       attrs: {
         ...getDefaultAttrs('name'),
         placeholder: t('Auth:SignUp:Enter 5-20 alphanumeric characters'),
-        autoFocus: true
+        autoFocus: true,
       },
-      setValue: value => setValue('name', sanitize.name(value))
+      setValue: (value) => setValue('name', sanitize.name(value)),
     },
     {
       ...getDefaultProps('password'),
@@ -74,8 +74,8 @@ export default (props: Props): SignUp => {
       attrs: {
         ...getDefaultAttrs('password'),
         type: 'password',
-        placeholder: t('Auth:Form:Must be at least 10 characters')
-      }
+        placeholder: t('Auth:Form:Must be at least 10 characters'),
+      },
     },
     {
       ...getDefaultProps('confirm'),
@@ -83,9 +83,9 @@ export default (props: Props): SignUp => {
       attrs: {
         ...getDefaultAttrs('confirm'),
         type: 'password',
-        placeholder: t('Auth:SignUp:Confirm your password')
-      }
-    }
+        placeholder: t('Auth:SignUp:Confirm your password'),
+      },
+    },
   ]
 
   const [step, setStep] = useState<SignUpStep>()
@@ -100,10 +100,10 @@ export default (props: Props): SignUp => {
     label: t('Auth:SignUp:Seed phrase'),
     element: 'textarea',
     attrs: { id: 'phrase', defaultValue: phrase, readOnly: true },
-    copy: phrase
+    copy: phrase,
   }
 
-  const invalidWord = seed.find(word => !wordlist.includes(word))
+  const invalidWord = seed.find((word) => !wordlist.includes(word))
 
   const mnemonics = {
     title: t('Auth:SignUp:Seed phrase'),
@@ -114,19 +114,19 @@ export default (props: Props): SignUp => {
         element: 'input' as const,
         attrs: { id: label, value: word, autoComplete: 'off' as const },
         setValue: (value: string) =>
-          setSeed(update(index, sanitize.word(value), seed))
+          setSeed(update(index, sanitize.word(value), seed)),
       }
     }),
     warning:
-      seed.every(word => word.length) && invalidWord
+      seed.every((word) => word.length) && invalidWord
         ? t('Auth:SignUp:{{word}} is an invalid word', { word: invalidWord })
         : undefined,
     paste: (clipboard: string, index: number = 0) =>
       setSeed(paste(index, toArray(clipboard), seed)),
     suggest: (input: string): string[] => {
-      const list = wordlist.filter(word => input && word.startsWith(input))
+      const list = wordlist.filter((word) => input && word.startsWith(input))
       return list.length === 1 && list.includes(input) ? [] : list
-    }
+    },
   }
 
   /* Select account */
@@ -145,7 +145,9 @@ export default (props: Props): SignUp => {
       const bipList: BipList = [118, 330]
       const addresses = await generateAddresses(phrase, bipList)
       const responses = await Promise.all(addresses.map(getPromise))
-      const is118empty = Object.values(responses[0].data).every(a => !a.length)
+      const is118empty = Object.values(responses[0].data).every(
+        (a) => !a.length
+      )
 
       const getAccount = ({ data }: { data: BankData }, i: number): Account => {
         return { bip: bipList[i], address: addresses[i], bank: data }
@@ -177,7 +179,7 @@ export default (props: Props): SignUp => {
     }
   }
 
-  const disabled = invalid || seed.some(word => !word.length) || loading
+  const disabled = invalid || seed.some((word) => !word.length) || loading
 
   return Object.assign(
     {
@@ -190,7 +192,7 @@ export default (props: Props): SignUp => {
         submitLabel: loading
           ? t('Common:Form:Loading...')
           : t('Common:Form:Next'),
-        onSubmit: disabled ? undefined : onSubmit
+        onSubmit: disabled ? undefined : onSubmit,
       },
       mnemonics,
       warning: {
@@ -198,16 +200,16 @@ export default (props: Props): SignUp => {
           t('Auth:SignUp:What if I lost my seed phrase?'),
           t(
             "Auth:SignUp:We cannot recover your information for you. If you lose your seed phrase it's GONE FOREVER. Terra Station does not store your mnemonic."
-          )
+          ),
         ] as [string, string],
         i18nKey:
-          'Auth:SignUp:I have securely <0>WRITTEN DOWN MY SEED</0>. I understand that lost seeds cannot be recovered.'
+          'Auth:SignUp:I have securely <0>WRITTEN DOWN MY SEED</0>. I understand that lost seeds cannot be recovered.',
       },
-      error
+      error,
     },
     step && {
       next: { step, seed, accounts, signUp },
-      reset: () => setStep(undefined)
+      reset: () => setStep(undefined),
     }
   )
 }
@@ -215,12 +217,8 @@ export default (props: Props): SignUp => {
 /* helpers */
 const sanitize = {
   name: (s: string = '') => s.toLowerCase().replace(/[^a-z\d-_]/g, ''),
-  word: (s: string = '') => s.toLowerCase().replace(/[^a-z]/g, '')
+  word: (s: string = '') => s.toLowerCase().replace(/[^a-z]/g, ''),
 }
 
 const toArray = (s: string) =>
-  s
-    .trim()
-    .replace(/\s\s+/g, ' ')
-    .split(' ')
-    .map(sanitize.word)
+  s.trim().replace(/\s\s+/g, ' ').split(' ').map(sanitize.word)

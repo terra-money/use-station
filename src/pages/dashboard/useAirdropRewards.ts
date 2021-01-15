@@ -23,7 +23,7 @@ const MILLISECONDS_IN_YEAR = 365 * 24 * 3600 * 1000
 /* Mantle */
 const client = new ApolloClient({
   uri: 'https://mantle.terra.dev',
-  cache: new InMemoryCache()
+  cache: new InMemoryCache(),
 })
 
 const LAST_SYNCED_HEIGHT = gql`
@@ -46,7 +46,7 @@ const useAirdropRewards = () => {
   useEffect(() => {
     const getLastHeight = async () => {
       const { data } = await client.query<{ LastSyncedHeight: number }>({
-        query: LAST_SYNCED_HEIGHT
+        query: LAST_SYNCED_HEIGHT,
       })
 
       return data.LastSyncedHeight
@@ -73,16 +73,16 @@ const useAirdropRewards = () => {
         const blocks = await getHeightArray()
         const baseURL = 'https://fcd.terra.dev'
         const responsesStakingPool = await Promise.all(
-          blocks.map(height =>
+          blocks.map((height) =>
             axios.get<{ result: { bonded_tokens: string } }>('/staking/pool', {
               baseURL,
-              params: { height }
+              params: { height },
             })
           )
         )
 
         const responsesBlocks = await Promise.all(
-          blocks.map(height =>
+          blocks.map((height) =>
             axios.get<{ block: { header: { time: string } } }>(
               `/blocks/${height}`,
               { baseURL }
@@ -102,8 +102,8 @@ const useAirdropRewards = () => {
             {
               height,
               bonded: responsesStakingPool[index].data.result.bonded_tokens,
-              date: new Date(responsesBlocks[index].data.block.header.time)
-            }
+              date: new Date(responsesBlocks[index].data.block.header.time),
+            },
           ],
           []
         )
@@ -115,7 +115,7 @@ const useAirdropRewards = () => {
 
         const blockInterval = getBlockInterval({
           from: prevLastDate,
-          to: lastDate
+          to: lastDate,
         })
 
         const nextDistDate = addMilliseconds(
@@ -135,14 +135,14 @@ const useAirdropRewards = () => {
                 bonded,
                 priceMIR,
                 priceLuna,
-                distributedMIR: !index ? MIR_AT_SNAPSHOT : MIR_EVERY_100K
+                distributedMIR: !index ? MIR_AT_SNAPSHOT : MIR_EVERY_100K,
               },
               {
                 from: date,
                 to:
                   index + 1 < length
                     ? bondedByDate[index + 1].date
-                    : nextDistDate
+                    : nextDistDate,
               }
             )
 

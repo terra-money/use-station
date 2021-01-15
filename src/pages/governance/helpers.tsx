@@ -8,7 +8,7 @@ export const optionColors: { [key: string]: string } = {
   Yes: '#6292ec',
   No: '#ce4a6f',
   NoWithVeto: '#f19f4d',
-  Abstain: '#a757f4'
+  Abstain: '#a757f4',
 }
 
 /** Get ratio of each answer and the most voted answers */
@@ -26,14 +26,14 @@ export const convertVote = (
     ratio: getRatio(dist[key]),
     amount: dist[key],
     display: format.display({ amount: dist[key], denom: 'uluna' }),
-    color: optionColors[key]
+    color: optionColors[key],
   })
 
   const list = [
     getItem('Yes'),
     getItem('No'),
     getItem('NoWithVeto'),
-    getItem('Abstain')
+    getItem('Abstain'),
   ]
 
   const sorted = sort(
@@ -58,10 +58,10 @@ export const getVoter = (
   return moniker
     ? {
         address: operatorAddress,
-        moniker: moniker
+        moniker: moniker,
       }
     : {
         address: accountAddress,
-        link: getLink?.({ q: 'account', v: accountAddress }) ?? ''
+        link: getLink?.({ q: 'account', v: accountAddress }) ?? '',
       }
 }

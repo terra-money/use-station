@@ -48,12 +48,12 @@ export default <T extends { denom?: string }>(props: Props): ChartCard => {
 
   const DefaultCumulativeLabel = {
     [CumulativeType.C]: t('Page:Chart:Cumulative'),
-    [CumulativeType.P]: t('Page:Chart:Periodic')
+    [CumulativeType.P]: t('Page:Chart:Periodic'),
   }
 
   const accountLabel = {
     [AccountType.A]: t('Page:Chart:Active'),
-    [AccountType.T]: t('Page:Chart:Total')
+    [AccountType.T]: t('Page:Chart:Total'),
   }
 
   const { url, filterConfig: config, getValue, getChart, ...rest } = props
@@ -93,10 +93,10 @@ export default <T extends { denom?: string }>(props: Props): ChartCard => {
       ? {
           value: type,
           set: setType,
-          options: [CumulativeType.C, CumulativeType.P].map(value => ({
+          options: [CumulativeType.C, CumulativeType.P].map((value) => ({
             value,
-            children: cumulativeLabel[value]
-          }))
+            children: cumulativeLabel[value],
+          })),
         }
       : undefined,
     denom:
@@ -106,40 +106,40 @@ export default <T extends { denom?: string }>(props: Props): ChartCard => {
             set: setDenom,
             options: results.map(({ denom }) => ({
               value: denom!,
-              children: format.denom(denom!)
-            }))
+              children: format.denom(denom!),
+            })),
           }
         : undefined,
     account: config?.account
       ? {
           value: account!,
           set: setAccount,
-          options: [AccountType.A, AccountType.T].map(value => ({
+          options: [AccountType.A, AccountType.T].map((value) => ({
             value,
-            children: accountLabel[value]
-          }))
+            children: accountLabel[value],
+          })),
         }
       : undefined,
     duration: {
       value: String(duration),
       set: (v: string) => setDuration(Number(v)),
-      options: (config?.duration?.list ?? [0, 7, 14, 30]).map(value => ({
+      options: (config?.duration?.list ?? [0, 7, 14, 30]).map((value) => ({
         value: String(value),
         children:
           value === 0
             ? t('Page:Chart:From genesis')
             : value === 1
             ? t('Page:Chart:Last day')
-            : t('Page:Chart:{{d}} days', { d: value })
-      }))
-    }
+            : t('Page:Chart:{{d}} days', { d: value }),
+      })),
+    },
   })
 
   return Object.assign(
     { ...rest, filter: renderFilter() },
     results && {
       value: getValue(results, filter, data && 'total' in data && data.total),
-      chart: getChart(results, filter)
+      chart: getChart(results, filter),
     }
   )
 }

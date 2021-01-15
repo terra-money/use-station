@@ -35,7 +35,7 @@ export default ({ seed, signUp }: Props): ConfirmSeed => {
   const disabled = values.some((value, index) => value !== seed[quiz[index]])
   const fields: Field[] = quiz.map((q, index) => {
     const label = t('Auth:SignUp:{{index}} word', {
-      index: i18n.language === 'en' ? numeral(q + 1).format('0o') : q + 1
+      index: i18n.language === 'en' ? numeral(q + 1).format('0o') : q + 1,
     })
 
     return {
@@ -47,9 +47,9 @@ export default ({ seed, signUp }: Props): ConfirmSeed => {
         value: values[index],
         placeholder: t('Auth:SignUp:Select or type'),
         autoComplete: 'off',
-        autoFocus: !index
+        autoFocus: !index,
       },
-      setValue: (value: string) => setValues(update(index, value, values))
+      setValue: (value: string) => setValues(update(index, value, values)),
     }
   })
 
@@ -65,13 +65,13 @@ export default ({ seed, signUp }: Props): ConfirmSeed => {
       fields,
       disabled,
       submitLabel: t('Auth:SignUp:Create a wallet'),
-      onSubmit: disabled ? undefined : onSubmit
+      onSubmit: disabled ? undefined : onSubmit,
     },
-    hint: hint.map(index => {
+    hint: hint.map((index) => {
       const word = seed[index]
       return {
         label: word,
-        onClick: index => setValues(update(index, word, values))
+        onClick: (index) => setValues(update(index, word, values)),
       }
     }),
     result: !submitted
@@ -79,7 +79,7 @@ export default ({ seed, signUp }: Props): ConfirmSeed => {
       : {
           title: t('Auth:SignUp:Wallet created!'),
           content: t('Auth:SignUp:Welcome abroad to Terra Station.'),
-          button: t('Auth:SignUp:Explore the Terra Network')
-        }
+          button: t('Auth:SignUp:Explore the Terra Network'),
+        },
   }
 }

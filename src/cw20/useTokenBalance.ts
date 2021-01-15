@@ -22,14 +22,14 @@ export default (
         try {
           const client = new ApolloClient({
             uri: mantle,
-            cache: new InMemoryCache()
+            cache: new InMemoryCache(),
           })
 
           const queries = alias(
             Object.values(whitelist).map(({ token }) => ({
               token,
               contract: token,
-              msg: { balance: { address } }
+              msg: { balance: { address } },
             }))
           )
 
@@ -52,8 +52,8 @@ export default (
       whitelist &&
       Object.entries(result).map(([token, balance]) => ({
         ...whitelist[token],
-        balance
-      }))
+        balance,
+      })),
   }
 }
 
@@ -61,7 +61,7 @@ const parseResult = (data: Dictionary<{ Result: string }>) =>
   Object.entries(data).reduce(
     (acc, [token, { Result }]) => ({
       ...acc,
-      [token]: JSON.parse(Result).balance
+      [token]: JSON.parse(Result).balance,
     }),
     {}
   )
