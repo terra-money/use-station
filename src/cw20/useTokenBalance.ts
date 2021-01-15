@@ -11,6 +11,7 @@ export default (
   address: string
 ): { loading: boolean; whitelist?: Tokens; list?: TokenBalance[] } => {
   const [result, setResult] = useState<Dictionary<string>>()
+  const [loading, setLoading] = useState(false)
   const { chain } = useConfig()
   const { name: currentChain } = chain.current
   const whitelist = (tokens as Dictionary<Tokens | undefined>)[currentChain]
@@ -19,6 +20,8 @@ export default (
   useEffect(() => {
     if (address && whitelist) {
       const load = async () => {
+        setLoading(true)
+
         try {
           const client = new ApolloClient({
             uri: mantle,
@@ -38,6 +41,8 @@ export default (
         } catch (error) {
           setResult({})
         }
+
+        setLoading(false)
       }
 
       load()
@@ -45,7 +50,7 @@ export default (
   }, [address, whitelist, mantle])
 
   return {
-    loading: !!whitelist && !result,
+    loading,
     whitelist,
     list:
       result &&

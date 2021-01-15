@@ -21,10 +21,10 @@ export default (user: User, config?: Config): AssetsPage => {
 
   const render = (
     { balance, vesting }: BankData,
-    tokenList: TokenBalance[]
+    tokenList?: TokenBalance[]
   ) => ({
     card:
-      !balance.length && !tokenList.length && !vesting.length
+      !balance.length && !tokenList?.length && !vesting.length
         ? {
             title: t('Page:Bank:Wallet empty'),
             content: t("Page:Bank:This wallet doesn't hold any coins yet"),
@@ -110,7 +110,7 @@ export default (user: User, config?: Config): AssetsPage => {
     {},
     bank,
     { loading: bank.loading || tokens.loading },
-    bank.data && tokens.list && { ui: render(bank.data, tokens.list) }
+    bank.data && { ui: render(bank.data, tokens.list) }
   )
 }
 
