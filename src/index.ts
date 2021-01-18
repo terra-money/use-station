@@ -6,18 +6,21 @@ import zh from './lang/zh.json'
 import fr from './lang/fr.json'
 import ko from './lang/ko.json'
 
-i18n
-  .use(LanguageDetector)
-  .use(initReactI18next)
-  .init({
-    resources: {
-      en: { translation: en },
-      zh: { translation: zh },
-      fr: { translation: fr },
-      ko: { translation: ko },
-    },
-    keySeparator: ':',
-  })
+try {
+  i18n.use(LanguageDetector)
+} catch {
+  // Don't Detect language except Browser environment
+}
+
+i18n.use(initReactI18next).init({
+  resources: {
+    en: { translation: en },
+    zh: { translation: zh },
+    fr: { translation: fr },
+    ko: { translation: ko }
+  },
+  keySeparator: ':'
+})
 
 /* types */
 export * from './types'
