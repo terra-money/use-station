@@ -10,7 +10,7 @@ export interface ConfirmProps {
   validate: (fee: Coin) => boolean
   submitLabels: string[]
   message: string
-  warning?: string
+  warning?: string | string[]
   cancel?: () => void
 }
 

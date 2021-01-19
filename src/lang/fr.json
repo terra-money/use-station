@@ -420,7 +420,8 @@
       "Send": "Envoyer",
       "Sending...": "En cours d'envoi...",
       "Sent {{coin}} to {{address}}": "Envoyé {{coin}} à {{address}}",
-      "Please double check if the above transaction requires a memo": "Veuillez vérifier si la transaction ci-dessus nécessite un mémo."
+      "Please double check if the above transaction requires a memo": "Veuillez vérifier si la transaction ci-dessus nécessite un mémo.",
+      "A fee of 1 UST or 0.1% of the transfer amount (whichever is greater) will be charged for transferring assets from Terra to Ethereum through Shuttle": "Un frais de 1 UST ou 0.1% du montant (selon le plus élevé) sera perçu pour les transferts depuis Terra à Ethereum à travers Shuttle."
     },
 
     "Staking": {

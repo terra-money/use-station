@@ -420,7 +420,8 @@
       "Send": "转出",
       "Sending...": "转出中...",
       "Sent {{coin}} to {{address}}": "发送{{coin}}到{{address}}",
-      "Please double check if the above transaction requires a memo": "如果转到交易所需要填写MEMO"
+      "Please double check if the above transaction requires a memo": "如果转到交易所需要填写MEMO",
+      "A fee of 1 UST or 0.1% of the transfer amount (whichever is greater) will be charged for transferring assets from Terra to Ethereum through Shuttle": "Shuttle收取1UST或成交金额的0.1%的費用, 收费以较高者为准。"
     },
 
     "Staking": {

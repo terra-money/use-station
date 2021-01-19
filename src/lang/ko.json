@@ -420,7 +420,8 @@
       "Send": "보내기",
       "Sending...": "보내는 중...",
       "Sent {{coin}} to {{address}}": "{{address}}에게 {{coin}}를 보냈습니다",
-      "Please double check if the above transaction requires a memo": "이 트랜잭션에 메모가 필요한지 한 번 더 체크해보세요"
+      "Please double check if the above transaction requires a memo": "이 트랜잭션에 메모가 필요한지 한 번 더 체크해보세요",
+      "A fee of 1 UST or 0.1% of the transfer amount (whichever is greater) will be charged for transferring assets from Terra to Ethereum through Shuttle": "셔틀을 통해 테라에서 이더리움으로 자산을 이전하는 경우 1 UST 또는 금액의 0.1% 중 큰 금액의 수수료가 부과됩니다."
     },
 
     "Staking": {
