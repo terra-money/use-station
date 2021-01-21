@@ -16,6 +16,9 @@ export const div = (a: BN.Value, b: BN.Value): string =>
 export const sum = (array: BN.Value[]): string =>
   BN.sum.apply(null, array.filter(isFinite)).toString()
 
+export const max = (array: BN.Value[]): string =>
+  BN.max.apply(null, array.filter(isFinite)).toString()
+
 export const min = (array: BN.Value[]): string =>
   BN.min.apply(null, array.filter(isFinite)).toString()
 

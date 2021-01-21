@@ -3,11 +3,12 @@ import { useTranslation } from 'react-i18next'
 import { Dictionary, last } from 'ramda'
 import { AccAddress } from '@terra-money/terra.js'
 import { ethers } from 'ethers'
-import { BankData, TxsData, Tx, RecentSentUI, RecentSentItemUI } from '../types'
+import { BankData, TxsData, Tx } from '../types'
+import { RecentSentUI, RecentSentItemUI, Rate } from '../types'
 import { PostPage, Coin, User, Field } from '../types'
 import { ConfirmContent, ConfirmProps } from '../types'
 import { is, format, find } from '../utils'
-import { gt, minus } from '../utils/math'
+import { div, gt, max as mathMax, minus, times } from '../utils/math'
 import { toAmount, toInput } from '../utils/format'
 import { useConfig } from '../contexts/ConfigContext'
 import useTokenBalance from '../cw20/useTokenBalance'
@@ -182,6 +183,11 @@ export default (user: User, denom: string): PostPage<RecentSentUI> => {
       setValues((values) => ({ ...values, network: RecipientNetwork.Terra }))
   }, [toTerra, toEthereum, network, setValues])
 
+  /* shuttle fee */
+  const rate = useRate(denom)
+  const shuttleFee = mathMax([times(amount, 0.001), div(1e6, rate)])
+  const amountAfterShuttleFee = mathMax([minus(amount, shuttleFee), String(0)])
+
   /* render */
   const unit = format.denom(denom)
   const fields: Field[] = [
@@ -261,6 +267,16 @@ export default (user: User, denom: string): PostPage<RecentSentUI> => {
         ],
       },
     ])
+    .concat(
+      toEthereum && is.nativeDenom(denom)
+        ? {
+            name: 'Amount after Shuttle fee',
+            displays: [
+              format.display({ amount: amountAfterShuttleFee, denom }),
+            ],
+          }
+        : []
+    )
     .concat(
       gt(tax.getCoin(amount).amount, 0)
         ? { name: tax.label, displays: [format.display(tax.getCoin(amount))] }
@@ -343,4 +359,11 @@ const findRecent = (txs: Tx[], denom: string): RecentSentItem[] | undefined => {
   } catch {
     return undefined
   }
+}
+
+const useRate = (denom: string) => {
+  const swapRateURL = `/v1/market/swaprate/${denom}`
+  const response = useFCD<Rate[]>({ url: swapRateURL }, !!denom)
+  const rate = find('uusd:swaprate', response.data) ?? '1'
+  return rate
 }
