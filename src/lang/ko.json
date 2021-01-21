@@ -240,6 +240,7 @@
     },
 
     "Txs": {
+      "Default": "기본",
       "Send": "보냄",
       "Receive": "받음",
       "Staking": "스테이킹",

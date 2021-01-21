@@ -240,6 +240,7 @@
     },
 
     "Txs": {
+      "Default": "Base",
       "Send": "Envoyer",
       "Receive": "Recevoir",
       "Staking": "Staking",

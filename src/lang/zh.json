@@ -240,6 +240,7 @@
     },
 
     "Txs": {
+      "Default": "基本",
       "Send": "转出",
       "Receive": "收到",
       "Staking": "权益质押",
