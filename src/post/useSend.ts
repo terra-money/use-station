@@ -297,10 +297,13 @@ export default (user: User, denom: string): PostPage<RecentSentUI> => {
       t(
         'Post:Send:Please double check if the above transaction requires a memo'
       ),
-      t(
-        'Post:Send:A fee of 1 UST or 0.1% of the transfer amount (whichever is greater) will be charged for transferring assets from Terra to Ethereum through Shuttle'
-      ),
-    ],
+    ].concat(
+      toEthereum
+        ? t(
+            'Post:Send:A fee of 1 UST or 0.1% of the transfer amount (whichever is greater) will be charged for transferring assets from Terra to Ethereum through Shuttle'
+          )
+        : []
+    ),
     cancel: () => setSubmitted(false),
   })
 
