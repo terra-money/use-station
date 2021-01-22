@@ -210,7 +210,7 @@ export default (user: User, denom: string): PostPage<RecentSentUI> => {
       label: t('Post:Send:Send to'),
       attrs: {
         ...getDefaultAttrs('to'),
-        placeholder: 'Terra address or Ethereum address',
+        placeholder: `${network} address`,
         autoFocus: true,
       },
     },
