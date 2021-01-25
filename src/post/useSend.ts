@@ -268,7 +268,7 @@ export default (user: User, denom: string): PostPage<RecentSentUI> => {
       },
     ])
     .concat(
-      toEthereum && is.nativeDenom(denom)
+      network === RecipientNetwork.Ethereum && is.nativeDenom(denom)
         ? {
             name: 'Amount after Shuttle fee',
             displays: [
