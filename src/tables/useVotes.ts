@@ -74,15 +74,10 @@ export default ({ id, option, page }: Params): VotesPage => {
               headings: {
                 voter: t('Page:Governance:Voter'),
                 answer: t('Page:Governance:Answer'),
-                hash: t('Common:Tx:Tx'),
               },
               contents: votes.map(({ voter, answer, txhash }: VoteItem) => ({
                 voter: getVoter(voter, getLink),
                 answer: t('Page:Governance:' + answer),
-                hash: {
-                  link: getLink?.({ q: 'tx', v: txhash }) ?? '',
-                  text: txhash,
-                },
               })),
             },
           }

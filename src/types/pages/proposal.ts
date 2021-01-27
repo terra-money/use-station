@@ -90,14 +90,13 @@ export type VotesPage = TablePage<VotesData, VotesTable>
 export type VotesUI = TableUI<VotesTable>
 
 export interface VotesTable {
-  headings: { voter: string; answer: string; hash: string }
+  headings: { voter: string; answer: string }
   contents: VoteContent[]
 }
 
 export interface VoteContent {
   voter: VoterUI
   answer: string
-  hash: Hash
 }
 
 /* data */
