@@ -34,16 +34,11 @@ export default (id: string, { page }: { page?: number }): DepositorsPage => {
               headings: {
                 depositor: t('Page:Governance:Depositor'),
                 displays: t('Common:Tx:Amount'),
-                hash: t('Common:Tx:Tx'),
               },
 
               contents: deposits.map(({ txhash, deposit, depositor }) => ({
                 depositor: getVoter(depositor, getLink),
                 displays: deposit.map((coin) => format.display(coin)),
-                hash: {
-                  link: getLink?.({ q: 'tx', v: txhash }) ?? '',
-                  text: txhash,
-                },
               })),
             },
           }

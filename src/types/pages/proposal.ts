@@ -1,5 +1,5 @@
 import { Dictionary } from 'ramda'
-import { API, Hash, ProposalItemData, DisplayCoin, VoteOption } from '..'
+import { API, ProposalItemData, DisplayCoin, VoteOption } from '..'
 import { Pagination, TablePage, TableUI, Coin, Article } from '..'
 import { ValidatorData } from '..'
 
@@ -75,14 +75,13 @@ export type DepositorsPage = TablePage<DepositorsData, DepositorsTable>
 export type DepositorsUI = TableUI<DepositorsTable>
 
 export interface DepositorsTable {
-  headings: { depositor: string; displays: string; hash: string }
+  headings: { depositor: string; displays: string }
   contents: DepositorContent[]
 }
 
 export interface DepositorContent {
   depositor: VoterUI
   displays: DisplayCoin[]
-  hash: Hash
 }
 
 /* Votes */
