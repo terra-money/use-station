@@ -271,7 +271,7 @@ export default (user: User, actives: string[]): PostPage<SwapUI> => {
       },
       options: ['Default', 'Terraswap'].map((value) => ({
         value,
-        children: value,
+        children: value === 'Default' ? 'On-chain' : value,
       })),
     },
   ]
