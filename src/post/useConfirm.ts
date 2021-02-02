@@ -7,8 +7,7 @@ import fcd from '../api/fcd'
 import { format } from '../utils'
 import { toInput, toAmount } from '../utils/format'
 import { times, lt } from '../utils/math'
-import { useConfig } from '../contexts/ConfigContext'
-import { getBase, config, calc } from './txHelpers'
+import { getBase, config, useCalcFee } from './txHelpers'
 import { checkError, parseError } from './txHelpers'
 
 interface SignParams {
@@ -32,9 +31,6 @@ export default (
     button: t('Common:Form:Ok'),
   }
 
-  const { chain } = useConfig()
-  const isMainnet = chain.current.name === 'mainnet'
-
   /* error */
   const defaultErrorMessage = t('Common:Error:Oops! Something went wrong')
   const [simulatedErrorMessage, setSimulatedErrorMessage] = useState<string>()
@@ -53,6 +49,7 @@ export default (
   const [denom, setDenom] = useState<string>(getFeeDenom('1'))
   const [estimated, setEstimated] = useState<string>()
   const fee = { amount: toAmount(input), denom }
+  const calc = useCalcFee(denom)
 
   /* simulate */
   const [simulating, setSimulating] = useState(true)
@@ -63,7 +60,7 @@ export default (
       simulate()
     },
     // eslint-disable-next-line
-    [denom]
+    [denom, calc]
   )
 
   const simulate = async () => {
@@ -81,11 +78,7 @@ export default (
 
       type Data = { gas_estimate: string }
       const { data } = await fcd.post<Data>(url, body, config)
-      const feeAmount = calc.fee(
-        denom,
-        times(data.gas_estimate, 1.5),
-        isMainnet
-      )
+      const feeAmount = calc.fee(times(data.gas_estimate, 1.5))
 
       // Set simulated fee
       setInput(toInput(feeAmount))
@@ -109,8 +102,8 @@ export default (
       setErrorMessage(undefined)
 
       // Post to fetch tx
-      const gas_prices = [calc.gasPrice(fee.denom, isMainnet)]
-      const gas = calc.gas(fee.denom, fee.amount, isMainnet)
+      const gas_prices = [calc.gasPrice]
+      const gas = calc.gas(fee.amount)
       const base = await getBase(address)
       const req = { simulate: false, gas, gas_prices, memo }
       const body = { base_req: { ...base, ...req }, ...payload }

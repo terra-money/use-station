@@ -17,7 +17,7 @@ import useBank from '../api/useBank'
 import useForm from '../hooks/useForm'
 import validateForm from './validateForm'
 import { isAvailable, getFeeDenomList, isFeeAvailable } from './validateConfirm'
-import { calc } from './txHelpers'
+import { useCalcFee } from './txHelpers'
 import useFetchTax from './useFetchTax'
 
 enum RecipientNetwork {
@@ -106,8 +106,8 @@ export default (user: User, denom: string): PostPage<RecentSentUI> => {
   /* tax */
   const [submitted, setSubmitted] = useState(false)
   const [max, setMax] = useState<Coin>({ denom, amount: '0' })
-  const isMainnet = chain.current.name === 'mainnet'
   const tax = useFetchTax(denom, t)
+  const calc = useCalcFee(denom)
 
   const calculateMax = async () => {
     if (bank) {
@@ -116,10 +116,7 @@ export default (user: User, denom: string): PostPage<RecentSentUI> => {
       if (denom === 'uluna') {
         // If luna is the only token available, we have to remove gas fee from luna
         if (bank.balance.length === 1) {
-          setMax({
-            denom,
-            amount: minus(amount, calc.fee(denom, '100000', isMainnet)),
-          })
+          setMax({ denom, amount: minus(amount, calc.fee('100000')) })
         } else {
           setMax({ denom, amount })
         }
@@ -139,7 +136,7 @@ export default (user: User, denom: string): PostPage<RecentSentUI> => {
       calculateMax()
     }
     // eslint-disable-next-line
-  }, [loading])
+  }, [loading, calc])
 
   /* form */
   const validate = ({ input, to, memo, network }: Values) => ({
