@@ -267,7 +267,7 @@ export default (user: User, actives: string[]): PostPage<SwapUI> => {
       element: 'select',
       attrs: {
         ...getDefaultAttrs('mode'),
-        hidden: ![from, to].includes('uluna'),
+        hidden: !pair,
       },
       options: ['Default', 'Terraswap'].map((value) => ({
         value,
