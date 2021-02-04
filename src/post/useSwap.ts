@@ -188,7 +188,8 @@ export default (user: User, actives: string[]): PostPage<SwapUI> => {
   }, [amount, from, to])
 
   useEffect(() => {
-    const isTerraswapBetter = gt(returnTerraswap, returnNative)
+    const isTerraswapBetter = pair && gt(returnTerraswap, returnNative)
+
     setValues((values) => ({
       ...values,
       mode: isTerraswapBetter ? 'Terraswap' : 'Default',
