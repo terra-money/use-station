@@ -225,7 +225,11 @@ export default (user: User, actives: string[]): PostPage<SwapUI> => {
     {
       label: '',
       ...getDefaultProps('input'),
-      attrs: { ...getDefaultAttrs('input'), placeholder: '0' },
+      attrs: {
+        ...getDefaultAttrs('input'),
+        type: 'numeric',
+        placeholder: '0',
+      },
       unit: format.denom(from),
     },
     {
