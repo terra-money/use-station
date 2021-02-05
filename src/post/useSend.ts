@@ -221,6 +221,7 @@ export default (user: User, denom: string): PostPage<RecentSentUI> => {
       },
       attrs: {
         ...getDefaultAttrs('input'),
+        type: 'numeric',
         placeholder: '0',
       },
       unit,

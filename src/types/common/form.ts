@@ -31,7 +31,7 @@ export interface Field<U = any> {
 }
 
 export interface FieldAttrs {
-  type?: 'text' | 'password' | 'checkbox' | 'radio' | 'file'
+  type?: 'text' | 'numeric' | 'password' | 'checkbox' | 'radio' | 'file'
 
   id: string
   name?: string
