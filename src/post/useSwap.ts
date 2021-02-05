@@ -58,12 +58,17 @@ export default (user: User, actives: string[]): PostPage<SwapUI> => {
   const { t } = useTranslation()
   const v = validateForm(t)
   const { chain } = useConfig()
-  const { data: bank, loading, error } = useBank(user)
+  const { data: bank, loading, error, execute: executeBank } = useBank(user)
   const cw20Tokens = useTokenBalance(user.address)
   const paramsResponse = useFCD<MarketData>({ url: '/market/parameters' })
   const oracleResponse = useFCD<OracleParamsData>({ url: '/oracle/parameters' })
   const { data: params, error: paramsError } = paramsResponse
   const { data: oracle } = oracleResponse
+
+  const load = async () => {
+    await executeBank()
+    await cw20Tokens.load()
+  }
 
   /* token options */
   const nativeTokensOptions = ['uluna', ...actives].map((denom) => ({
@@ -383,6 +388,7 @@ export default (user: User, actives: string[]): PostPage<SwapUI> => {
   return {
     ui,
     error: error || paramsError || errorNative,
+    load,
     loading,
     submitted,
     form: formUI,

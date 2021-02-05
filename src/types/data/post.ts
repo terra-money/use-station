@@ -9,6 +9,7 @@ export interface PostPage<UI = any> {
   confirm?: ConfirmProps
   card?: Card
   ui?: UI
+  load?: () => Promise<void>
 }
 
 export type PostResult = { raw_log?: string }
