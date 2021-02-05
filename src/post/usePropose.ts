@@ -255,7 +255,7 @@ export default (user: User): PostPage => {
       },
       attrs: {
         ...getDefaultAttrs('input'),
-        type: 'numeric',
+        type: 'number',
         placeholder: '0',
       },
       unit,
