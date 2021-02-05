@@ -28,7 +28,10 @@ const useFetchTax = (denom: string, t: TFunction) => {
     }
 
     const noTax = denom === 'uluna' || is.address(denom)
-    !noTax && denom && fetchCap()
+
+    if (denom) {
+      !noTax ? fetchCap() : setCap('0')
+    }
   }, [denom])
 
   return {
