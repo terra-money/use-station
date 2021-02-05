@@ -146,7 +146,7 @@ export default (
       },
       attrs: {
         ...getDefaultAttrs('input'),
-        type: 'numeric',
+        type: 'number',
         placeholder: '0',
         autoFocus: true,
       },
