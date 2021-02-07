@@ -12,7 +12,15 @@ export interface PostPage<UI = any> {
   load?: () => Promise<void>
 }
 
-export type PostResult = { raw_log?: string }
+interface TxLog {
+  events: TxEvent[]
+}
+
+interface TxEvent {
+  attributes: {key: string, value: string}[]
+}
+
+export type PostResult = { raw_log?: string; logs: TxLog[] }
 export type ParsedRaw = { success?: boolean; log?: string }[] | ParsedLog
 export type ParsedLog = { message?: string }
 export type ErrorResult = ParsedLog | { error?: string | ParsedRaw }

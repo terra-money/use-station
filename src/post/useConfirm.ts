@@ -20,7 +20,7 @@ export default (
   { url, payload, memo, submitLabels, message, ...rest }: ConfirmProps,
   { user, password: defaultPassword = '', sign }: SignParams
 ): ConfirmPage => {
-  const { contents, feeDenom, validate, warning } = rest
+  const { contents, feeDenom, validate, warning, parseResult } = rest
 
   const { t } = useTranslation()
   const { ERROR } = useInfo()
@@ -55,13 +55,10 @@ export default (
   const [simulating, setSimulating] = useState(true)
   const [simulated, setSimulated] = useState(false)
 
-  useEffect(
-    () => {
-      simulate()
-    },
+  useEffect(() => {
+    simulate()
     // eslint-disable-next-line
-    [denom, calc]
-  )
+  }, [denom, calc])
 
   const simulate = async () => {
     try {
@@ -94,6 +91,7 @@ export default (
   /* submit */
   const [submitting, setSubmitting] = useState(false)
   const [submitted, setSubmitted] = useState(false)
+  const [result, setResult] = useState<PostResult>()
 
   const submit = async () => {
     try {
@@ -116,6 +114,7 @@ export default (
       const txURL = '/v1/txs'
       const signedTx = await sign({ tx, base, password })
       const result = await fcd.post<PostResult>(txURL, signedTx, config)
+      setResult(result.data)
 
       // Catch error
       const errorMessage = checkError(result.data.raw_log)
@@ -235,7 +234,7 @@ export default (
       : errorMessage
       ? { ...ERROR, content: errorMessage }
       : submitted
-      ? { ...SUCCESS, content: message }
+      ? { ...SUCCESS, content: (result && parseResult?.(result)) ?? message }
       : undefined,
   }
 }

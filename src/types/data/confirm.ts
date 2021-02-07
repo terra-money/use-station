@@ -1,5 +1,6 @@
 import { FormUI, FieldAttrs, Options } from '..'
 import { Card, Coin, DisplayCoin, ConfirmLedger } from '..'
+import { PostResult } from './post'
 
 export interface ConfirmProps {
   url: string
@@ -10,6 +11,7 @@ export interface ConfirmProps {
   validate: (fee: Coin) => boolean
   submitLabels: string[]
   message: string
+  parseResult?: (result: PostResult) => string
   warning?: string | string[]
   cancel?: () => void
 }

@@ -5,7 +5,7 @@ import { TFunction } from 'i18next'
 import { AccAddress } from '@terra-money/terra.js'
 import { PostPage, SwapUI, ConfirmProps, BankData, Denom } from '../types'
 import { User, Coin, Token, Rate, Field, FormUI } from '../types'
-import { find, format, gt, times, percent, minus } from '../utils'
+import { find, format, gt, times, percent, minus, div } from '../utils'
 import { toInput, toAmount } from '../utils/format'
 import { useConfig } from '../contexts/ConfigContext'
 import useForm from '../hooks/useForm'
@@ -112,6 +112,11 @@ export default (user: User, actives: string[]): PostPage<SwapUI> => {
   const { from, to, input, mode } = values
   const amount = toAmount(input)
 
+  // price
+  const url = `/v1/market/swaprate/${from}`
+  const { data } = useFCD<Rate[]>({ url }, !!from)
+  const price = data?.find(({ denom }) => denom === to)?.swaprate
+
   // tax
   const tax = useFetchTax(from, t)
 
@@ -171,6 +176,9 @@ export default (user: User, actives: string[]): PostPage<SwapUI> => {
           const { swapped, rate } = await fetchSimulate(values)
           setPrincipalNative(times(amount, rate))
           setReturnNative(swapped)
+        } else {
+          setPrincipalNative('0')
+          setReturnNative('0')
         }
       } catch (error) {
         // ...
@@ -370,7 +378,9 @@ export default (user: User, actives: string[]): PostPage<SwapUI> => {
         name: t('Post:Swap:Receive'),
         displays: [
           format.display({
-            amount: { 'On-chain': returnNative, Terraswap: returnTerraswap }[mode],
+            amount: { 'On-chain': returnNative, Terraswap: returnTerraswap }[
+              mode
+            ],
             denom: to,
           }),
         ],
@@ -379,10 +389,31 @@ export default (user: User, actives: string[]): PostPage<SwapUI> => {
     validate: (fee: Coin) =>
       ismAsset || isAvailable({ amount, denom: from, fee }, bank.balance),
     submitLabels: [t('Post:Swap:Swap'), t('Post:Swap:Swapping...')],
-    message: t('Post:Swap:Swapped {{coin}} to {{unit}}', {
-      coin: format.coin({ amount, denom: from }),
-      unit: format.denom(to),
-    }),
+    message: '',
+    parseResult: ({ logs }) => {
+      const message = t('Post:Swap:Swapped {{coin}} to {{unit}}', {
+        coin: format.coin({ amount, denom: from }),
+        unit: format.denom(to),
+      })
+
+      const { attributes } = logs[0].events[1]
+
+      const { amount: paid } = splitTokenText(
+        attributes.find(({ key }) => key === 'offer' || key === 'offer_amount')
+          ?.value
+      )
+
+      const { amount: received } = splitTokenText(
+        attributes.find(
+          ({ key }) => key === 'swap_coin' || key === 'return_amount'
+        )?.value
+      )
+
+      const executed_price = div(received, paid)
+      const slippage = price ? minus(div(executed_price, price), 1) : ''
+
+      return slippage ? `${message} (Slippage: ${percent(slippage)})` : message
+    },
     warning: t(
       'Post:Swap:Final amount you receive in {{unit}} may vary due to the swap rate changes',
       { unit: format.denom(to) }
@@ -440,4 +471,9 @@ const getContent = (params: Params, t: TFunction) => {
   )}`
 
   return [minText, tobinText].join('\n')
+}
+
+export const splitTokenText = (string = '') => {
+  const [, amount, token] = string.split(/(\d+)(\w+)/)
+  return { amount, token }
 }
