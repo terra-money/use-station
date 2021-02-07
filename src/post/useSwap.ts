@@ -199,7 +199,7 @@ export default (user: User, actives: string[]): PostPage<SwapUI> => {
       ...values,
       mode: isTerraswapBetter ? 'Terraswap' : 'Default',
     }))
-  }, [returnTerraswap, returnNative, setValues])
+  }, [returnTerraswap, returnNative, setValues, pair])
 
   useEffect(() => {
     setValues((values) => ({ ...values, input: '', to: '' }))
