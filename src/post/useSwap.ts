@@ -19,7 +19,7 @@ import { getFeeDenomList, isAvailable } from './validateConfirm'
 import { getTerraswapURL, simulate as simulateTerraswap } from './terraswap'
 import useFetchTax from './useFetchTax'
 
-type Mode = 'Default' | 'Terraswap'
+type Mode = 'On-chain' | 'Terraswap'
 interface Values {
   from: string
   to: string
@@ -104,7 +104,7 @@ export default (user: User, actives: string[]): PostPage<SwapUI> => {
     mode: '',
   })
 
-  const initial = { from: '', to: '', input: '', mode: 'Default' as Mode }
+  const initial = { from: '', to: '', input: '', mode: 'On-chain' as Mode }
   const [submitted, setSubmitted] = useState(false)
   const form = useForm<Values>(initial, validate)
   const { values, setValue, setValues, invalid } = form
@@ -197,7 +197,7 @@ export default (user: User, actives: string[]): PostPage<SwapUI> => {
 
     setValues((values) => ({
       ...values,
-      mode: isTerraswapBetter ? 'Terraswap' : 'Default',
+      mode: isTerraswapBetter ? 'Terraswap' : 'On-chain',
     }))
   }, [returnTerraswap, returnNative, setValues, pair])
 
@@ -265,7 +265,7 @@ export default (user: User, actives: string[]): PostPage<SwapUI> => {
       attrs: {
         id: 'receive',
         value: {
-          Default: format.amount(returnNative),
+          'On-chain': format.amount(returnNative),
           Terraswap: format.amount(returnTerraswap),
         }[mode],
         readOnly: true,
@@ -279,9 +279,9 @@ export default (user: User, actives: string[]): PostPage<SwapUI> => {
         ...getDefaultAttrs('mode'),
         hidden: !pair,
       },
-      options: ['Default', 'Terraswap'].map((value) => ({
+      options: ['On-chain', 'Terraswap'].map((value) => ({
         value,
-        children: value === 'Default' ? 'On-chain' : value,
+        children: value,
       })),
     },
   ]
@@ -290,7 +290,7 @@ export default (user: User, actives: string[]): PostPage<SwapUI> => {
     invalid ||
     simulating ||
     !!errorNative ||
-    !(mode !== 'Default' || gt(returnNative, '0'))
+    !(mode !== 'On-chain' || gt(returnNative, '0'))
 
   const [firstActiveDenom] = actives
   const ui: SwapUI = {
@@ -306,7 +306,7 @@ export default (user: User, actives: string[]): PostPage<SwapUI> => {
       },
     },
     spread: {
-      Default: {
+      'On-chain': {
         title: t('Post:Swap:Spread'),
         text:
           params &&
@@ -344,11 +344,11 @@ export default (user: User, actives: string[]): PostPage<SwapUI> => {
 
   const getConfirm = (bank: BankData): ConfirmProps => ({
     url: {
-      Default: '/market/swap',
+      'On-chain': '/market/swap',
       Terraswap: terraswap?.url ?? '',
     }[mode],
     payload: {
-      Default: { ask_denom: to, offer_coin: { amount, denom: from } },
+      'On-chain': { ask_denom: to, offer_coin: { amount, denom: from } },
       Terraswap: terraswap?.payload,
     }[mode],
     contents: [
@@ -370,7 +370,7 @@ export default (user: User, actives: string[]): PostPage<SwapUI> => {
         name: t('Post:Swap:Receive'),
         displays: [
           format.display({
-            amount: { Default: returnNative, Terraswap: returnTerraswap }[mode],
+            amount: { 'On-chain': returnNative, Terraswap: returnTerraswap }[mode],
             denom: to,
           }),
         ],
