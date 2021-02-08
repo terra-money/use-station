@@ -3,6 +3,7 @@ import { DisplayCoin, Card, BankAPI } from '..'
 
 export interface AssetsPage extends BankAPI {
   ui?: AssetsUI
+  setHideSmall: (hide: boolean) => void
 }
 
 export interface AssetsUI {
