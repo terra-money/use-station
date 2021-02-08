@@ -107,7 +107,7 @@ export default (user: User, config?: Config): AssetsPage => {
   }
 
   return Object.assign(
-    {},
+    { setHideSmall },
     bank,
     { loading: bank.loading || tokens.loading },
     bank.data && { ui: render(bank.data, tokens.list) }
