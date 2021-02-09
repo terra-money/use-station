@@ -75,7 +75,7 @@ export default (
 
       type Data = { gas_estimate: string }
       const { data } = await fcd.post<Data>(url, body, config)
-      const feeAmount = calc.fee(times(data.gas_estimate, 1.5))
+      const feeAmount = calc.fee(times(data.gas_estimate, 1.75))
 
       // Set simulated fee
       setInput(toInput(feeAmount))
