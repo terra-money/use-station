@@ -6,7 +6,7 @@ import useInfo from '../lang/useInfo'
 import fcd from '../api/fcd'
 import { format } from '../utils'
 import { toInput, toAmount } from '../utils/format'
-import { times, lt } from '../utils/math'
+import { times, lt, gt } from '../utils/math'
 import { getBase, config, useCalcFee } from './txHelpers'
 import { checkError, parseError } from './txHelpers'
 
@@ -131,7 +131,7 @@ export default (
   }
 
   const ready = simulated && !submitting
-  const valid = validate(fee)
+  const valid = gt(fee.amount, 0) && validate(fee)
 
   /* ledger */
   const [confirming, setConfirming] = useState(false)
