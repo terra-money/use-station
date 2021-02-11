@@ -15,6 +15,7 @@ import useTokenBalance from '../cw20/useTokenBalance'
 import useFCD from '../api/useFCD'
 import useBank from '../api/useBank'
 import useForm from '../hooks/useForm'
+import useTerraAssets from '../hooks/useTerraAssets'
 import validateForm from './validateForm'
 import { isAvailable, getFeeDenomList, isFeeAvailable } from './validateConfirm'
 import { useCalcFee } from './txHelpers'
@@ -185,8 +186,13 @@ export default (user: User, denom: string): PostPage<RecentSentUI> => {
   const shuttleFee = mathMax([times(amount, 0.001), div(1e6, rate)])
   const amountAfterShuttleFee = mathMax([minus(amount, shuttleFee), String(0)])
 
-  /* render */
+  /* shuttle available */
   const unit = format.denom(denom)
+  const shuttleList = useShuttleList()
+  const getIsShuttleAvailable = (network: RecipientNetwork) =>
+    network === RecipientNetwork.Terra || !!shuttleList?.[network]?.[unit]
+
+  /* render */
   const fields: Field[] = [
     {
       ...getDefaultProps('network'),
@@ -194,12 +200,18 @@ export default (user: User, denom: string): PostPage<RecentSentUI> => {
       label: t('Post:Send:Network'),
       attrs: { ...getDefaultAttrs('network') },
       options: Object.values(RecipientNetwork).map((value) => {
+        const isShuttleAvailable = getIsShuttleAvailable(value)
         const disabled = {
           [RecipientNetwork.Terra]: toEthereum,
           [RecipientNetwork.Ethereum]: toTerra,
           [RecipientNetwork.BSC]: toTerra,
         }[value]
-        return { value, children: value, disabled }
+
+        return {
+          value,
+          children: value,
+          disabled: disabled || !isShuttleAvailable,
+        }
       }),
     },
     {
@@ -364,4 +376,21 @@ const useRate = (denom: string) => {
   const response = useFCD<Rate[]>({ url: swapRateURL }, !!denom)
   const rate = find('uusd:swaprate', response.data) ?? '1'
   return rate
+}
+
+const useShuttleList = ():
+  | Record<RecipientNetwork, Dictionary<string>>
+  | undefined => {
+  const { data: ethereum } = useTerraAssets('/shuttle/eth.json')
+  const { data: bsc } = useTerraAssets('/shuttle/bsc.json')
+  const { chain } = useConfig()
+  const { name } = chain.current
+
+  return (
+    ethereum &&
+    bsc && {
+      [RecipientNetwork.Ethereum]: ethereum[name],
+      [RecipientNetwork.BSC]: bsc[name],
+    }
+  )
 }
