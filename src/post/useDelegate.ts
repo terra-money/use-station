@@ -198,7 +198,7 @@ export default (
           moniker,
         }),
         warning: t(
-          'Post:Staking:Remember to leave a small of tokens undelegated, as subsequent transactions (e.g. redelegation) require fees to be paid.'
+          'Post:Staking:Remember to leave a small amount of tokens undelegated, as subsequent transactions (e.g. redelegation) require fees to be paid.'
         ),
       },
       [TxType.R]: {

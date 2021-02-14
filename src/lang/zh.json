@@ -448,7 +448,7 @@
 
       "Create Validator": "成为验证者",
 
-      "Remember to leave a small of tokens undelegated, as subsequent transactions (e.g. redelegation) require fees to be paid.": "请注意，执行后续操作(如：再委托）需要支付交易费。",
+      "Remember to leave a small amount of tokens undelegated, as subsequent transactions (e.g. redelegation) require fees to be paid.": "请注意，执行后续操作(如：再委托）需要支付交易费。",
       "Undelegation takes 21 days to complete. You would not get rewards in the meantime.": "取消委托需要21天才能完成。在此期间没有任何奖励。",
       "Redelegation to the same validator will be prohibited for 21 days. Please make sure you input the right amount of luna to delegate.": "21天内禁止再委托给同一验证人。请确保您输入了正确的委托量。"
     },
