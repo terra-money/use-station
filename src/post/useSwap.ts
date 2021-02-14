@@ -38,19 +38,19 @@ interface TobinTaxItem {
   tobin_tax: string
 }
 
-const LUNA_PAIRS: Dictionary<Record<Denom, string>> = {
+const LUNA_PAIRS: Dictionary<Dictionary<string>> = {
   mainnet: {
-    ukrw: 'terra1zw0kfxrxgrs5l087mjm79hcmj3y8z6tljuhpmc',
-    umnt: 'terra1sndgzq62wp23mv20ndr4sxg6k8xcsudsy87uph',
-    usdr: 'terra1vs2vuks65rq7xj78mwtvn7vvnm2gn7adjlr002',
-    uusd: 'terra1tndcaqxkpc5ce9qee5ggqf430mr2z3pefe5wj6',
+    // ukrw: 'terra1zw0kfxrxgrs5l087mjm79hcmj3y8z6tljuhpmc',
+    // umnt: 'terra1sndgzq62wp23mv20ndr4sxg6k8xcsudsy87uph',
+    // usdr: 'terra1vs2vuks65rq7xj78mwtvn7vvnm2gn7adjlr002',
+    // uusd: 'terra1tndcaqxkpc5ce9qee5ggqf430mr2z3pefe5wj6',
   },
 
   testnet: {
-    ukrw: 'terra1rfzwcdhhu502xws6r5pxw4hx8c6vms772d6vyu',
-    umnt: 'terra18x2ld35r4vn5rlygjzpjenyh2rfmvqgqk9lrnn',
-    usdr: 'terra1dmrn07plsrr8p7qqq6dmue8ydw0smxfza6f8sc',
-    uusd: 'terra156v8s539wtz0sjpn8y8a8lfg8fhmwa7fy22aff',
+    // ukrw: 'terra1rfzwcdhhu502xws6r5pxw4hx8c6vms772d6vyu',
+    // umnt: 'terra18x2ld35r4vn5rlygjzpjenyh2rfmvqgqk9lrnn',
+    // usdr: 'terra1dmrn07plsrr8p7qqq6dmue8ydw0smxfza6f8sc',
+    // uusd: 'terra156v8s539wtz0sjpn8y8a8lfg8fhmwa7fy22aff',
   },
 }
 
