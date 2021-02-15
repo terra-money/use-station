@@ -9,15 +9,20 @@ import useTokenBalance from '../../cw20/useTokenBalance'
 const SMALL = '1000000'
 
 interface Config {
-  hideSmall: boolean
+  hideSmall?: boolean
+  hideSmallTokens?: boolean
 }
 
 export default (user: User, config?: Config): AssetsPage => {
   const { t } = useTranslation()
   const bank = useBank(user)
   const tokens = useTokenBalance(user.address)
-  const [hideSmall, setHideSmall] = useState<boolean>(!!config?.hideSmall)
-  const [hideSmallTokens, setHideSmallTokens] = useState(true)
+  const [hideSmall, setHideSmall] = useState<boolean>(
+    config?.hideSmall !== undefined ? config.hideSmall : false
+  )
+  const [hideSmallTokens, setHideSmallTokens] = useState(
+    config?.hideSmallTokens !== undefined ? config.hideSmallTokens : true
+  )
 
   const render = (
     { balance, vesting }: BankData,
