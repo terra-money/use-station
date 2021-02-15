@@ -5,7 +5,8 @@ import { TFunction } from 'i18next'
 import { AccAddress } from '@terra-money/terra.js'
 import { PostPage, SwapUI, ConfirmProps, BankData, Denom } from '../types'
 import { User, Coin, Token, Rate, Field, FormUI } from '../types'
-import { find, format, gt, times, percent, minus, div } from '../utils'
+import { find, format } from '../utils'
+import { gt, times, percent, minus, div, isFinite } from '../utils'
 import { toInput, toAmount } from '../utils/format'
 import { useConfig } from '../contexts/ConfigContext'
 import useForm from '../hooks/useForm'
@@ -24,7 +25,6 @@ interface Values {
   from: string
   to: string
   input: string
-  mode: Mode
 }
 
 interface OracleParamsData {
@@ -40,17 +40,13 @@ interface TobinTaxItem {
 
 const LUNA_PAIRS: Dictionary<Dictionary<string>> = {
   mainnet: {
-    // ukrw: 'terra1zw0kfxrxgrs5l087mjm79hcmj3y8z6tljuhpmc',
-    // umnt: 'terra1sndgzq62wp23mv20ndr4sxg6k8xcsudsy87uph',
-    // usdr: 'terra1vs2vuks65rq7xj78mwtvn7vvnm2gn7adjlr002',
-    // uusd: 'terra1tndcaqxkpc5ce9qee5ggqf430mr2z3pefe5wj6',
+    ukrw: 'terra1zw0kfxrxgrs5l087mjm79hcmj3y8z6tljuhpmc',
+    uusd: 'terra1tndcaqxkpc5ce9qee5ggqf430mr2z3pefe5wj6',
   },
 
   testnet: {
-    // ukrw: 'terra1rfzwcdhhu502xws6r5pxw4hx8c6vms772d6vyu',
-    // umnt: 'terra18x2ld35r4vn5rlygjzpjenyh2rfmvqgqk9lrnn',
-    // usdr: 'terra1dmrn07plsrr8p7qqq6dmue8ydw0smxfza6f8sc',
-    // uusd: 'terra156v8s539wtz0sjpn8y8a8lfg8fhmwa7fy22aff',
+    ukrw: 'terra1rfzwcdhhu502xws6r5pxw4hx8c6vms772d6vyu',
+    uusd: 'terra156v8s539wtz0sjpn8y8a8lfg8fhmwa7fy22aff',
   },
 }
 
@@ -101,15 +97,14 @@ export default (user: User, actives: string[]): PostPage<SwapUI> => {
     input: v.input(input, { max: toInput(getMax(from).amount) }),
     from: '',
     to: '',
-    mode: '',
   })
 
-  const initial = { from: '', to: '', input: '', mode: 'On-chain' as Mode }
+  const initial = { from: '', to: '', input: '' }
   const [submitted, setSubmitted] = useState(false)
   const form = useForm<Values>(initial, validate)
   const { values, setValue, setValues, invalid } = form
   const { getDefaultProps, getDefaultAttrs } = form
-  const { from, to, input, mode } = values
+  const { from, to, input } = values
   const amount = toAmount(input)
 
   // price
@@ -132,6 +127,9 @@ export default (user: User, actives: string[]): PostPage<SwapUI> => {
   const [returnTerraswap, setReturnTerraswap] = useState('0')
   const [tradingFeeTerraswap, setTradingFeeTerraswap] = useState('0')
 
+  // simulate: Expected price
+  const [expectedPrice, setExpectedPrice] = useState('0')
+
   const init = () => {
     setValue('to', '')
     setPrincipalNative('0')
@@ -153,6 +151,8 @@ export default (user: User, actives: string[]): PostPage<SwapUI> => {
     ? whitelist[from === 'uusd' ? to : from].pair
     : undefined
 
+  const mode: Mode = !pair || from === 'uluna' ? 'On-chain' : 'Terraswap'
+
   const token = ismAsset
     ? whitelist[from === 'uusd' ? to : from].token
     : undefined
@@ -162,7 +162,7 @@ export default (user: User, actives: string[]): PostPage<SwapUI> => {
   useEffect(() => {
     const waitAll = async () => {
       try {
-        if (pair) {
+        if (mode === 'Terraswap') {
           const { result } = await simulateTerraswap(
             terraswapParams,
             chain.current
@@ -170,15 +170,12 @@ export default (user: User, actives: string[]): PostPage<SwapUI> => {
 
           result && setReturnTerraswap(result.return_amount)
           result && setTradingFeeTerraswap(result.commission_amount)
-        }
-
-        if (![from, to].some(AccAddress.validate)) {
+          result && setExpectedPrice(div(result.return_amount, amount))
+        } else {
           const { swapped, rate } = await fetchSimulate(values)
           setPrincipalNative(times(amount, rate))
           setReturnNative(swapped)
-        } else {
-          setPrincipalNative('0')
-          setReturnNative('0')
+          setExpectedPrice(div(swapped, amount))
         }
       } catch (error) {
         // ...
@@ -199,15 +196,6 @@ export default (user: User, actives: string[]): PostPage<SwapUI> => {
     from && to && simulate()
     // eslint-disable-next-line
   }, [amount, from, to])
-
-  useEffect(() => {
-    const isTerraswapBetter = pair && gt(returnTerraswap, returnNative)
-
-    setValues((values) => ({
-      ...values,
-      mode: isTerraswapBetter ? 'Terraswap' : 'On-chain',
-    }))
-  }, [returnTerraswap, returnNative, setValues, pair])
 
   useEffect(() => {
     setValues((values) => ({ ...values, input: '', to: '' }))
@@ -279,19 +267,6 @@ export default (user: User, actives: string[]): PostPage<SwapUI> => {
         readOnly: true,
       },
     },
-    {
-      label: '',
-      ...getDefaultProps('mode'),
-      element: 'select',
-      attrs: {
-        ...getDefaultAttrs('mode'),
-        hidden: !pair,
-      },
-      options: ['On-chain', 'Terraswap'].map((value) => ({
-        value,
-        children: value,
-      })),
-    },
   ]
 
   const disabled =
@@ -302,6 +277,7 @@ export default (user: User, actives: string[]): PostPage<SwapUI> => {
 
   const [firstActiveDenom] = actives
   const ui: SwapUI = {
+    mode,
     message:
       !firstActiveDenom || errorNative
         ? t('Post:Swap:Swapping is not available at the moment')
@@ -312,6 +288,18 @@ export default (user: User, actives: string[]): PostPage<SwapUI> => {
       attrs: {
         onClick: () => setValue('input', toInput(getMax(from).amount)),
       },
+    },
+    expectedPrice: {
+      title: 'Expected price',
+      text: !(isFinite(expectedPrice) && gt(expectedPrice, 0))
+        ? ''
+        : gt(expectedPrice, 1)
+        ? `1 ${format.denom(from)} = ${format.decimal(
+            expectedPrice
+          )} ${format.denom(to)}`
+        : `1 ${format.denom(to)} = ${format.decimal(
+            div(1, expectedPrice)
+          )} ${format.denom(from)}`,
     },
     spread: {
       'On-chain': {
