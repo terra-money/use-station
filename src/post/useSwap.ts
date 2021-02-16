@@ -5,7 +5,7 @@ import { TFunction } from 'i18next'
 import { AccAddress } from '@terra-money/terra.js'
 import { PostPage, SwapUI, ConfirmProps, BankData, Denom } from '../types'
 import { User, Coin, Token, Rate, Field, FormUI } from '../types'
-import { find, format } from '../utils'
+import { find, format, is } from '../utils'
 import { gt, times, percent, minus, div, isFinite } from '../utils'
 import { toInput, toAmount } from '../utils/format'
 import { useConfig } from '../contexts/ConfigContext'
@@ -84,17 +84,23 @@ export default (user: User, actives: string[]): PostPage<SwapUI> => {
 
   /* max */
   const getMax = (token: string): Coin => {
+    const shouldMinusTax =
+      is.nativeDenom(token) && token !== 'uluna' && mode === 'Terraswap'
     const tokenInfo = tokens.find(({ value }) => value === token)
-    const taxAmount = tax?.getCoin(tokenInfo?.balance ?? '0').amount
+    const balance = tokenInfo?.balance ?? '0'
+    const taxAmount = tax?.getCoin(balance).amount
+
     return {
-      amount: minus(tokenInfo?.balance ?? '0', taxAmount),
+      amount: shouldMinusTax ? minus(balance, taxAmount) : balance,
       denom: tokenInfo?.value ?? '',
     }
   }
 
   /* form */
   const validate = ({ from, input }: Values) => ({
-    input: v.input(input, { max: toInput(getMax(from).amount) }),
+    input: v.input(input, {
+      max: tokens.find(({ value }) => value === from)?.balance ?? '0',
+    }),
     from: '',
     to: '',
   })
