@@ -24,6 +24,11 @@ export default (user: User, config?: Config): AssetsPage => {
     config?.hideSmallTokens !== undefined ? config.hideSmallTokens : true
   )
 
+  const load = () => {
+    bank.execute()
+    tokens.load()
+  }
+
   const render = (
     { balance, vesting }: BankData,
     tokenList?: TokenBalance[]
@@ -112,7 +117,7 @@ export default (user: User, config?: Config): AssetsPage => {
   }
 
   return Object.assign(
-    { setHideSmall },
+    { setHideSmall, load },
     bank,
     { loading: bank.loading || tokens.loading },
     bank.data && { ui: render(bank.data, tokens.list) }
