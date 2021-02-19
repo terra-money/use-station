@@ -160,7 +160,9 @@
       "Delete": "삭제",
 
       "Recent addresses": "최근 주소들",
-      "Delete all": "모두 삭제"
+      "Delete all": "모두 삭제",
+
+      "Keep this QR code private": "이 QR 코드는 다른 사람에게 공개하지 마십시오."
     },
 
     "Download": {

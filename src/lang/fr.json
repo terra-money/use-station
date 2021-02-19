@@ -160,7 +160,9 @@
       "Delete": "Supprimer",
 
       "Recent addresses": "Adresses récentes",
-      "Delete all": "Tout supprimer"
+      "Delete all": "Tout supprimer",
+
+      "Keep this QR code private": "Gardez ce code QR privé"
     },
 
     "Download": {

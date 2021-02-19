@@ -160,7 +160,9 @@
       "Delete": "删除",
 
       "Recent addresses": "最近的地址",
-      "Delete all": "全部删除"
+      "Delete all": "全部删除",
+
+      "Keep this QR code private": "不要与任何人共享您的二维码"
     },
 
     "Download": {
