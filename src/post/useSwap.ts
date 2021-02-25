@@ -279,6 +279,7 @@ export default (user: User, actives: string[]): PostPage<SwapUI> => {
     invalid ||
     simulating ||
     !!errorNative ||
+    gt(amount, getMax(from).amount) ||
     !(mode !== 'On-chain' || gt(returnNative, '0'))
 
   const [firstActiveDenom] = actives
