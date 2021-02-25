@@ -117,7 +117,7 @@ export default (user: User, denom: string): PostPage<RecentSentUI> => {
       if (denom === 'uluna') {
         // If luna is the only token available, we have to remove gas fee from luna
         if (bank.balance.length === 1) {
-          setMax({ denom, amount: minus(amount, calc.fee('100000')) })
+          setMax({ denom, amount: minus(amount, calc!.fee('100000')) })
         } else {
           setMax({ denom, amount })
         }
@@ -133,7 +133,7 @@ export default (user: User, denom: string): PostPage<RecentSentUI> => {
   }
 
   useEffect(() => {
-    if (!loading) {
+    if (!loading && calc) {
       calculateMax()
     }
     // eslint-disable-next-line

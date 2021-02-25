@@ -30,7 +30,7 @@ export const useCalcFee = (denom: string) => {
     [amount, calcFee, calcGas, denom]
   )
 
-  return calc
+  return data ? calc : undefined
 }
 
 /* base */

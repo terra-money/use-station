@@ -56,7 +56,7 @@ export default (
   const [simulated, setSimulated] = useState(false)
 
   useEffect(() => {
-    simulate()
+    calc && simulate()
     // eslint-disable-next-line
   }, [denom, calc])
 
@@ -75,7 +75,7 @@ export default (
 
       type Data = { gas_estimate: string }
       const { data } = await fcd.post<Data>(url, body, config)
-      const feeAmount = calc.fee(times(data.gas_estimate, 1.75))
+      const feeAmount = calc!.fee(times(data.gas_estimate, 1.75))
 
       // Set simulated fee
       setInput(toInput(feeAmount))
@@ -100,8 +100,8 @@ export default (
       setErrorMessage(undefined)
 
       // Post to fetch tx
-      const gas_prices = [calc.gasPrice]
-      const gas = calc.gas(fee.amount)
+      const gas_prices = [calc!.gasPrice]
+      const gas = calc!.gas(fee.amount)
       const base = await getBase(address)
       const req = { simulate: false, gas, gas_prices, memo }
       const body = { base_req: { ...base, ...req }, ...payload }
@@ -130,7 +130,7 @@ export default (
     }
   }
 
-  const ready = simulated && !submitting
+  const ready = simulated && !submitting && calc
   const valid = gt(fee.amount, 0) && validate(fee)
 
   /* ledger */
