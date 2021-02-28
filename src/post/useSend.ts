@@ -67,12 +67,13 @@ export default (user: User, denom: string): PostPage<RecentSentUI> => {
   }: RecentSentItem): RecentSentItemUI => {
     const { to, input, memo: $memo } = values
 
-    const toEthereum = Object.values(shuttles).includes(to)
-    const network = toEthereum
-      ? (Object.entries(shuttles).find(
-          ([, address]) => address === to
-        )![0] as RecipientNetwork)
-      : RecipientNetwork.Terra
+    const toEthereum = shuttles && Object.values(shuttles).includes(to)
+    const network =
+      shuttles && toEthereum
+        ? (Object.entries(shuttles).find(
+            ([, address]) => address === to
+          )![0] as RecipientNetwork)
+        : RecipientNetwork.Terra
 
     const recipient = !toEthereum ? to : $memo
     const memo = !toEthereum ? $memo : ''
@@ -169,7 +170,7 @@ export default (user: User, denom: string): PostPage<RecentSentUI> => {
   const toEthereum = ethers.utils.isAddress(to)
   const toTerra = AccAddress.validate(to)
   const shuttles = SHUTTLES[chain.current.name]
-  const shuttle = shuttles[network]
+  const shuttle = shuttles?.[network]
 
   useEffect(() => {
     toEthereum &&
