@@ -152,7 +152,7 @@ export default (user: User, actives: string[]): PostPage<SwapUI> => {
     (to === 'uusd' && AccAddress.validate(from))
 
   const pair = [from, to].includes('uluna')
-    ? LUNA_PAIRS[chain.current.name]![(from === 'uluna' ? to : from) as Denom]
+    ? LUNA_PAIRS[chain.current.name]?.[(from === 'uluna' ? to : from) as Denom]
     : ismAsset
     ? whitelist[from === 'uusd' ? to : from].pair
     : undefined
