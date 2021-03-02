@@ -5,5 +5,5 @@ export interface SwapUI {
   message: string
   expectedPrice: { title: string; text: string }
   max: { title: string; display: DisplayCoin; attrs: { onClick: () => void } }
-  spread: { title: string; text?: string; value: string; unit?: string }
+  spread: { title: string; tooltip?: string; value: string; unit?: string }
 }

@@ -311,7 +311,7 @@ export default (user: User, actives: string[]): PostPage<SwapUI> => {
     spread: {
       'On-chain': {
         title: t('Post:Swap:Spread'),
-        text:
+        tooltip:
           params &&
           oracle &&
           getContent(
