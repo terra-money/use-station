@@ -1,13 +1,15 @@
 import { TFunction } from 'i18next'
-import { CumulativeType, StakingReturnResult } from '../../types'
+import { CumulativeType } from '../../types'
 import { percent, toNumber, times } from '../../utils'
 import { Props } from './useChartCard'
 
-export default (
-  t: TFunction,
-  modifyData: (points: StakingReturnResult[]) => StakingReturnResult[],
-  loading: boolean
-): Props<StakingReturnResult> => ({
+interface Result {
+  datetime: number
+  dailyReturn: string
+  annualizedReturn: string
+}
+
+export default (t: TFunction): Props<Result> => ({
   title: t('Page:Chart:Staking return'),
   desc: t(
     'Page:Chart:Annualized staking yield for Luna based on tax rewards, oracle rewards, gas, MIR airdrop rewards and latest prices of Luna (annualize return = 7 days moving average return * 365)'
@@ -18,8 +20,7 @@ export default (
     [CumulativeType.C]: t('Page:Chart:Annualized'),
     [CumulativeType.P]: t('Page:Chart:Daily'),
   },
-  getValue: (data, { type }) => {
-    const results = loading ? [] : modifyData(data)
+  getValue: (results, { type }) => {
     const isAnnualized = type === CumulativeType.C
     const key = isAnnualized ? 'annualizedReturn' : 'dailyReturn'
     const unit = isAnnualized ? t('Page:Chart:/ year') : t('Page:Chart:/ day')
@@ -29,8 +30,7 @@ export default (
       unit,
     ]
   },
-  getChart: (data, { type }) => {
-    const results = loading ? [] : modifyData(data)
+  getChart: (results, { type }) => {
     const key = type === CumulativeType.C ? 'annualizedReturn' : 'dailyReturn'
     return {
       data:

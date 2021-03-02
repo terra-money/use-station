@@ -35,9 +35,3 @@ export interface ChartUI {
   data: Point[]
   tooltips: { title: string; label: string }[]
 }
-
-export interface StakingReturnResult {
-  datetime: number
-  dailyReturn: string
-  annualizedReturn: string
-}
