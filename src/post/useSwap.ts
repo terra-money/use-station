@@ -114,8 +114,8 @@ export default (user: User, actives: string[]): PostPage<SwapUI> => {
 
   const mode = getMode({ from, to })
 
-  const init = () => {
-    setValues({ ...values, to: '', input: '' })
+  const init = (values?: Partial<Values>) => {
+    setValues({ from: '', to: '', input: '', ...values })
     setPrincipalNative('0')
     setSimulated('0')
     setTradingFeeTerraswap('0')
@@ -189,7 +189,7 @@ export default (user: User, actives: string[]): PostPage<SwapUI> => {
     }
 
     if (from && to) {
-      from === to ? init() : gt(amount, 0) && simulate()
+      from === to ? init({ from }) : gt(amount, 0) && simulate()
     }
 
     // eslint-disable-next-line
@@ -207,7 +207,7 @@ export default (user: User, actives: string[]): PostPage<SwapUI> => {
   }, [from, to])
 
   useEffect(() => {
-    init()
+    init({ from })
     // eslint-disable-next-line
   }, [from])
 
