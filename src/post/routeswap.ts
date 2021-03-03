@@ -6,6 +6,7 @@ import { is } from '../utils'
 import { toBase64, toTokenInfo } from './terraswap'
 
 const RouteContracts: Dictionary<string> = {
+  mainnet: 'terra19qx5xe6q9ll4w0890ux7lv2p4mf3csd4qvt3ex',
   testnet: 'terra1dtzpdj3lc7prd46tuxj2aqy40uv4v4xsphwcpx',
 }
 
