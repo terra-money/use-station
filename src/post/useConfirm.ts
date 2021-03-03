@@ -45,9 +45,13 @@ export default (
   const { chainID, lcd: URL } = chain.current
 
   /* fee */
-  const getFeeDenom = (amount: string) => {
+  const getFeeDenom = (gas: string) => {
     const { defaultValue, list } = feeDenom
-    const available = list.filter((denom) => validate({ amount, denom }))
+    const available = list.filter((denom) => {
+      const amount = calcFee ? calcFee.feeFromGas(gas, denom) : gas
+      return validate({ amount, denom })
+    })
+
     // People would prefer other denoms for paying fee
     const availablePref: string[] = available.filter((d) => d !== denom)
     return availablePref[0] ?? defaultValue ?? available[0]
@@ -57,7 +61,7 @@ export default (
   const [denom, setDenom] = useState<string>(getFeeDenom('1'))
   const [estimated, setEstimated] = useState<string>()
   const fee = { amount: toAmount(input), denom }
-  const calcFee = useCalcFee(denom)
+  const calcFee = useCalcFee()
   const readyToSimulate = !!calcFee
 
   /* simulate */
@@ -68,10 +72,9 @@ export default (
   const isGasEstimated = gt(gas, 0)
 
   useEffect(() => {
-    const feeDenom = calcFee && getFeeDenom(calcFee.gasFee(gas))
-    isGasEstimated && feeDenom && setDenom(feeDenom)
+    isGasEstimated && setDenom(getFeeDenom(gas))
     // eslint-disable-next-line
-  }, [isGasEstimated, readyToSimulate])
+  }, [isGasEstimated])
 
   useEffect(() => {
     const simulate = async () => {
@@ -82,18 +85,17 @@ export default (
         setErrorMessage(undefined)
 
         if (msgs) {
-          const { gasPrice } = calcFee!
-          const gasPrices = { [denom]: gasPrice }
+          const gasPrices = { [denom]: calcFee!.gasPrice(denom) }
           const lcd = new LCDClient({ chainID, URL, gasPrices })
           const options = { msgs, feeDenoms: [denom], memo }
           const unsignedTx = await lcd.tx.create(user.address, options)
           setUnsignedTx(unsignedTx)
 
           const gas = String(unsignedTx.fee.gas)
-          const estimatedGasFee = calcFee!.gasFee(gas)
+          const estimatedFee = calcFee!.feeFromGas(gas, denom)
           setGas(gas)
-          setInput(toInput(estimatedGasFee ?? '0'))
-          setEstimated(estimatedGasFee)
+          setInput(toInput(estimatedFee ?? '0'))
+          setEstimated(estimatedFee)
           setSimulated(true)
         } else if (url) {
           // Simulate with initial fee
@@ -104,7 +106,8 @@ export default (
 
           type Data = { gas_estimate: string }
           const { data } = await fcd.post<Data>(url, body, config)
-          const feeAmount = calcFee!.gasFee(times(data.gas_estimate, 1.75))
+          const adjusted = times(data.gas_estimate, 1.75)
+          const feeAmount = calcFee!.feeFromGas(adjusted, denom)
 
           // Set simulated fee
           setInput(toInput(feeAmount))
@@ -163,8 +166,8 @@ export default (
         }
       } else if (url) {
         // Post to fetch tx
-        const gas_prices = [{ amount: calcFee!.gasPrice, denom: fee.denom }]
-        const gas = calcFee!.gasFromFee(fee.amount)
+        const gas_prices = [{ amount: calcFee!.gasPrice(fee.denom), denom }]
+        const gas = calcFee!.gasFromFee(fee.amount, denom)
         const base = await getBase(address)
         const req = { simulate: false, gas, gas_prices, memo }
         const body = { base_req: { ...base, ...req }, ...payload }

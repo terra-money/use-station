@@ -142,7 +142,7 @@ export default (user: User, denom: string): PostPage<RecentSentUI> => {
   const [submitted, setSubmitted] = useState(false)
   const shouldTax = is.nativeTerra(denom)
   const calcTax = useCalcTax(denom, t)
-  const calcFee = useCalcFee(denom)
+  const calcFee = useCalcFee()
 
   const balance =
     (is.nativeDenom(denom)
@@ -151,7 +151,7 @@ export default (user: User, denom: string): PostPage<RecentSentUI> => {
   const calculatedMaxAmount = calcTax.getMax(balance)
   const maxAmount =
     bank?.balance.length === 1 && calcFee
-      ? max([minus(calculatedMaxAmount, calcFee.gasFee('100000')), 0])
+      ? max([minus(calculatedMaxAmount, calcFee.feeFromGas('100000', denom)), 0])
       : calculatedMaxAmount
   const taxAmount = calcTax.getTax(amount)
 

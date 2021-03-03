@@ -139,14 +139,14 @@ export default (user: User, actives: string[]): PostPage<SwapUI> => {
   // simulate: Max & Tax
   const shouldTax = is.nativeTerra(from) && mode !== 'On-chain'
   const calcTax = useCalcTax(from, t)
-  const calcFee = useCalcFee(from)
+  const calcFee = useCalcFee()
   const { getMax, getTax, label: taxLabel, loading: loadingTax } = calcTax
   const tax = shouldTax ? getTax(amount) : '0'
   const balance = tokens.find(({ value }) => value === from)?.balance ?? '0'
   const calculatedMaxAmount = shouldTax ? getMax(balance) : balance
   const maxAmount =
     bank.data?.balance.length === 1 && calcFee
-      ? max([minus(calculatedMaxAmount, calcFee.gasFee('100000')), 0])
+      ? max([minus(calculatedMaxAmount, calcFee.feeFromGas('100000', from)), 0])
       : calculatedMaxAmount
 
   // simulate

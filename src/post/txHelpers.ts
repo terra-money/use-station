@@ -6,13 +6,17 @@ import fcd from '../api/fcd'
 import useFCD from '../api/useFCD'
 
 export const config = { headers: { 'Content-Type': 'application/json' } }
-export const useCalcFee = (denom: string) => {
+export const useCalcFee = () => {
   const url = '/v1/txs/gas_prices'
   const { data } = useFCD<Dictionary<string>>({ url })
-  const gasPrice = data?.[denom] ?? '0'
 
-  const calcGasFee = (gas: string) => ceil(times(gas, gasPrice))
-  const calcGasFromFee = (fee: string) => floor(div(fee, gasPrice))
+  const getGasPrice = (denom: string) => data?.[denom] ?? '0'
+
+  const calcFeeFromGas = (gas: string, denom: string) =>
+    ceil(times(gas, getGasPrice(denom)))
+
+  const calcGasFromFee = (fee: string, denom: string) =>
+    floor(div(fee, getGasPrice(denom)))
 
   const gasPrices = Object.entries(data ?? {}).reduce<Dictionary<string>>(
     (acc, [denom, value]) => ({ ...acc, [denom]: decimal(value) }),
@@ -21,7 +25,12 @@ export const useCalcFee = (denom: string) => {
 
   return !data
     ? undefined
-    : { gasPrices, gasPrice, gasFee: calcGasFee, gasFromFee: calcGasFromFee }
+    : {
+        gasPrices,
+        gasPrice: getGasPrice,
+        feeFromGas: calcFeeFromGas,
+        gasFromFee: calcGasFromFee,
+      }
 }
 
 /* base */
