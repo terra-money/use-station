@@ -68,7 +68,8 @@ export default (
   const isGasEstimated = gt(gas, 0)
 
   useEffect(() => {
-    isGasEstimated && calcFee && setDenom(getFeeDenom(calcFee.gasFee(gas)))
+    const feeDenom = calcFee && getFeeDenom(calcFee.gasFee(gas))
+    isGasEstimated && feeDenom && setDenom(feeDenom)
     // eslint-disable-next-line
   }, [isGasEstimated, readyToSimulate])
 
