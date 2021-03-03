@@ -1,4 +1,5 @@
-import { AccAddress } from '@terra-money/terra.js'
+import { AccAddress, MsgExecuteContract } from '@terra-money/terra.js'
+import { Coin, Coins } from '@terra-money/terra.js'
 import axios from 'axios'
 import { ChainOptions } from '../types'
 
@@ -8,44 +9,48 @@ interface Params {
   offer: { amount: string; from: string }
 }
 
+export const toTokenInfo = (token: string) =>
+  AccAddress.validate(token)
+    ? { token: { contract_addr: token } }
+    : { native_token: { denom: token } }
+
 export const getTerraswapURL = (
   { pair, token, offer }: Params,
-  { lcd: baseURL }: ChainOptions
+  { lcd: baseURL }: ChainOptions,
+  address: string
 ) => {
   const shouldHook = AccAddress.validate(offer.from)
   const simulatePath = `/wasm/contracts/${pair}/store`
   const url = `/wasm/contracts/${shouldHook ? token : pair}`
 
   const offerMessage = {
-    offer_asset: {
-      amount: offer.amount,
-      info: AccAddress.validate(offer.from)
-        ? { token: { contract_addr: offer.from } }
-        : { native_token: { denom: offer.from } },
-    },
+    offer_asset: { amount: offer.amount, info: toTokenInfo(offer.from) },
   }
 
   const params = { query_msg: { simulation: offerMessage } }
+  const asset = { amount: offer.amount, info: toTokenInfo(offer.from) }
 
   return {
     query: { baseURL, path: simulatePath, params },
     url,
-    payload: {
-      exec_msg: JSON.stringify(
-        shouldHook
-          ? {
-              send: {
-                amount: offer.amount,
-                contract: pair,
-                msg: toBase64({ swap: offerMessage }),
-              },
-            }
-          : { swap: offerMessage }
-      ),
-      coins: AccAddress.validate(offer.from)
-        ? []
-        : [{ amount: offer.amount, denom: offer.from }],
-    },
+    msgs: !shouldHook
+      ? [
+          new MsgExecuteContract(
+            address,
+            pair!,
+            { swap: { offer_asset: asset } },
+            new Coins([new Coin(offer.from, offer.amount)])
+          ),
+        ]
+      : [
+          new MsgExecuteContract(address, token!, {
+            send: {
+              amount: offer.amount,
+              contract: pair,
+              msg: toBase64({ swap: {} }),
+            },
+          }),
+        ],
   }
 }
 
@@ -55,19 +60,19 @@ interface SimulationResult {
   commission_amount: string
 }
 
-export const simulate = async (params: Params, chain: ChainOptions) => {
-  try {
-    const { query } = getTerraswapURL(params, chain)
-    const { path, ...config } = query
-    const { data } = await axios.get<{ result: SimulationResult }>(path, config)
-    return { success: true, result: data.result }
-  } catch (error) {
-    return { success: false, message: error.message }
-  }
+export const simulate = async (
+  params: Params,
+  chain: ChainOptions,
+  address: string
+) => {
+  const { query } = getTerraswapURL(params, chain, address)
+  const { path, ...config } = query
+  const { data } = await axios.get<{ result: SimulationResult }>(path, config)
+  return data.result
 }
 
 /* utils */
-const toBase64 = (object: object) => {
+export const toBase64 = (object: object) => {
   try {
     return Buffer.from(JSON.stringify(object)).toString('base64')
   } catch (error) {

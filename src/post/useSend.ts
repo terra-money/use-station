@@ -1,14 +1,15 @@
 import { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Dictionary, last } from 'ramda'
-import { AccAddress } from '@terra-money/terra.js'
+import { AccAddress, MsgExecuteContract, MsgSend } from '@terra-money/terra.js'
+import { Coin } from '@terra-money/terra.js'
 import { ethers } from 'ethers'
-import { BankData, TxsData, Tx } from '../types'
+import { BankData, TxsData, Tx, Whitelist } from '../types'
 import { RecentSentUI, RecentSentItemUI, Rate } from '../types'
-import { PostPage, Coin, User, Field } from '../types'
+import { PostPage, Coin as StationCoin, User, Field } from '../types'
 import { ConfirmContent, ConfirmProps } from '../types'
 import { is, format, find } from '../utils'
-import { div, gt, max as mathMax, minus, times } from '../utils/math'
+import { div, gt, max as mathMax, max, minus, times } from '../utils/math'
 import { toAmount, toInput } from '../utils/format'
 import { useConfig } from '../contexts/ConfigContext'
 import useTokenBalance from '../cw20/useTokenBalance'
@@ -19,7 +20,7 @@ import useTerraAssets from '../hooks/useTerraAssets'
 import validateForm from './validateForm'
 import { isAvailable, getFeeDenomList, isFeeAvailable } from './validateConfirm'
 import { useCalcFee } from './txHelpers'
-import useFetchTax from './useFetchTax'
+import useCalcTax from './useCalcTax'
 
 enum RecipientNetwork {
   Terra = 'Terra',
@@ -105,45 +106,10 @@ export default (user: User, denom: string): PostPage<RecentSentUI> => {
         }
   }
 
-  /* tax */
-  const [submitted, setSubmitted] = useState(false)
-  const [max, setMax] = useState<Coin>({ denom, amount: '0' })
-  const tax = useFetchTax(denom, t)
-  const calc = useCalcFee(denom)
-
-  const calculateMax = async () => {
-    if (bank) {
-      const amount = find(`${denom}:available`, bank.balance) || '0'
-
-      if (denom === 'uluna') {
-        // If luna is the only token available, we have to remove gas fee from luna
-        if (bank.balance.length === 1) {
-          setMax({ denom, amount: minus(amount, calc!.fee('100000')) })
-        } else {
-          setMax({ denom, amount })
-        }
-      } else if (is.nativeDenom(denom)) {
-        const coin = tax.getCoin(amount)
-        setMax({ denom, amount: minus(amount, coin.amount) })
-      } else {
-        const amount =
-          tokens?.find(({ token }) => token === denom)?.balance ?? '0'
-        setMax({ denom, amount })
-      }
-    }
-  }
-
-  useEffect(() => {
-    if (!loading && calc) {
-      calculateMax()
-    }
-    // eslint-disable-next-line
-  }, [loading, calc])
-
   /* form */
   const validate = ({ input, to, memo, network }: Values) => ({
     to: v.address(to, true),
-    input: v.input(input, { max: toInput(max.amount) }),
+    input: v.input(input),
     memo:
       v.length(memo, { max: 256, label: t('Common:Tx:Memo') }) ||
       v.includes(memo, '<') ||
@@ -172,6 +138,24 @@ export default (user: User, denom: string): PostPage<RecentSentUI> => {
   const shuttles = SHUTTLES[chain.current.name]
   const shuttle = shuttles?.[network]
 
+  /* tax */
+  const [submitted, setSubmitted] = useState(false)
+  const shouldTax = is.nativeTerra(denom)
+  const calcTax = useCalcTax(denom, t)
+  const calcFee = useCalcFee(denom)
+
+  const balance =
+    (is.nativeDenom(denom)
+      ? find(`${denom}:available`, bank?.balance)
+      : tokens?.find(({ token }) => token === denom)?.balance) ?? '0'
+  const calculatedMaxAmount = calcTax.getMax(balance)
+  const maxAmount =
+    bank?.balance.length === 1 && calcFee
+      ? max([minus(calculatedMaxAmount, calcFee.gasFee('100000')), 0])
+      : calculatedMaxAmount
+  const taxAmount = calcTax.getTax(amount)
+
+  /* set network on address change */
   useEffect(() => {
     toEthereum &&
       network === RecipientNetwork.Terra &&
@@ -188,7 +172,8 @@ export default (user: User, denom: string): PostPage<RecentSentUI> => {
   const amountAfterShuttleFee = mathMax([minus(amount, shuttleFee), String(0)])
 
   /* shuttle available */
-  const unit = format.denom(denom)
+  const unit = format.denom(denom, whitelist)
+
   const shuttleList = useShuttleList()
   const getIsShuttleAvailable = (network: RecipientNetwork) =>
     network === RecipientNetwork.Terra || !!shuttleList?.[network]?.[unit]
@@ -229,8 +214,8 @@ export default (user: User, denom: string): PostPage<RecentSentUI> => {
       label: t('Common:Tx:Amount'),
       button: {
         label: t('Common:Account:Available'),
-        display: format.display(max),
-        attrs: { onClick: () => setValue('input', toInput(max.amount)) },
+        display: format.display({ amount: maxAmount, denom }),
+        attrs: { onClick: () => setValue('input', toInput(maxAmount)) },
       },
       attrs: {
         ...getDefaultAttrs('input'),
@@ -250,7 +235,7 @@ export default (user: User, denom: string): PostPage<RecentSentUI> => {
     },
   ]
 
-  const disabled = invalid
+  const disabled = invalid || gt(amount, maxAmount)
 
   const formUI = {
     title: t('Post:Send:Send {{unit}}', { unit }),
@@ -289,35 +274,40 @@ export default (user: User, denom: string): PostPage<RecentSentUI> => {
         : []
     )
     .concat(
-      gt(tax.getCoin(amount).amount, 0)
-        ? { name: tax.label, displays: [format.display(tax.getCoin(amount))] }
+      shouldTax
+        ? {
+            name: calcTax.label,
+            displays: [format.display({ amount: taxAmount, denom })],
+          }
         : []
     )
     .concat($memo ? { name: t('Common:Tx:Memo'), text: $memo } : [])
 
-  const getConfirm = (bank: BankData): ConfirmProps => ({
-    url: is.nativeDenom(denom)
-      ? `/bank/accounts/${recipient}/transfers`
-      : `/wasm/contracts/${denom}`,
-    payload: is.nativeDenom(denom)
-      ? { coins: [{ amount, denom }] }
-      : { exec_msg: JSON.stringify({ transfer: { recipient, amount } }) },
+  const getConfirm = (bank: BankData, whitelist: Whitelist): ConfirmProps => ({
+    msgs: is.nativeDenom(denom)
+      ? [new MsgSend(user.address, recipient, amount + denom)]
+      : [
+          new MsgExecuteContract(user.address, denom, {
+            transfer: { recipient, amount },
+          }),
+        ],
+    tax: shouldTax ? new Coin(denom, taxAmount) : undefined,
     memo,
     contents,
     feeDenom: {
       defaultValue: denom,
       list: getFeeDenomList(bank.balance),
     },
-    validate: (fee: Coin) =>
+    validate: (fee: StationCoin) =>
       is.nativeDenom(denom)
         ? isAvailable(
-            { amount, denom, fee, tax: tax.getCoin(amount) },
+            { amount, denom, fee, tax: { amount: taxAmount, denom } },
             bank.balance
           )
         : isFeeAvailable(fee, bank.balance),
     submitLabels: [t('Post:Send:Send'), t('Post:Send:Sending...')],
     message: t('Post:Send:Sent {{coin}} to {{address}}', {
-      coin: format.coin({ amount, denom }),
+      coin: format.coin({ amount, denom }, undefined, whitelist),
       address: to,
     }),
     warning: [
@@ -339,7 +329,7 @@ export default (user: User, denom: string): PostPage<RecentSentUI> => {
     loading,
     submitted,
     form: formUI,
-    confirm: bank && getConfirm(bank),
+    confirm: bank && whitelist ? getConfirm(bank, whitelist) : undefined,
     ui: txsResponse.data && renderRecent(txsResponse.data),
   }
 }
@@ -374,7 +364,7 @@ const findRecent = (txs: Tx[], denom: string): RecentSentItem[] | undefined => {
 
 const useRate = (denom: string) => {
   const swapRateURL = `/v1/market/swaprate/${denom}`
-  const response = useFCD<Rate[]>({ url: swapRateURL }, !!denom)
+  const response = useFCD<Rate[]>({ url: swapRateURL }, is.nativeDenom(denom))
   const rate = find('uusd:swaprate', response.data) ?? '1'
   return rate
 }

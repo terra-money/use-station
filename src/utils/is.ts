@@ -9,12 +9,15 @@ const isBech32 = (value: string) => {
   }
 }
 
+const nativeTerra = (string = '') =>
+  string.startsWith('u') && string.length === 4
+
 export default {
   address: (string: string = ''): boolean =>
     string.length === 44 && string.startsWith('terra') && isBech32(string),
 
-  nativeDenom: (string = '') =>
-    string.startsWith('u') && (string === 'uluna' || string.length === 4),
+  nativeTerra,
+  nativeDenom: (string = '') => nativeTerra(string) || string === 'uluna',
 
   json: (param: any) => {
     try {

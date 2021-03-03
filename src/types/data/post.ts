@@ -17,10 +17,10 @@ interface TxLog {
 }
 
 interface TxEvent {
-  attributes: {key: string, value: string}[]
+  attributes: { key: string; value: string }[]
 }
 
-export type PostResult = { raw_log?: string; logs: TxLog[] }
+export type PostResult = { raw_log?: string; logs?: TxLog[] }
 export type ParsedRaw = { success?: boolean; log?: string }[] | ParsedLog
 export type ParsedLog = { message?: string }
 export type ErrorResult = ParsedLog | { error?: string | ParsedRaw }

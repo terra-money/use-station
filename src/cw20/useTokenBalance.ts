@@ -3,7 +3,7 @@ import { Dictionary } from 'ramda'
 import { ApolloClient, InMemoryCache } from '@apollo/client'
 import { TokenBalance, Tokens } from '../types'
 import { useConfig } from '../contexts/ConfigContext'
-import tokens from './tokens.json'
+import useWhitelist from './useWhitelist'
 import mantleURL from './mantle.json'
 import alias from './alias'
 
@@ -19,7 +19,7 @@ export default (address: string): TokenBalanceQuery => {
   const [loading, setLoading] = useState(false)
   const { chain } = useConfig()
   const { name: currentChain } = chain.current
-  const whitelist = (tokens as Dictionary<Tokens | undefined>)[currentChain]
+  const { whitelist, loading: loadingWhitelist } = useWhitelist(currentChain)
   const mantle = (mantleURL as Dictionary<string | undefined>)[currentChain]
 
   const load = useCallback(async () => {
@@ -56,7 +56,7 @@ export default (address: string): TokenBalanceQuery => {
 
   return {
     load,
-    loading,
+    loading: loading || loadingWhitelist,
     whitelist,
     list:
       result &&

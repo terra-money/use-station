@@ -22,14 +22,19 @@ const validateForm = (t: TFunction) => {
   return {
     between,
 
-    input: (input: string, { max }: { max: string }): string =>
-      !gt(max, 0)
+    input: (input: string, range?: { max: string }): string =>
+      range && !gt(range.max, 0)
         ? t('Common:Validate:Insufficient balance')
         : !isInteger(toAmount(input))
         ? t('Common:Validate:{{label}} must be within 6 decimal points', {
             label: t('Common:Tx:Amount'),
           })
-        : between(input, { range: [0, max], label: t('Common:Tx:Amount') }),
+        : range
+        ? between(input, {
+            range: [0, range.max],
+            label: t('Common:Tx:Amount'),
+          })
+        : '',
 
     address: (to: string, eth = false) =>
       !to

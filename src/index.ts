@@ -14,10 +14,10 @@ i18n
       en: { translation: en },
       zh: { translation: zh },
       fr: { translation: fr },
-      ko: { translation: ko }
+      ko: { translation: ko },
     },
     lng: 'en',
-    keySeparator: ':'
+    keySeparator: ':',
   })
 
 /* types */

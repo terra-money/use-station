@@ -1,5 +1,7 @@
 import { useState, useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
+import { Coins, LCDClient, RawKey, StdFee } from '@terra-money/terra.js'
+import { StdSignMsg, StdTx } from '@terra-money/terra.js'
 import { ConfirmProps, ConfirmPage, Sign, Field, User } from '../types'
 import { PostResult } from '../types'
 import useInfo from '../lang/useInfo'
@@ -7,6 +9,10 @@ import fcd from '../api/fcd'
 import { format } from '../utils'
 import { toInput, toAmount } from '../utils/format'
 import { times, lt, gt } from '../utils/math'
+import { getStoredWallet } from '../../../utils/localStorage'
+import * as ledgers from '../../../wallet/ledger'
+import { useConfig } from '../contexts/ConfigContext'
+import LedgerKey from '../../../extension/LedgerKey'
 import { getBase, config, useCalcFee } from './txHelpers'
 import { checkError, parseError } from './txHelpers'
 
@@ -20,7 +26,7 @@ export default (
   { url, payload, memo, submitLabels, message, ...rest }: ConfirmProps,
   { user, password: defaultPassword = '', sign }: SignParams
 ): ConfirmPage => {
-  const { contents, feeDenom, validate, warning, parseResult } = rest
+  const { contents, msgs, tax, feeDenom, validate, warning, parseResult } = rest
 
   const { t } = useTranslation()
   const { ERROR } = useInfo()
@@ -35,58 +41,86 @@ export default (
   const defaultErrorMessage = t('Common:Error:Oops! Something went wrong')
   const [simulatedErrorMessage, setSimulatedErrorMessage] = useState<string>()
   const [errorMessage, setErrorMessage] = useState<string>()
+  const { chain } = useConfig()
+  const { chainID, lcd: URL } = chain.current
 
   /* fee */
   const getFeeDenom = (amount: string) => {
     const { defaultValue, list } = feeDenom
-    const available: string[] = list
-      .filter((d) => d !== denom) // People would prefer other denoms for paying fee
-      .filter((denom) => validate({ amount, denom }))
-    return available.length === 0 ? defaultValue : available[0]
+    const available = list.filter((denom) => validate({ amount, denom }))
+    // People would prefer other denoms for paying fee
+    const availablePref: string[] = available.filter((d) => d !== denom)
+    return availablePref[0] ?? defaultValue ?? available[0]
   }
 
   const [input, setInput] = useState<string>(toInput('1'))
   const [denom, setDenom] = useState<string>(getFeeDenom('1'))
   const [estimated, setEstimated] = useState<string>()
   const fee = { amount: toAmount(input), denom }
-  const calc = useCalcFee(denom)
+  const calcFee = useCalcFee(denom)
+  const readyToSimulate = !!calcFee
 
   /* simulate */
   const [simulating, setSimulating] = useState(true)
   const [simulated, setSimulated] = useState(false)
+  const [unsignedTx, setUnsignedTx] = useState<StdSignMsg>()
+  const [gas, setGas] = useState('0')
+  const isGasEstimated = gt(gas, 0)
 
   useEffect(() => {
-    calc && simulate()
+    isGasEstimated && calcFee && setDenom(getFeeDenom(calcFee.gasFee(gas)))
     // eslint-disable-next-line
-  }, [denom, calc])
+  }, [isGasEstimated, readyToSimulate])
 
-  const simulate = async () => {
-    try {
-      setSimulated(false)
-      setSimulating(true)
-      setEstimated(undefined)
-      setErrorMessage(undefined)
+  useEffect(() => {
+    const simulate = async () => {
+      try {
+        setSimulated(false)
+        setSimulating(true)
+        setEstimated(undefined)
+        setErrorMessage(undefined)
 
-      // Simulate with initial fee
-      const base = await getBase(address)
-      const fees = [{ ...fee, amount: '0' }]
-      const req = { simulate: true, gas: 'auto', fees, memo }
-      const body = { base_req: { ...base, ...req }, ...payload }
+        if (msgs) {
+          const { gasPrice } = calcFee!
+          const gasPrices = { [denom]: gasPrice }
+          const lcd = new LCDClient({ chainID, URL, gasPrices })
+          const options = { msgs, feeDenoms: [denom], memo }
+          const unsignedTx = await lcd.tx.create(user.address, options)
+          setUnsignedTx(unsignedTx)
 
-      type Data = { gas_estimate: string }
-      const { data } = await fcd.post<Data>(url, body, config)
-      const feeAmount = calc!.fee(times(data.gas_estimate, 1.75))
+          const gas = String(unsignedTx.fee.gas)
+          const estimatedGasFee = calcFee!.gasFee(gas)
+          setGas(gas)
+          setInput(toInput(estimatedGasFee ?? '0'))
+          setEstimated(estimatedGasFee)
+          setSimulated(true)
+        } else if (url) {
+          // Simulate with initial fee
+          const base = await getBase(address)
+          const fees = [{ ...fee, amount: '0' }]
+          const req = { simulate: true, gas: 'auto', fees, memo }
+          const body = { base_req: { ...base, ...req }, ...payload }
 
-      // Set simulated fee
-      setInput(toInput(feeAmount))
-      setEstimated(feeAmount)
-      setSimulated(true)
-    } catch (error) {
-      setSimulatedErrorMessage(parseError(error, defaultErrorMessage))
-    } finally {
-      setSimulating(false)
+          type Data = { gas_estimate: string }
+          const { data } = await fcd.post<Data>(url, body, config)
+          const feeAmount = calcFee!.gasFee(times(data.gas_estimate, 1.75))
+
+          // Set simulated fee
+          setInput(toInput(feeAmount))
+          setEstimated(feeAmount)
+          setSimulated(true)
+        }
+      } catch (error) {
+        setSimulatedErrorMessage(parseError(error, defaultErrorMessage))
+      } finally {
+        setSimulating(false)
+      }
     }
-  }
+
+    readyToSimulate && simulate()
+
+    // eslint-disable-next-line
+  }, [denom, readyToSimulate])
 
   /* submit */
   const [submitting, setSubmitting] = useState(false)
@@ -99,26 +133,55 @@ export default (
       setSubmitting(true)
       setErrorMessage(undefined)
 
-      // Post to fetch tx
-      const gas_prices = [calc!.gasPrice]
-      const gas = calc!.gas(fee.amount)
-      const base = await getBase(address)
-      const req = { simulate: false, gas, gas_prices, memo }
-      const body = { base_req: { ...base, ...req }, ...payload }
+      if (unsignedTx) {
+        const broadcast = async (signedTx: StdTx) => {
+          const { gasPrices } = calcFee!
+          const lcd = new LCDClient({ chainID, URL, gasPrices })
 
-      type Data = { value: string }
-      const { data } = await fcd.post<Data>(url, body, config)
-      const { value: tx } = data
+          const data = await lcd.tx.broadcast(signedTx)
+          setResult(data)
 
-      // Post with signed tx
-      const txURL = '/v1/txs'
-      const signedTx = await sign({ tx, base, password })
-      const result = await fcd.post<PostResult>(txURL, signedTx, config)
-      setResult(result.data)
+          // Catch error
+          const errorMessage = checkError(data.raw_log)
+          errorMessage ? setErrorMessage(errorMessage) : setSubmitted(true)
+        }
 
-      // Catch error
-      const errorMessage = checkError(result.data.raw_log)
-      errorMessage ? setErrorMessage(errorMessage) : setSubmitted(true)
+        const gasFee = new Coins({ [fee.denom]: fee.amount })
+        const fees = tax ? gasFee.add(tax) : gasFee
+        unsignedTx.fee = new StdFee(unsignedTx.fee.gas, fees)
+
+        if (user.ledger) {
+          const key = new LedgerKey(await ledgers.getPubKey())
+          const signed = await key.signTx(unsignedTx)
+          await broadcast(signed)
+        } else if (name) {
+          const { privateKey } = getStoredWallet(name, password)
+          const key = new RawKey(Buffer.from(privateKey, 'hex'))
+          const signed = await key.signTx(unsignedTx)
+          await broadcast(signed)
+        }
+      } else if (url) {
+        // Post to fetch tx
+        const gas_prices = [{ amount: calcFee!.gasPrice, denom: fee.denom }]
+        const gas = calcFee!.gasFromFee(fee.amount)
+        const base = await getBase(address)
+        const req = { simulate: false, gas, gas_prices, memo }
+        const body = { base_req: { ...base, ...req }, ...payload }
+
+        type Data = { value: string }
+        const { data } = await fcd.post<Data>(url, body, config)
+        const { value: tx } = data
+
+        // Post with signed tx
+        const txURL = '/v1/txs'
+        const signedTx = await sign({ tx, base, password })
+        const result = await fcd.post<PostResult>(txURL, signedTx, config)
+        setResult(result.data)
+
+        // Catch error
+        const errorMessage = checkError(result.data.raw_log)
+        errorMessage ? setErrorMessage(errorMessage) : setSubmitted(true)
+      }
     } catch (error) {
       error.message === 'Incorrect password'
         ? setPasswordError(t('Auth:Form:Incorrect password'))
@@ -130,7 +193,7 @@ export default (
     }
   }
 
-  const ready = simulated && !submitting && calc
+  const readyToSubmit = simulated && !submitting
   const valid = gt(fee.amount, 0) && validate(fee)
 
   /* ledger */
@@ -146,7 +209,7 @@ export default (
     attrs: {
       type: 'password',
       id: 'password',
-      disabled: !ready || !valid,
+      disabled: !readyToSubmit || !valid,
       value: password,
       placeholder: t('Post:Confirm:Input your password to confirm'),
       autoComplete: 'off',
@@ -159,7 +222,7 @@ export default (
     error: passwordError,
   }
 
-  const disabled = !ready || !valid || !(!name || password)
+  const disabled = !readyToSubmit || !valid || !(!name || password)
   const onSubmit = () => {
     ledger && setConfirming(true)
     submit()
@@ -175,12 +238,17 @@ export default (
         options: feeDenom.list.map((denom) => ({
           value: denom,
           children: format.denom(denom),
+          disabled: !validate({ amount: gas, denom }),
         })),
-        attrs: { id: 'denom', value: denom, disabled: !ready },
+        attrs: { id: 'denom', value: denom, disabled: !readyToSubmit },
         setValue: (value: string) => setDenom(value),
       },
       input: {
-        attrs: { id: 'input', value: input, disabled: !ready || !denom },
+        attrs: {
+          id: 'input',
+          value: input,
+          disabled: !readyToSubmit || !denom,
+        },
         setValue: (value: string) => setInput(value),
       },
       message:

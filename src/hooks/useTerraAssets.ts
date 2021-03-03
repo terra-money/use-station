@@ -5,17 +5,25 @@ const config = { baseURL: 'https://assets.terra.money' }
 
 const useTerraAssets = <T = any>(path: string) => {
   const [data, setData] = useState<T>()
+  const [loading, setLoading] = useState(false)
+  const [error, setError] = useState<Error>()
 
   useEffect(() => {
     const fetch = async () => {
-      const { data } = await axios.get(path, config)
-      setData(data)
+      try {
+        setLoading(true)
+        const { data } = await axios.get(path, config)
+        setData(data)
+      } catch (error) {
+        setError(error)
+      }
+      setLoading(false)
     }
 
     fetch()
   }, [path])
 
-  return { data }
+  return { data, loading, error }
 }
 
 export default useTerraAssets

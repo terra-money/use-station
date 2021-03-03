@@ -1,11 +1,11 @@
 import { useState, useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
-import { Dictionary } from 'ramda'
 import { TFunction } from 'i18next'
-import { AccAddress } from '@terra-money/terra.js'
-import { PostPage, SwapUI, ConfirmProps, BankData, Denom } from '../types'
-import { User, Coin, Token, Rate, Field, FormUI } from '../types'
-import { find, format, is } from '../utils'
+import { AccAddress, MsgExecuteContract, MsgSwap } from '@terra-money/terra.js'
+import { Coin } from '@terra-money/terra.js'
+import { PostPage, SwapUI, ConfirmProps, BankData, Whitelist } from '../types'
+import { User, Coin as StationCoin, Rate, Field, FormUI } from '../types'
+import { find, format, is, lte, max, plus } from '../utils'
 import { gt, times, percent, minus, div, isFinite } from '../utils'
 import { toInput, toAmount } from '../utils/format'
 import { useConfig } from '../contexts/ConfigContext'
@@ -14,13 +14,18 @@ import useFCD from '../api/useFCD'
 import useBank from '../api/useBank'
 import fcd from '../api/fcd'
 import useTokenBalance from '../cw20/useTokenBalance'
-import whitelists from '../cw20/tokens.json'
 import validateForm from './validateForm'
-import { getFeeDenomList, isAvailable } from './validateConfirm'
+import usePairs from '../cw20/usePairs'
+import { getFeeDenomList, isAvailable, isFeeAvailable } from './validateConfirm'
 import { getTerraswapURL, simulate as simulateTerraswap } from './terraswap'
-import useFetchTax from './useFetchTax'
+import * as routeswap from './routeswap'
+import useCalcTax from './useCalcTax'
+import { useCalcFee } from './txHelpers'
 
-type Mode = 'On-chain' | 'Terraswap'
+const { findPair, getRouteMessage } = routeswap
+const { isRouteAvailable, isOnChainAvailable, simulateRoute } = routeswap
+
+type Mode = 'On-chain' | 'Terraswap' | 'Route'
 interface Values {
   from: string
   to: string
@@ -38,39 +43,23 @@ interface TobinTaxItem {
   tobin_tax: string
 }
 
-const LUNA_PAIRS: Dictionary<Dictionary<string>> = {
-  mainnet: {
-    ukrw: 'terra1zw0kfxrxgrs5l087mjm79hcmj3y8z6tljuhpmc',
-    uusd: 'terra1tndcaqxkpc5ce9qee5ggqf430mr2z3pefe5wj6',
-  },
-
-  testnet: {
-    ukrw: 'terra1rfzwcdhhu502xws6r5pxw4hx8c6vms772d6vyu',
-    uusd: 'terra156v8s539wtz0sjpn8y8a8lfg8fhmwa7fy22aff',
-  },
-}
-
 export default (user: User, actives: string[]): PostPage<SwapUI> => {
   const { t } = useTranslation()
   const v = validateForm(t)
   const { chain } = useConfig()
-  const { data: bank, loading, error, execute: executeBank } = useBank(user)
+
+  /* ready: balance */
+  const bank = useBank(user)
   const cw20Tokens = useTokenBalance(user.address)
-  const paramsResponse = useFCD<MarketData>({ url: '/market/parameters' })
-  const oracleResponse = useFCD<OracleParamsData>({ url: '/oracle/parameters' })
-  const { data: params, error: paramsError } = paramsResponse
-  const { data: oracle } = oracleResponse
+  const { pairs, loading: loadingPairs } = usePairs(chain.current.name)
+  const { whitelist } = cw20Tokens
+  const loadingUI = bank.loading || cw20Tokens.loading || loadingPairs
 
-  const load = async () => {
-    await executeBank()
-    await cw20Tokens.load()
-  }
-
-  /* token options */
+  // tokens
   const nativeTokensOptions = ['uluna', ...actives].map((denom) => ({
     value: denom,
     children: format.denom(denom),
-    balance: find(`${denom}:available`, bank?.balance) ?? '0',
+    balance: find(`${denom}:available`, bank.data?.balance) ?? '0',
   }))
 
   const cw20TokensList =
@@ -82,27 +71,24 @@ export default (user: User, actives: string[]): PostPage<SwapUI> => {
 
   const tokens = [...nativeTokensOptions, ...cw20TokensList]
 
-  /* max */
-  const getMax = (token: string): Coin => {
-    const shouldMinusTax =
-      is.nativeDenom(token) && token !== 'uluna' && mode === 'Terraswap'
-    const tokenInfo = tokens.find(({ value }) => value === token)
-    const balance = tokenInfo?.balance ?? '0'
-    const taxAmount = tax?.getCoin(balance).amount
+  /* ready: tooltip */
+  const paramsResponse = useFCD<MarketData>({ url: '/market/parameters' })
+  const oracleResponse = useFCD<OracleParamsData>({ url: '/oracle/parameters' })
+  const { data: params, error: paramsError } = paramsResponse
+  const { data: oracle } = oracleResponse
 
-    return {
-      amount: shouldMinusTax ? minus(balance, taxAmount) : balance,
-      denom: tokenInfo?.value ?? '',
-    }
+  /* ready: refetch */
+  const load = async () => {
+    init()
+    await bank.execute()
+    await cw20Tokens.load()
   }
 
   /* form */
-  const validate = ({ from, input }: Values) => ({
-    input: v.input(input, {
-      max: tokens.find(({ value }) => value === from)?.balance ?? '0',
-    }),
+  const validate = ({ input }: Values) => ({
     from: '',
     to: '',
+    input: v.input(input),
   })
 
   const initial = { from: '', to: '', input: '' }
@@ -113,98 +99,115 @@ export default (user: User, actives: string[]): PostPage<SwapUI> => {
   const { from, to, input } = values
   const amount = toAmount(input)
 
-  // price
-  const url = `/v1/market/swaprate/${from}`
-  const { data } = useFCD<Rate[]>({ url }, !!from)
-  const price = data?.find(({ denom }) => denom === to)?.swaprate
+  const pair = findPair({ from, to }, pairs)
 
-  // tax
-  const tax = useFetchTax(from, t)
+  const getMode = ({ from, to }: Omit<Values, 'input'>): Mode | undefined =>
+    !(from && to)
+      ? undefined
+      : isOnChainAvailable({ from, to })
+      ? 'On-chain'
+      : findPair({ from, to }, pairs)
+      ? 'Terraswap'
+      : isRouteAvailable(chain.current)
+      ? 'Route'
+      : undefined
 
-  // simulate on change
-  const [simulating, setSimulating] = useState(false)
-
-  // simulate: Native
-  const [returnNative, setReturnNative] = useState('0')
-  const [principalNative, setPrincipalNative] = useState('0')
-  const [errorNative, setErrorNative] = useState<Error>()
-
-  // simulate: Terraswap
-  const [returnTerraswap, setReturnTerraswap] = useState('0')
-  const [tradingFeeTerraswap, setTradingFeeTerraswap] = useState('0')
-
-  // simulate: Expected price
-  const [expectedPrice, setExpectedPrice] = useState('0')
+  const mode = getMode({ from, to })
 
   const init = () => {
-    setValue('to', '')
+    setValues({ ...values, to: '', input: '' })
     setPrincipalNative('0')
-    setReturnNative('0')
-    setReturnTerraswap('0')
+    setSimulated('0')
     setTradingFeeTerraswap('0')
   }
 
-  const whitelist: Dictionary<Token> =
-    whitelists[chain.current.name as 'mainnet' | 'testnet']
+  /* simulate */
+  const [simulating, setSimulating] = useState(false)
+  const [simulated, setSimulated] = useState('0')
+  const [errorMessage, setErrorMessage] = useState<Error>()
 
-  const ismAsset =
+  // simulate: Native
+  const [principalNative, setPrincipalNative] = useState('0')
+
+  // simulate: Terraswap
+  const [tradingFeeTerraswap, setTradingFeeTerraswap] = useState('0')
+
+  // simulate: Expected price
+  const [price, setPrice] = useState('0')
+  const expectedPrice = div(simulated, amount)
+
+  // simulate: Max & Tax
+  const shouldTax = is.nativeTerra(from) && mode !== 'On-chain'
+  const calcTax = useCalcTax(from, t)
+  const calcFee = useCalcFee(from)
+  const { getMax, getTax, label: taxLabel, loading: loadingTax } = calcTax
+  const tax = shouldTax ? getTax(amount) : '0'
+  const balance = tokens.find(({ value }) => value === from)?.balance ?? '0'
+  const calculatedMaxAmount = shouldTax ? getMax(balance) : balance
+  const maxAmount =
+    bank.data?.balance.length === 1 && calcFee
+      ? max([minus(calculatedMaxAmount, calcFee.gasFee('100000')), 0])
+      : calculatedMaxAmount
+
+  // simulate
+  const isTerraswap =
     (from === 'uusd' && AccAddress.validate(to)) ||
     (to === 'uusd' && AccAddress.validate(from))
-
-  const pair = [from, to].includes('uluna')
-    ? LUNA_PAIRS[chain.current.name]?.[(from === 'uluna' ? to : from) as Denom]
-    : ismAsset
-    ? whitelist[from === 'uusd' ? to : from].pair
+  const token = isTerraswap
+    ? cw20Tokens.whitelist?.[from === 'uusd' ? to : from]?.token
     : undefined
-
-  const mode: Mode = !pair || from === 'uluna' ? 'On-chain' : 'Terraswap'
-
-  const token = ismAsset
-    ? whitelist[from === 'uusd' ? to : from].token
-    : undefined
-
   const terraswapParams = { pair, token, offer: { amount, from } }
+  const routeParams = { amount, from, to, chain: chain.current }
+  const { execute: executeRoute } = getRouteMessage(routeParams)
 
   useEffect(() => {
-    const waitAll = async () => {
-      try {
-        if (mode === 'Terraswap') {
-          const { result } = await simulateTerraswap(
-            terraswapParams,
-            chain.current
-          )
-
-          result && setReturnTerraswap(result.return_amount)
-          result && setTradingFeeTerraswap(result.commission_amount)
-          result && setExpectedPrice(div(result.return_amount, amount))
-        } else {
-          const { swapped, rate } = await fetchSimulate(values)
-          setPrincipalNative(times(amount, rate))
-          setReturnNative(swapped)
-          setExpectedPrice(div(swapped, amount))
-        }
-      } catch (error) {
-        // ...
-      }
-    }
-
     const simulate = async () => {
       try {
         setSimulating(true)
-        from === to ? init() : gt(amount, 0) && (await waitAll())
+
+        if (mode === 'Route') {
+          const result = await simulateRoute(routeParams)
+          setSimulated(result)
+        } else if (mode === 'Terraswap') {
+          const result = await simulateTerraswap(
+            terraswapParams,
+            chain.current,
+            user.address
+          )
+          result && setSimulated(result.return_amount)
+          result && setTradingFeeTerraswap(result.commission_amount)
+        } else if (mode === 'On-chain') {
+          const { swapped, rate } = await fetchSimulate(values)
+          setPrincipalNative(times(amount, rate))
+          setSimulated(swapped)
+        }
       } catch (error) {
-        setErrorNative(error)
+        setErrorMessage(error.message)
       } finally {
         setSimulating(false)
       }
     }
 
-    from && to && simulate()
+    if (from && to) {
+      from === to ? init() : gt(amount, 0) && simulate()
+    }
+
     // eslint-disable-next-line
   }, [amount, from, to])
 
   useEffect(() => {
-    setValues((values) => ({ ...values, input: '', to: '' }))
+    const fetchPrice = async () => {
+      const { data } = await fcd.get<Rate[]>(`/v1/market/swaprate/${from}`)
+      const price = data?.find(({ denom }) => denom === to)?.swaprate
+      price && setPrice(price)
+    }
+
+    is.nativeDenom(from) && fetchPrice()
+    // eslint-disable-next-line
+  }, [from, to])
+
+  useEffect(() => {
+    init()
     // eslint-disable-next-line
   }, [from])
 
@@ -247,18 +250,7 @@ export default (user: User, actives: string[]): PostPage<SwapUI> => {
         },
         ...tokens
           .filter(({ value }) => value !== from)
-          .map((item) => {
-            const disabledFromUST =
-              from !== 'uusd' &&
-              !nativeTokensOptions.find((native) => native.value === item.value)
-
-            const disabledFromCW20 =
-              cw20TokensList.find((cw20) => cw20.value === from) &&
-              item.value !== 'uusd'
-
-            const disabled = disabledFromUST || disabledFromCW20
-            return { ...item, disabled }
-          }),
+          .filter(({ value }) => getMode({ from, to: value })),
       ],
     },
     {
@@ -266,71 +258,83 @@ export default (user: User, actives: string[]): PostPage<SwapUI> => {
       element: 'input',
       attrs: {
         id: 'receive',
-        value: {
-          'On-chain': format.amount(returnNative),
-          Terraswap: format.amount(returnTerraswap),
-        }[mode],
+        value: format.amount(simulated),
         readOnly: true,
       },
     },
   ]
 
+  const validInput = !invalid && from && to && lte(amount, maxAmount)
+  const validSimulation = gt(simulated, '0')
+  const calculating = loadingTax || simulating
   const disabled =
-    invalid ||
-    simulating ||
-    !!errorNative ||
-    gt(amount, getMax(from).amount) ||
-    !(mode !== 'On-chain' || gt(returnNative, '0'))
+    !validInput || !validSimulation || calculating || !!errorMessage
 
   const [firstActiveDenom] = actives
   const ui: SwapUI = {
-    mode,
+    mode: mode ?? '',
     message:
-      !firstActiveDenom || errorNative
+      !firstActiveDenom || errorMessage
         ? t('Post:Swap:Swapping is not available at the moment')
         : t('Post:Swap:Select a coin to swap'),
-    max: {
-      title: t('Post:Swap:Current balance'),
-      display: format.display(getMax(from)),
-      attrs: {
-        onClick: () => setValue('input', toInput(getMax(from).amount)),
-      },
-    },
-    expectedPrice: {
-      title: 'Expected price',
-      text: !(isFinite(expectedPrice) && gt(expectedPrice, 0))
-        ? ''
-        : gt(expectedPrice, 1)
-        ? `1 ${format.denom(from)} = ${format.decimal(
-            expectedPrice
-          )} ${format.denom(to)}`
-        : `1 ${format.denom(to)} = ${format.decimal(
-            div(1, expectedPrice)
-          )} ${format.denom(from)}`,
-    },
-    spread: {
-      'On-chain': {
-        title: t('Post:Swap:Spread'),
-        tooltip:
-          params &&
-          oracle &&
-          getContent(
-            {
-              result: params.result,
-              whitelist: oracle.result.whitelist,
-              denom: to,
-            },
-            t
+    max: !from
+      ? undefined
+      : {
+          title: t('Post:Swap:Available balance'),
+          display: format.display(
+            { amount: maxAmount, denom: from },
+            undefined,
+            whitelist
           ),
-        value: format.amount(minus(principalNative, returnNative)),
-        unit: format.denom(to),
-      },
-      Terraswap: {
-        title: 'Trading Fee',
-        value: format.amount(tradingFeeTerraswap),
-        unit: format.denom(to),
-      },
-    }[mode],
+          attrs: {
+            onClick: () => setValue('input', toInput(maxAmount)),
+          },
+        },
+    expectedPrice: !(isFinite(expectedPrice) && gt(expectedPrice, 0))
+      ? undefined
+      : {
+          title: 'Expected price',
+          text: gt(expectedPrice, 1)
+            ? `1 ${format.denom(from, whitelist)} = ${format.decimal(
+                expectedPrice
+              )} ${format.denom(to, whitelist)}`
+            : `1 ${format.denom(to, whitelist)} = ${format.decimal(
+                div(1, expectedPrice)
+              )} ${format.denom(from, whitelist)}`,
+        },
+    spread: !mode
+      ? undefined
+      : {
+          'On-chain': {
+            title: t('Post:Swap:Spread'),
+            tooltip:
+              params &&
+              oracle &&
+              getContent(
+                {
+                  result: params.result,
+                  whitelist: oracle.result.whitelist,
+                  denom: to,
+                },
+                t
+              ),
+            value: format.amount(minus(principalNative, simulated)),
+            unit: format.denom(to),
+          },
+          Terraswap: {
+            title: 'Trading Fee',
+            value: format.amount(tradingFeeTerraswap),
+            unit: format.denom(to),
+          },
+          Route: {
+            title: 'Route',
+            text: [
+              format.denom(from, whitelist),
+              'UST',
+              format.denom(to, whitelist),
+            ].join(' > '),
+          },
+        }[mode],
   }
 
   const formUI: FormUI = {
@@ -342,18 +346,25 @@ export default (user: User, actives: string[]): PostPage<SwapUI> => {
   }
 
   const terraswap = pair
-    ? getTerraswapURL(terraswapParams, chain.current)
+    ? getTerraswapURL(terraswapParams, chain.current, user.address)
     : undefined
 
-  const getConfirm = (bank: BankData): ConfirmProps => ({
-    url: {
-      'On-chain': '/market/swap',
-      Terraswap: terraswap?.url ?? '',
-    }[mode],
-    payload: {
-      'On-chain': { ask_denom: to, offer_coin: { amount, denom: from } },
-      Terraswap: terraswap?.payload,
-    }[mode],
+  const getConfirm = (bank: BankData, whitelist: Whitelist): ConfirmProps => ({
+    msgs: !mode
+      ? undefined
+      : {
+          'On-chain': [new MsgSwap(user.address, new Coin(from, amount), to)],
+          Terraswap: terraswap?.msgs,
+          Route: [
+            new MsgExecuteContract(
+              user.address,
+              executeRoute.contract,
+              executeRoute.msg,
+              executeRoute.coins
+            ),
+          ],
+        }[mode],
+    tax: shouldTax ? new Coin(from, tax) : undefined,
     contents: [
       {
         name: 'Mode',
@@ -361,68 +372,93 @@ export default (user: User, actives: string[]): PostPage<SwapUI> => {
       },
       {
         name: t('Common:Tx:Amount'),
-        displays: [format.display({ amount, denom: from })],
+        displays: [
+          format.display({ amount, denom: from }, undefined, whitelist),
+        ],
       },
     ]
       .concat(
-        mode === 'Terraswap' && gt(tax.getCoin(amount).amount, 0)
-          ? { name: tax.label, displays: [format.display(tax.getCoin(amount))] }
+        shouldTax
+          ? {
+              name: taxLabel,
+              displays: [format.display({ amount: tax, denom: from })],
+            }
           : []
       )
       .concat({
         name: t('Post:Swap:Receive'),
         displays: [
-          format.display({
-            amount: { 'On-chain': returnNative, Terraswap: returnTerraswap }[
-              mode
-            ],
-            denom: to,
-          }),
+          format.display(
+            { amount: simulated, denom: to },
+            undefined,
+            whitelist
+          ),
         ],
       }),
-    feeDenom: { defaultValue: from, list: getFeeDenomList(bank.balance) },
-    validate: (fee: Coin) =>
-      ismAsset || isAvailable({ amount, denom: from, fee }, bank.balance),
+    feeDenom: {
+      defaultValue: is.nativeDenom(from) ? from : undefined,
+      list: getFeeDenomList(bank.balance),
+    },
+    validate: (fee: StationCoin) =>
+      is.nativeDenom(from)
+        ? isAvailable(
+            { amount: plus(amount, tax), denom: from, fee },
+            bank.balance
+          )
+        : isFeeAvailable(fee, bank.balance),
     submitLabels: [t('Post:Swap:Swap'), t('Post:Swap:Swapping...')],
     message: '',
     parseResult: ({ logs }) => {
-      const message = t('Post:Swap:Swapped {{coin}} to {{unit}}', {
-        coin: format.coin({ amount, denom: from }),
-        unit: format.denom(to),
-      })
+      if (!logs) return ''
 
-      const { attributes } = logs[0].events[1]
+      const { attributes: attributes1 } = logs[0].events[1]
 
       const { amount: paid } = splitTokenText(
-        attributes.find(({ key }) => key === 'offer' || key === 'offer_amount')
+        attributes1.find(({ key }) => key === 'offer' || key === 'offer_amount')
           ?.value
       )
 
       const { amount: received } = splitTokenText(
-        attributes.find(
+        attributes1.find(
           ({ key }) => key === 'swap_coin' || key === 'return_amount'
         )?.value
       )
 
+      const message = t('Post:Swap:Swapped {{coin}} to {{unit}}', {
+        coin: format.coin({ amount, denom: from }, undefined, whitelist),
+        unit:
+          mode === 'Route'
+            ? format.denom(to, whitelist)
+            : format.coin(
+                { amount: received, denom: to },
+                undefined,
+                whitelist
+              ),
+      })
+
       const executed_price = div(received, paid)
-      const slippage = price ? minus(div(executed_price, price), 1) : ''
+      const slippage =
+        mode !== 'Route' && price
+          ? max([minus(div(executed_price, price), 1), '0'])
+          : ''
 
       return slippage ? `${message} (Slippage: ${percent(slippage)})` : message
     },
     warning: t(
       'Post:Swap:Final amount you receive in {{unit}} may vary due to the swap rate changes',
-      { unit: format.denom(to) }
+      { unit: format.denom(to, whitelist) }
     ),
   })
 
   return {
     ui,
-    error: error || paramsError || errorNative,
+    error: bank.error || paramsError || errorMessage,
     load,
-    loading,
+    loading: loadingUI,
     submitted,
     form: formUI,
-    confirm: bank && getConfirm(bank),
+    confirm:
+      bank.data && whitelist ? getConfirm(bank.data, whitelist) : undefined,
   }
 }
 
@@ -431,7 +467,8 @@ type Result = { swapped: string; rate: string }
 const fetchSimulate = async ({ from, to, input }: Values): Promise<Result> => {
   const amount = toAmount(input)
   const params = { offer_coin: amount + from, ask_denom: to }
-  const swapped = await fcd.get<{ result: Coin }>(`/market/swap`, { params })
+  const url = `/market/swap`
+  const swapped = await fcd.get<{ result: StationCoin }>(url, { params })
   const rateList = await fcd.get<Rate[]>(`/v1/market/swaprate/${from}`)
   const rate = find(`${to}:swaprate`, rateList.data) ?? '0'
   return { swapped: swapped.data.result.amount, rate }
@@ -470,5 +507,5 @@ const getContent = (params: Params, t: TFunction) => {
 
 export const splitTokenText = (string = '') => {
   const [, amount, token] = string.split(/(\d+)(\w+)/)
-  return { amount, token }
+  return Number(string) ? { amount: string, token: '' } : { amount, token }
 }

@@ -1,9 +1,8 @@
-import { Dictionary } from 'ramda'
 import { AccAddress } from '@terra-money/terra.js'
 import BigNumber from 'bignumber.js'
 import { DateTime } from 'luxon'
-import { Coin, DisplayCoin, Token } from '../types'
-import tokens from '../cw20/tokens.json'
+import { Coin, DisplayCoin, Whitelist } from '../types'
+import is from './is'
 import currencies from './currencies.json'
 
 interface Config {
@@ -26,34 +25,33 @@ export const amountN = (amount: string, config?: Config): number => {
   return decimalN(number.toString(), config?.integer ? 0 : 6)
 }
 
-export const denom = (denom: string): string => {
-  const valid = denom && (denom.startsWith('u') || AccAddress.validate(denom))
+export const denom = (denom = '', whitelist?: Whitelist): string => {
   const unit = denom.slice(1).toUpperCase()
+  const isValidTerra = is.nativeTerra(denom) && currencies.includes(unit)
+  const symbol = AccAddress.validate(denom) && whitelist?.[denom]?.symbol
 
-  const whitelist = Object.values(tokens).reduce<Dictionary<Token>>(
-    (acc, cur) => ({ ...acc, ...cur }),
-    {}
+  return (
+    symbol ||
+    (denom === 'uluna' ? 'Luna' : isValidTerra ? unit.slice(0, 2) + 'T' : '')
   )
-
-  return !valid
-    ? ''
-    : AccAddress.validate(denom)
-    ? whitelist[denom].symbol
-    : unit === 'LUNA'
-    ? 'Luna'
-    : currencies.includes(unit)
-    ? unit.slice(0, 2) + 'T'
-    : unit
 }
 
-export const display = (coin: Coin, config?: Config): DisplayCoin => {
+export const display = (
+  coin: Coin,
+  config?: Config,
+  whitelist?: Whitelist
+): DisplayCoin => {
   const value = amount(coin.amount, config)
-  const unit = denom(coin.denom)
+  const unit = denom(coin.denom, whitelist)
   return { value, unit }
 }
 
-export const coin = (coin: Coin, config?: Config): string => {
-  const { value, unit } = display(coin, config)
+export const coin = (
+  coin: Coin,
+  config?: Config,
+  whitelist?: Whitelist
+): string => {
+  const { value, unit } = display(coin, config, whitelist)
   return [value, unit].join(' ')
 }
 

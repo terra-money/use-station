@@ -1,7 +1,7 @@
-import { useCallback, useMemo } from 'react'
 import { Dictionary } from 'ramda'
 import { Result, ParsedRaw, ParsedLog, Base, PostError } from '../types'
 import { times, div, ceil, floor } from '../utils/math'
+import { decimal } from '../utils/format'
 import fcd from '../api/fcd'
 import useFCD from '../api/useFCD'
 
@@ -9,28 +9,19 @@ export const config = { headers: { 'Content-Type': 'application/json' } }
 export const useCalcFee = (denom: string) => {
   const url = '/v1/txs/gas_prices'
   const { data } = useFCD<Dictionary<string>>({ url })
-  const amount = data?.[denom] ?? '0'
+  const gasPrice = data?.[denom] ?? '0'
 
-  const calcFee = useCallback(
-    (gas: string) => {
-      return ceil(times(gas, amount))
-    },
-    [amount]
+  const calcGasFee = (gas: string) => ceil(times(gas, gasPrice))
+  const calcGasFromFee = (fee: string) => floor(div(fee, gasPrice))
+
+  const gasPrices = Object.entries(data ?? {}).reduce<Dictionary<string>>(
+    (acc, [denom, value]) => ({ ...acc, [denom]: decimal(value) }),
+    {}
   )
 
-  const calcGas = useCallback(
-    (fee: string) => {
-      return floor(div(fee, amount))
-    },
-    [amount]
-  )
-
-  const calc = useMemo(
-    () => ({ gasPrice: { amount, denom }, fee: calcFee, gas: calcGas }),
-    [amount, calcFee, calcGas, denom]
-  )
-
-  return data ? calc : undefined
+  return !data
+    ? undefined
+    : { gasPrices, gasPrice, gasFee: calcGasFee, gasFromFee: calcGasFromFee }
 }
 
 /* base */
