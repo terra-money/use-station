@@ -33,6 +33,9 @@ export default (
   }: StakingData): StakingPersonal => {
     const { undelegations, availableLuna, delegationTotal } = rest
     const { myDelegations } = rest
+    const myDelegationsFiltered = myDelegations?.filter(({ amountDelegated }) =>
+      gt(amountDelegated, 1)
+    )
 
     const undelegationTotal = calcUndelegationTotal(undelegations)
 
@@ -42,7 +45,7 @@ export default (
         data: format.amountN(d[sortKey] ?? '0'),
       })
 
-      const sorted = myDelegations?.sort(compareWith(sortKey)) ?? []
+      const sorted = myDelegationsFiltered?.sort(compareWith(sortKey)) ?? []
       const converted = sorted.map(getChart)
       const othersSum = sorted
         .slice(4)
@@ -54,7 +57,7 @@ export default (
         return src.length ? sum(src) : '0'
       }
 
-      return !myDelegations?.length
+      return !myDelegationsFiltered?.length
         ? undefined
         : {
             title,
