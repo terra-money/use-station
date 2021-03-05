@@ -151,7 +151,10 @@ export default (user: User, denom: string): PostPage<RecentSentUI> => {
   const calculatedMaxAmount = calcTax.getMax(balance)
   const maxAmount =
     bank?.balance.length === 1 && calcFee
-      ? max([minus(calculatedMaxAmount, calcFee.feeFromGas('100000', denom)), 0])
+      ? max([
+          minus(calculatedMaxAmount, calcFee.feeFromGas('100000', denom)),
+          0,
+        ])
       : calculatedMaxAmount
   const taxAmount = calcTax.getTax(amount)
 
@@ -295,7 +298,7 @@ export default (user: User, denom: string): PostPage<RecentSentUI> => {
     memo,
     contents,
     feeDenom: {
-      defaultValue: denom,
+      defaultValue: is.nativeDenom(denom) ? denom : '',
       list: getFeeDenomList(bank.balance),
     },
     validate: (fee: StationCoin) =>
