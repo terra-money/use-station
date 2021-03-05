@@ -34,7 +34,7 @@ export default (
     const { undelegations, availableLuna, delegationTotal } = rest
     const { myDelegations } = rest
     const myDelegationsFiltered = myDelegations?.filter(({ amountDelegated }) =>
-      gt(amountDelegated, 1)
+      gte(amountDelegated, 1)
     )
 
     const undelegationTotal = calcUndelegationTotal(undelegations)
