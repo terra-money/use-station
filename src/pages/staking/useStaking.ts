@@ -92,6 +92,10 @@ export default (
           disabled: !(rewards && gte(rewards.total, 1)),
         },
         amounts: rewards?.denoms.map((coin) => format.display(coin)) ?? [],
+        validators:
+          myDelegationsFiltered?.map(
+            ({ validatorAddress }) => validatorAddress
+          ) ?? [],
       },
       available: {
         title: t('Page:Staking:Available for delegation'),

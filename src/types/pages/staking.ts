@@ -9,6 +9,7 @@ export interface StakingPersonal {
   withdrawAll: {
     attrs: { children: string; disabled: boolean }
     amounts: DisplayCoin[]
+    validators: string[]
   }
   available: { title: string; display: DisplayCoin }
   delegated: { title: string; display: DisplayCoin }
