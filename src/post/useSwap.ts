@@ -395,7 +395,10 @@ export default (user: User, actives: string[]): PostPage<SwapUI> => {
           ),
         ],
       }),
-    feeDenom: { list: getFeeDenomList(bank.balance) },
+    feeDenom: {
+      defaultValue: is.nativeDenom(from) ? from : undefined,
+      list: getFeeDenomList(bank.balance),
+    },
     validate: (fee: StationCoin) =>
       is.nativeDenom(from)
         ? isAvailable(

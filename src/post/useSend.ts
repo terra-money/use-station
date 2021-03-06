@@ -297,7 +297,10 @@ export default (user: User, denom: string): PostPage<RecentSentUI> => {
     tax: shouldTax ? new Coin(denom, taxAmount) : undefined,
     memo,
     contents,
-    feeDenom: { list: getFeeDenomList(bank.balance) },
+    feeDenom: {
+      defaultValue: is.nativeDenom(denom) ? denom : undefined,
+      list: getFeeDenomList(bank.balance),
+    },
     validate: (fee: StationCoin) =>
       is.nativeDenom(denom)
         ? isAvailable(
