@@ -475,6 +475,7 @@
       "Swap": "兑换",
       "Swapping...": "兑换中...",
       "Swapped {{coin}} to {{unit}}": "把{{coin}}换成了{{unit}}",
+      "Swap multiple coins": "多币种兑换",
 
       "Final amount you receive in {{unit}} may vary due to the swap rate changes": "由于汇率变化而收到 {{unit}} 最终金额可能有所不同。"
     },

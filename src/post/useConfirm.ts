@@ -52,9 +52,7 @@ export default (
       return validate({ amount, denom })
     })
 
-    // People would prefer other denoms for paying fee
-    const availablePref: string[] = available.filter((d) => d !== denom)
-    return availablePref[0] ?? defaultValue ?? available[0]
+    return defaultValue ?? available[0]
   }
 
   const [input, setInput] = useState<string>(toInput('1'))

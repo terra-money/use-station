@@ -1,6 +1,10 @@
 import { DisplayCoin } from '..'
+import { BankData } from '../data/bank'
+import { Pairs } from '../data/coin'
 
 export interface SwapUI {
+  bank?: BankData
+  pairs?: Pairs
   mode: string
   message: string
   expectedPrice?: {
@@ -18,5 +22,8 @@ export interface SwapUI {
     value?: string
     unit?: string
     tooltip?: string
+  }
+  label: {
+    multipleSwap: string
   }
 }

@@ -15,6 +15,11 @@ interface SwapParams {
   to: string
 }
 
+interface SimulateParams extends SwapParams {
+  amount: string
+  chain: ChainOptions
+}
+
 export const isOnChainAvailable = ({ from, to }: SwapParams) =>
   is.nativeDenom(from) && is.nativeTerra(to)
 
@@ -29,7 +34,7 @@ export const findPair = ({ from, to }: SwapParams, pairs?: Pairs) => {
   return shouldBurnLuna ? undefined : pair
 }
 
-const createSwap = ({ from, to }: SwapParams) =>
+export const createSwap = ({ from, to }: SwapParams) =>
   isOnChainAvailable({ from, to })
     ? { native_swap: { offer_denom: from, ask_denom: to } }
     : {
@@ -39,15 +44,10 @@ const createSwap = ({ from, to }: SwapParams) =>
         },
       }
 
-const findRoute = ({ from, to }: SwapParams) => [
+export const findRoute = ({ from, to }: SwapParams) => [
   createSwap({ from, to: 'uusd' }),
   createSwap({ from: 'uusd', to }),
 ]
-
-interface SimulateParams extends SwapParams {
-  amount: string
-  chain: ChainOptions
-}
 
 export const isRouteAvailable = ({ name }: ChainOptions) => {
   return !!RouteContracts[name]
@@ -59,25 +59,21 @@ export const getRouteMessage = (params: SimulateParams) => {
   const path = RouteContracts[chain.name]
   const operations = findRoute({ from, to })
 
-  const msg = { execute_swap_operations: { offer_amount, operations } }
+  const swapOperations = { offer_amount, operations }
+  const msgSimulate = { simulate_swap_operations: swapOperations }
+  const msgExecute = { execute_swap_operations: swapOperations }
   const execute = is.nativeDenom(from)
     ? {
         contract: path,
-        msg,
+        msg: msgExecute,
         coins: [new Coin(from, offer_amount)],
       }
     : {
         contract: from,
-        msg: { send: { contract: path, msg: toBase64(msg), amount } },
+        msg: { send: { contract: path, msg: toBase64(msgExecute), amount } },
       }
 
-  return {
-    simulate: {
-      path,
-      msg: { simulate_swap_operations: { offer_amount, operations } },
-    },
-    execute,
-  }
+  return { simulate: { path, msg: msgSimulate }, execute }
 }
 
 export const simulateRoute = async (params: SimulateParams) => {

@@ -8,7 +8,7 @@ export interface CoinInput {
 export interface CoinInputGroup {
   denom: Field
   input: Field
-  button: ButtonAttrs
+  button?: ButtonAttrs
 }
 
 export interface CoinFields {

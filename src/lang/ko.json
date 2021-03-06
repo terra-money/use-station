@@ -475,6 +475,7 @@
       "Swap": "환전",
       "Swapping...": "환전하는 중...",
       "Swapped {{coin}} to {{unit}}": "{{coin}}를 {{unit}}으로 환전했습니다",
+      "Swap multiple coins": "한번에 환전하기",
 
       "Final amount you receive in {{unit}} may vary due to the swap rate changes": "환율 변경으로 인해, 받게 되는 {{unit}}의 최종 금액이 달라질 수 있습니다"
     },

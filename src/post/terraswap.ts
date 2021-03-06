@@ -60,7 +60,7 @@ interface SimulationResult {
   commission_amount: string
 }
 
-export const simulate = async (
+export const simulateTerraswap = async (
   params: Params,
   chain: ChainOptions,
   address: string

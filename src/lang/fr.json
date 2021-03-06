@@ -475,6 +475,7 @@
       "Swap": "Échanger",
       "Swapping...": "Échange...",
       "Swapped {{coin}} to {{unit}}": "Echangé {{coin}} pour {{unit}}",
+      "Swap multiple coins": "Échanger plusieurs jetons",
 
       "Final amount you receive in {{unit}} may vary due to the swap rate changes": "Le montant final que vous recevez en {{unit}} peut varier en raison de la variation du taux d'échange"
     },

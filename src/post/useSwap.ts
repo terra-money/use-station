@@ -17,7 +17,7 @@ import useTokenBalance from '../cw20/useTokenBalance'
 import validateForm from './validateForm'
 import usePairs from '../cw20/usePairs'
 import { getFeeDenomList, isAvailable, isFeeAvailable } from './validateConfirm'
-import { getTerraswapURL, simulate as simulateTerraswap } from './terraswap'
+import { getTerraswapURL, simulateTerraswap } from './terraswap'
 import * as routeswap from './routeswap'
 import useCalcTax from './useCalcTax'
 import { useCalcFee } from './txHelpers'
@@ -174,10 +174,11 @@ export default (user: User, actives: string[]): PostPage<SwapUI> => {
             chain.current,
             user.address
           )
+
           result && setSimulated(result.return_amount)
           result && setTradingFeeTerraswap(result.commission_amount)
         } else if (mode === 'On-chain') {
-          const { swapped, rate } = await fetchSimulate(values)
+          const { swapped, rate } = await simulateOnchain({ ...values, amount })
           setPrincipalNative(times(amount, rate))
           setSimulated(swapped)
         }
@@ -272,6 +273,8 @@ export default (user: User, actives: string[]): PostPage<SwapUI> => {
 
   const [firstActiveDenom] = actives
   const ui: SwapUI = {
+    bank: bank?.data,
+    pairs,
     mode: mode ?? '',
     message:
       !firstActiveDenom || errorMessage
@@ -335,6 +338,7 @@ export default (user: User, actives: string[]): PostPage<SwapUI> => {
             ].join(' > '),
           },
         }[mode],
+    label: { multipleSwap: t('Post:Swap:Swap multiple coins') },
   }
 
   const formUI: FormUI = {
@@ -463,9 +467,21 @@ export default (user: User, actives: string[]): PostPage<SwapUI> => {
 }
 
 /* fetch */
-type Result = { swapped: string; rate: string }
-const fetchSimulate = async ({ from, to, input }: Values): Promise<Result> => {
-  const amount = toAmount(input)
+interface SimulateParams {
+  from: string
+  to: string
+  amount: string
+}
+
+interface SimulateResult {
+  swapped: string
+  rate: string
+}
+
+export const simulateOnchain = async (
+  simulateParams: SimulateParams
+): Promise<SimulateResult> => {
+  const { from, to, amount } = simulateParams
   const params = { offer_coin: amount + from, ask_denom: to }
   const url = `/market/swap`
   const swapped = await fcd.get<{ result: StationCoin }>(url, { params })
