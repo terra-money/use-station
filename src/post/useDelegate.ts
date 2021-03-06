@@ -170,10 +170,7 @@ export default (
     const coin = format.coin({ amount, denom })
     const display = format.display({ amount, denom })
     const contents = [{ name: t('Common:Tx:Amount'), displays: [display] }]
-    const feeDenom = {
-      defaultValue: denom,
-      list: getFeeDenomList(bank.balance),
-    }
+    const feeDenom = { list: getFeeDenomList(bank.balance) }
     const cancel = () => setSubmitted(false)
 
     return {

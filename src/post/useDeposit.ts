@@ -77,10 +77,7 @@ export default (
         displays: [format.display({ amount, denom })],
       },
     ],
-    feeDenom: {
-      defaultValue: denom,
-      list: getFeeDenomList(bank.balance),
-    },
+    feeDenom: { list: getFeeDenomList(bank.balance) },
     validate: (fee: Coin) => isAvailable({ amount, denom, fee }, bank.balance),
     submitLabels: [
       t('Post:Governance:Deposit'),

@@ -21,10 +21,7 @@ export default (user: User, props: WithdrawProps): PostPage => {
     confirm: bank && {
       msgs,
       contents: [{ name: t('Common:Tx:Amount'), displays: amounts }],
-      feeDenom: {
-        defaultValue: 'uluna',
-        list: getFeeDenomList(bank.balance),
-      },
+      feeDenom: { list: getFeeDenomList(bank.balance) },
       validate: (fee) => isFeeAvailable(fee, bank.balance),
       submitLabels: [
         t('Post:Staking:Withdraw'),

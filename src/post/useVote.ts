@@ -76,10 +76,7 @@ export default (
     url: `/gov/proposals/${id}/votes`,
     payload: { voter: user.address, option: key },
     contents: [{ name: t('Page:Governance:Answer'), text: label }],
-    feeDenom: {
-      defaultValue: 'uluna',
-      list: getFeeDenomList(bank.balance),
-    },
+    feeDenom: { list: getFeeDenomList(bank.balance) },
     validate: (fee: Coin) => isFeeAvailable(fee, bank.balance),
     submitLabels: [t('Post:Governance:Vote'), t('Post:Governance:Voting...')],
     message: t('Post:Governance:Voted {{answer}} for {{title}}', {

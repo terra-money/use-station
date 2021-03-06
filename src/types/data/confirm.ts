@@ -1,4 +1,4 @@
-import { Coin, Msg } from '@terra-money/terra.js'
+import { Coin, Coins, Msg } from '@terra-money/terra.js'
 import { FormUI, FieldAttrs, Options } from '..'
 import { Card, Coin as StationCoin, DisplayCoin, ConfirmLedger } from '..'
 import { PostResult } from './post'
@@ -6,7 +6,7 @@ import { PostResult } from './post'
 export interface ConfirmProps {
   url?: string
   msgs?: Msg[]
-  tax?: Coin
+  tax?: Coin | Coins
   payload?: object
   memo?: string
   contents: ConfirmContent[]

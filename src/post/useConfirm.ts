@@ -57,8 +57,8 @@ export default (
     return availablePref[0] ?? defaultValue ?? available[0]
   }
 
-  const [input, setInput] = useState<string>(toInput('1'))
-  const [denom, setDenom] = useState<string>(getFeeDenom('1'))
+  const [input, setInput] = useState<string>('1')
+  const [denom, setDenom] = useState<string>(() => getFeeDenom('1'))
   const [estimated, setEstimated] = useState<string>()
   const fee = { amount: toAmount(input), denom }
   const calcFee = useCalcFee()

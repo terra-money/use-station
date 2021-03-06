@@ -282,10 +282,7 @@ export default (user: User): PostPage => {
           },
         ]
       : [],
-    feeDenom: {
-      defaultValue: denom,
-      list: getFeeDenomList(bank.balance),
-    },
+    feeDenom: { list: getFeeDenomList(bank.balance) },
     validate: (fee: Coin) => isAvailable({ amount, denom, fee }, bank.balance),
     submitLabels: [
       t('Post:Governance:Propose'),

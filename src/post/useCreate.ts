@@ -86,10 +86,7 @@ export default (user: User, denoms: string[]): PostPage<CoinFields> => {
     },
     memo: stringify({ name, description }),
     contents: [],
-    feeDenom: {
-      defaultValue: 'uluna',
-      list: getFeeDenomList(bank.balance),
-    },
+    feeDenom: { list: getFeeDenomList(bank.balance) },
     validate: (fee: Coin) => isFeeAvailable(fee, bank.balance),
     submitLabels: [t('Post:Contracts:Create'), t('Post:Contracts:Creating...')],
     message: t('Post:Contracts:Created contract'),

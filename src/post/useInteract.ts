@@ -66,10 +66,7 @@ export default (
     url: `/wasm/contracts/${address}`,
     payload: { exec_msg: format.sanitizeJSON(values.json) },
     contents: [],
-    feeDenom: {
-      defaultValue: 'uluna',
-      list: getFeeDenomList(bank.balance),
-    },
+    feeDenom: { list: getFeeDenomList(bank.balance) },
     validate: (fee: Coin) => isFeeAvailable(fee, bank.balance),
     submitLabels: [
       t('Post:Contracts:Interact'),
