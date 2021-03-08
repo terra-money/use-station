@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from 'react'
-import axios, { AxiosRequestConfig as Config } from 'axios'
+import axios, { AxiosError, AxiosRequestConfig as Config } from 'axios'
 import qs from 'qs'
 import { API } from '../types'
 import fcd from './fcd'
@@ -11,7 +11,7 @@ export default <T>(
 ): API<T> => {
   const [data, setData] = useState<T>()
   const [loading, setLoading] = useState<boolean>(immediate)
-  const [error, setError] = useState<Error>()
+  const [error, setError] = useState<Error | AxiosError>()
 
   /* request */
   const query = qs.stringify(params)

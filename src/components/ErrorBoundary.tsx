@@ -1,3 +1,4 @@
+import { AxiosError } from 'axios'
 import { Component, ReactNode, ErrorInfo } from 'react'
 
 interface Props {
@@ -6,18 +7,26 @@ interface Props {
 }
 
 class ErrorBoundary extends Component<Props> {
-  state = { hasError: null }
+  state = { hasError: null, isForbidden: false }
   static getDerivedStateFromError = () => ({ hasError: true })
 
   componentDidCatch(error: Error, errorInfo: ErrorInfo) {
+    this.setState({ isForbidden: error && getIsForbidden(error) })
     this.props.handleError?.(error, errorInfo)
   }
 
   render() {
     const { fallback = null, children } = this.props
-    const { hasError } = this.state
-    return hasError ? fallback : children
+    const { hasError, isForbidden } = this.state
+    return hasError ? (isForbidden ? FORBIDDEN : fallback) : children
   }
 }
 
 export default ErrorBoundary
+
+/* helpers */
+export const FORBIDDEN =
+  'Your IP has been flagged for potential security violations. Please change your network configuration.'
+
+export const getIsForbidden = (error: Error | AxiosError) =>
+  'response' in error && error.response?.status === 403
