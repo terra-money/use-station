@@ -63,7 +63,7 @@ export default (user: User, { bank, pairs }: Params): PostPage => {
   const [isSimulating, setIsSimulating] = useState(false)
   const [isSimulated, setIsSimulated] = useState(false)
   const [simulatedList, setSimulatedList] = useState<Dictionary<string>>({})
-  const simulatedValues = Object.values(simulatedList)
+  const simulatedValues = checked.map((denom) => simulatedList[denom])
   const sumOfSimulated = simulatedValues.length ? sum(simulatedValues) : '0'
 
   const isTerraswap = (from: string) => findPair({ from, to }, pairs)
