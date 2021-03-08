@@ -68,10 +68,12 @@ export default (user: User, { bank, pairs }: Params): PostPage => {
 
   const isTerraswap = (from: string) => findPair({ from, to }, pairs)
   const balanceDenomsWithoutTo = balanceDenoms.filter((denom) => denom !== to)
-  const terraswapList = balanceDenomsWithoutTo.filter(isTerraswap)
-  const routeswapList = balanceDenomsWithoutTo.filter(
-    (denom) => !isTerraswap(denom)
-  )
+  const terraswapList = balanceDenomsWithoutTo
+    .filter((denom) => gt(getAmountAfterTax(denom), '1'))
+    .filter(isTerraswap)
+  const routeswapList = balanceDenomsWithoutTo
+    .filter((denom) => gt(getAmountAfterTax(denom), '1'))
+    .filter((denom) => !isTerraswap(denom))
 
   useEffect(() => {
     const simulate = async () => {
