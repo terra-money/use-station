@@ -179,7 +179,7 @@ export default (user: User, actives: string[]): PostPage<SwapUI> => {
           result && setTradingFeeTerraswap(result.commission_amount)
         } else if (mode === 'On-chain') {
           const { swapped, rate } = await simulateOnchain({ ...values, amount })
-          setPrincipalNative(times(amount, rate))
+          setPrincipalNative(times(amount, rate!))
           setSimulated(swapped)
         }
       } catch (error) {
@@ -475,19 +475,25 @@ interface SimulateParams {
 
 interface SimulateResult {
   swapped: string
-  rate: string
+  rate?: string
 }
 
 export const simulateOnchain = async (
-  simulateParams: SimulateParams
+  simulateParams: SimulateParams,
+  fetchRate = true
 ): Promise<SimulateResult> => {
   const { from, to, amount } = simulateParams
   const params = { offer_coin: amount + from, ask_denom: to }
   const url = `/market/swap`
   const swapped = await fcd.get<{ result: StationCoin }>(url, { params })
-  const rateList = await fcd.get<Rate[]>(`/v1/market/swaprate/${from}`)
-  const rate = find(`${to}:swaprate`, rateList.data) ?? '0'
-  return { swapped: swapped.data.result.amount, rate }
+
+  if (fetchRate) {
+    const rateList = await fcd.get<Rate[]>(`/v1/market/swaprate/${from}`)
+    const rate = find(`${to}:swaprate`, rateList.data) ?? '0'
+    return { swapped: swapped.data.result.amount, rate }
+  } else {
+    return { swapped: swapped.data.result.amount }
+  }
 }
 
 interface MarketData {

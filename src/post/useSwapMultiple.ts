@@ -120,7 +120,10 @@ export default (user: User, { bank, pairs }: Params): PostPage => {
         setSimulatedList({ ...simulatedTerraswap, ...simulatedRouteswap })
       } else {
         const simulateList = balanceDenomsWithoutTo.map((from) =>
-          simulateOnchain({ from, to, amount: availableList[from] ?? '0' })
+          simulateOnchain(
+            { from, to, amount: availableList[from] ?? '0' },
+            false
+          )
         )
 
         const responses = await Promise.all(simulateList)
