@@ -111,11 +111,11 @@ export default (
             : [
                 {
                   value: address,
-                  children: `${t('Page:Bank:My wallet')} - ${address}`,
+                  children: t('Page:Bank:My wallet'),
                 },
                 ...sources!.map(({ validatorName, validatorAddress }) => ({
                   value: validatorAddress,
-                  children: `${validatorName} - ${validatorAddress}`,
+                  children: validatorName,
                 })),
               ],
         }
