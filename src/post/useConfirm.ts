@@ -9,22 +9,22 @@ import fcd from '../api/fcd'
 import { format } from '../utils'
 import { toInput, toAmount } from '../utils/format'
 import { times, lt, gt } from '../utils/math'
-import { getStoredWallet } from '../../../utils/localStorage'
-import * as ledgers from '../../../wallet/ledger'
+import * as ledgers from '../api/ledger'
 import { useConfig } from '../contexts/ConfigContext'
-import LedgerKey from '../../../extension/LedgerKey'
+import LedgerKey from '../api/LedgerKey'
 import { getBase, config, useCalcFee } from './txHelpers'
 import { checkError, parseError } from './txHelpers'
 
 interface SignParams {
   user: User
   password?: string
+  getKey: ({ name, password }: { name: string; password: string }) => string
   sign: Sign
 }
 
 export default (
   { url, payload, memo, submitLabels, message, ...rest }: ConfirmProps,
-  { user, password: defaultPassword = '', sign }: SignParams
+  { user, password: defaultPassword = '', sign, getKey }: SignParams
 ): ConfirmPage => {
   const { contents, msgs, tax, feeDenom, validate, warning, parseResult } = rest
 
@@ -157,7 +157,7 @@ export default (
           const signed = await key.signTx(unsignedTx)
           await broadcast(signed)
         } else if (name) {
-          const { privateKey } = getStoredWallet(name, password)
+          const privateKey = getKey({ name, password })
           const key = new RawKey(Buffer.from(privateKey, 'hex'))
           const signed = await key.signTx(unsignedTx)
           await broadcast(signed)
