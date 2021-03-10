@@ -1,4 +1,4 @@
-import { Coin, Coins, Msg } from '@terra-money/terra.js'
+import { Coin, Coins, Key, Msg } from '@terra-money/terra.js'
 import { FormUI, FieldAttrs, Options } from '..'
 import { Card, Coin as StationCoin, DisplayCoin, ConfirmLedger } from '..'
 import { PostResult } from './post'
@@ -57,3 +57,8 @@ export type Sign = (params: {
   base: Base
   password: string
 }) => Promise<string>
+
+export type GetKey = (params?: {
+  name: string
+  password: string
+}) => Promise<Key>

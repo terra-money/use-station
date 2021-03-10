@@ -1,30 +1,28 @@
 import { useState, useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
-import { Coins, LCDClient, RawKey, StdFee } from '@terra-money/terra.js'
+import { Coins, LCDClient, StdFee } from '@terra-money/terra.js'
 import { StdSignMsg, StdTx } from '@terra-money/terra.js'
-import { ConfirmProps, ConfirmPage, Sign, Field, User } from '../types'
+import { ConfirmProps, ConfirmPage, Sign, Field, User, GetKey } from '../types'
 import { PostResult } from '../types'
 import useInfo from '../lang/useInfo'
 import fcd from '../api/fcd'
 import { format } from '../utils'
 import { toInput, toAmount } from '../utils/format'
 import { times, lt, gt } from '../utils/math'
-import { getStoredWallet } from '../../../utils/localStorage'
-import * as ledgers from '../../../wallet/ledger'
 import { useConfig } from '../contexts/ConfigContext'
-import LedgerKey from '../../../extension/LedgerKey'
 import { getBase, config, useCalcFee } from './txHelpers'
 import { checkError, parseError } from './txHelpers'
 
 interface SignParams {
   user: User
   password?: string
+  getKey: GetKey
   sign: Sign
 }
 
 export default (
   { url, payload, memo, submitLabels, message, ...rest }: ConfirmProps,
-  { user, password: defaultPassword = '', sign }: SignParams
+  { user, password: defaultPassword = '', sign, getKey }: SignParams
 ): ConfirmPage => {
   const { contents, msgs, tax, feeDenom, validate, warning, parseResult } = rest
 
@@ -152,16 +150,9 @@ export default (
         const fees = tax ? gasFee.add(tax) : gasFee
         unsignedTx.fee = new StdFee(unsignedTx.fee.gas, fees)
 
-        if (user.ledger) {
-          const key = new LedgerKey(await ledgers.getPubKey())
-          const signed = await key.signTx(unsignedTx)
-          await broadcast(signed)
-        } else if (name) {
-          const { privateKey } = getStoredWallet(name, password)
-          const key = new RawKey(Buffer.from(privateKey, 'hex'))
-          const signed = await key.signTx(unsignedTx)
-          await broadcast(signed)
-        }
+        const key = await getKey(name ? { name, password } : undefined)
+        const signed = await key.signTx(unsignedTx)
+        await broadcast(signed)
       } else if (url) {
         // Post to fetch tx
         const gas_prices = [{ amount: calcFee!.gasPrice(fee.denom), denom }]
