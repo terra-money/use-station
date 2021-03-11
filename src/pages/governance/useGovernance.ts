@@ -15,9 +15,8 @@ export const useProposalStatus = (): {
   const { t } = useTranslation()
 
   return [
-    { key: '', label: t('Common:All') },
-    { key: 'Deposit', label: t('Page:Governance:Deposit') },
     { key: 'Voting', label: t('Page:Governance:Voting') },
+    { key: 'Deposit', label: t('Page:Governance:Deposit') },
     { key: 'Passed', label: t('Page:Governance:Passed') },
     { key: 'Rejected', label: t('Page:Governance:Rejected') },
   ]
