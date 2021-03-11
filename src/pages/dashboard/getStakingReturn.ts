@@ -12,7 +12,7 @@ interface Result {
 export default (t: TFunction): Props<Result> => ({
   title: t('Page:Chart:Staking return'),
   desc: t(
-    'Page:Chart:Annualized staking yield for Luna based on tax rewards, oracle rewards, gas, MIR airdrop rewards and latest prices of Luna (annualize return = 7 days moving average return * 365)'
+    'Page:Chart:Annualized staking yield for Luna based on tax rewards, oracle rewards, gas, MIR airdrop rewards and latest prices of Luna (annualize return = 10 days moving average return * 365)'
   ),
   url: '/v1/dashboard/staking_return',
   filterConfig: { type: { initial: CumulativeType.C } },

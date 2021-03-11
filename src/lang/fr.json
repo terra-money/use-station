@@ -214,7 +214,7 @@
       "Transaction volume": "Volume des transactions",
       "The onchain transaction volume for the selected currency over the selected time period": "Le volume des transactions sur chaîne pour la devise sélectionnée sur la période sélectionnée",
       "Staking return": "Retour de Staking",
-      "Annualized staking yield for Luna based on tax rewards, oracle rewards, gas, MIR airdrop rewards and latest prices of Luna (annualize return = 7 days moving average return * 365)": "Rendement annualisé du staking pour Luna basé sur les frais de transactions et du gaz, les récompenses de l'oracle, les récompenses de MIR, et les derniers prix du Luna (retour annualisé = moyenne mobile sur 7 jours * 365)",
+      "Annualized staking yield for Luna based on tax rewards, oracle rewards, gas, MIR airdrop rewards and latest prices of Luna (annualize return = 10 days moving average return * 365)": "Rendement annualisé du staking pour Luna basé sur les frais de transactions et du gaz, les récompenses de l'oracle, les récompenses de MIR, et les derniers prix du Luna (retour annualisé = moyenne mobile sur 10 jours * 365)",
       "Tax rewards": "Récompenses fiscales",
       "Tax rewards distributed over the selected time period": "Récompenses fiscales réparties sur la période choisie",
       "Total accounts": "Nombre total de comptes",

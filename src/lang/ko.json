@@ -214,7 +214,7 @@
       "Transaction volume": "거래량",
       "The onchain transaction volume for the selected currency over the selected time period": "선택한 통화에 대한 선택한 기간 동안의 체인상 거래량입니다",
       "Staking return": "스테이킹 수익",
-      "Annualized staking yield for Luna based on tax rewards, oracle rewards, gas, MIR airdrop rewards and latest prices of Luna (annualize return = 7 days moving average return * 365)": "세금 보상, 오라클 보상, 가스 수수료, MIR 에어드랍 보상 및 루나의 최신 가격을 기준으로 한 루나의 연간 스테이킹 수익율입니다 (7일간의 스테이킹 수익률 이동평균 * 365)",
+      "Annualized staking yield for Luna based on tax rewards, oracle rewards, gas, MIR airdrop rewards and latest prices of Luna (annualize return = 10 days moving average return * 365)": "세금 보상, 오라클 보상, 가스 수수료, MIR 에어드랍 보상 및 루나의 최신 가격을 기준으로 한 루나의 연간 스테이킹 수익율입니다 (10일간의 스테이킹 수익률 이동평균 * 365)",
       "Tax rewards": "세금 보상",
       "Tax rewards distributed over the selected time period": "선택한 기간 동안 분배된 세금 보상입니다",
       "Total accounts": "계정 수",
