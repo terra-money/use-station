@@ -21,7 +21,7 @@ export default (user: User, config?: Config): AssetsPage => {
     config?.hideSmall !== undefined ? config.hideSmall : false
   )
   const [hideSmallTokens, setHideSmallTokens] = useState(
-    config?.hideSmallTokens !== undefined ? config.hideSmallTokens : true
+    config?.hideSmallTokens !== undefined ? config.hideSmallTokens : false
   )
 
   const load = () => {
@@ -39,7 +39,7 @@ export default (user: User, config?: Config): AssetsPage => {
             title: t('Page:Bank:Wallet empty'),
             content: t("Page:Bank:This wallet doesn't hold any coins yet"),
           }
-        : !balance.length && !vesting.length
+        : !balance.length && !vesting.length && tokenList?.length
         ? {
             title: t('Page:Bank:Wallet empty'),
             content:
@@ -120,7 +120,12 @@ export default (user: User, config?: Config): AssetsPage => {
     { setHideSmall, load },
     bank,
     { loading: bank.loading || tokens.loading },
-    bank.data && { ui: render(bank.data, tokens.list) }
+    bank.data && {
+      ui: render(
+        bank.data,
+        tokens.list?.filter(({ balance }) => gt(balance, 0))
+      ),
+    }
   )
 }
 
