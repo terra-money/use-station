@@ -17,6 +17,7 @@ interface SwapParams {
 
 interface SimulateParams extends SwapParams {
   amount: string
+  minimum_receive?: string
   chain: ChainOptions
 }
 
@@ -54,12 +55,12 @@ export const isRouteAvailable = ({ name }: ChainOptions) => {
 }
 
 export const getRouteMessage = (params: SimulateParams) => {
-  const { amount, from, to, chain } = params
+  const { amount, from, to, chain, minimum_receive } = params
   const offer_amount = amount
   const path = RouteContracts[chain.name]
   const operations = findRoute({ from, to })
 
-  const swapOperations = { offer_amount, operations }
+  const swapOperations = { offer_amount, operations, minimum_receive }
   const msgSimulate = { simulate_swap_operations: swapOperations }
   const msgExecute = { execute_swap_operations: swapOperations }
   const execute = is.nativeDenom(from)

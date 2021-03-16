@@ -5,9 +5,9 @@ import { AccAddress, MsgExecuteContract, MsgSwap } from '@terra-money/terra.js'
 import { Coin } from '@terra-money/terra.js'
 import { PostPage, SwapUI, ConfirmProps, BankData, Whitelist } from '../types'
 import { User, Coin as StationCoin, Rate, Field, FormUI } from '../types'
-import { find, format, is, lte, max, plus } from '../utils'
+import { find, floor, format, is, isInteger, lte, max, plus } from '../utils'
 import { gt, times, percent, minus, div, isFinite } from '../utils'
-import { toInput, toAmount } from '../utils/format'
+import { toInput, toAmount, decimal } from '../utils/format'
 import { useConfig } from '../contexts/ConfigContext'
 import useForm from '../hooks/useForm'
 import useFCD from '../api/useFCD'
@@ -25,8 +25,14 @@ import { useCalcFee } from './txHelpers'
 const { findPair, getRouteMessage } = routeswap
 const { isRouteAvailable, isOnChainAvailable, simulateRoute } = routeswap
 
+const assertLimitOrderContracts: Dictionary = {
+  mainnet: 'terra1vs9jr7pxuqwct3j29lez3pfetuu8xmq7tk3lzk',
+  testnet: 'terra1z3sf42ywpuhxdh78rr5vyqxpaxa0dx657x5trs',
+}
+
 type Mode = 'On-chain' | 'Terraswap' | 'Route'
 interface Values {
+  slippage: string
   from: string
   to: string
   input: string
@@ -85,23 +91,28 @@ export default (user: User, actives: string[]): PostPage<SwapUI> => {
   }
 
   /* form */
-  const validate = ({ input }: Values) => ({
+  const validate = ({ input, slippage }: Values) => ({
+    slippage: !isInteger(times(slippage, 100))
+      ? 'Slippage must be within 2 decimal points'
+      : '',
     from: '',
     to: '',
     input: v.input(input),
   })
 
-  const initial = { from: '', to: '', input: '' }
+  const initial = { slippage: '1', from: '', to: '', input: '' }
   const [submitted, setSubmitted] = useState(false)
   const form = useForm<Values>(initial, validate)
   const { values, setValue, setValues, invalid } = form
   const { getDefaultProps, getDefaultAttrs } = form
-  const { from, to, input } = values
+  const { slippage, from, to, input } = values
   const amount = toAmount(input)
+  const slippagePercent = isFinite(slippage) ? div(slippage, 100) : '0.01'
 
   const pair = findPair({ from, to }, pairs)
 
-  const getMode = ({ from, to }: Omit<Values, 'input'>): Mode | undefined =>
+  type PairParams = { from: string; to: string }
+  const getMode = ({ from, to }: PairParams): Mode | undefined =>
     !(from && to)
       ? undefined
       : isOnChainAvailable({ from, to })
@@ -115,7 +126,7 @@ export default (user: User, actives: string[]): PostPage<SwapUI> => {
   const mode = getMode({ from, to })
 
   const init = (values?: Partial<Values>) => {
-    setValues({ from: '', to: '', input: '', ...values })
+    setValues({ slippage: '1', from: '', to: '', input: '', ...values })
     setPrincipalNative('0')
     setSimulated('0')
     setTradingFeeTerraswap('0')
@@ -125,6 +136,7 @@ export default (user: User, actives: string[]): PostPage<SwapUI> => {
   const [simulating, setSimulating] = useState(false)
   const [simulated, setSimulated] = useState('0')
   const [errorMessage, setErrorMessage] = useState<Error>()
+  const minimum_receive = floor(times(simulated, minus(1, slippagePercent)))
 
   // simulate: Native
   const [principalNative, setPrincipalNative] = useState('0')
@@ -134,7 +146,7 @@ export default (user: User, actives: string[]): PostPage<SwapUI> => {
 
   // simulate: Expected price
   const [price, setPrice] = useState('0')
-  const expectedPrice = div(simulated, amount)
+  const expectedPrice = div(amount, simulated)
 
   // simulate: Max & Tax
   const shouldTax = is.nativeTerra(from) && mode !== 'On-chain'
@@ -157,7 +169,15 @@ export default (user: User, actives: string[]): PostPage<SwapUI> => {
     ? cw20Tokens.whitelist?.[from === 'uusd' ? to : from]?.token
     : undefined
   const terraswapParams = { pair, token, offer: { amount, from } }
-  const routeParams = { amount, from, to, chain: chain.current }
+
+  const routeParams = {
+    amount,
+    from,
+    to,
+    chain: chain.current,
+    minimum_receive,
+  }
+
   const { execute: executeRoute } = getRouteMessage(routeParams)
 
   useEffect(() => {
@@ -265,6 +285,13 @@ export default (user: User, actives: string[]): PostPage<SwapUI> => {
     },
   ]
 
+  const slippageField: Field = {
+    label: '',
+    ...getDefaultProps('slippage'),
+    element: 'input',
+    attrs: getDefaultAttrs('slippage'),
+  }
+
   const validInput = !invalid && from && to && lte(amount, maxAmount)
   const validSimulation = gt(simulated, '0')
   const calculating = loadingTax || simulating
@@ -298,12 +325,12 @@ export default (user: User, actives: string[]): PostPage<SwapUI> => {
       : {
           title: 'Expected price',
           text: gt(expectedPrice, 1)
-            ? `1 ${format.denom(from, whitelist)} = ${format.decimal(
+            ? `1 ${format.denom(to, whitelist)} = ${format.decimal(
                 expectedPrice
-              )} ${format.denom(to, whitelist)}`
-            : `1 ${format.denom(to, whitelist)} = ${format.decimal(
+              )} ${format.denom(from, whitelist)}`
+            : `1 ${format.denom(from, whitelist)} = ${format.decimal(
                 div(1, expectedPrice)
-              )} ${format.denom(from, whitelist)}`,
+              )} ${format.denom(to, whitelist)}`,
         },
     spread: !mode
       ? undefined
@@ -339,6 +366,7 @@ export default (user: User, actives: string[]): PostPage<SwapUI> => {
           },
         }[mode],
     label: { multipleSwap: t('Post:Swap:Swap multiple coins') },
+    slippageField,
   }
 
   const formUI: FormUI = {
@@ -349,15 +377,31 @@ export default (user: User, actives: string[]): PostPage<SwapUI> => {
     onSubmit: disabled ? undefined : () => setSubmitted(true),
   }
 
+  const assertLimitOrderContract = assertLimitOrderContracts[chain.current.name]
+  const assertLimitOrder = !assertLimitOrderContract
+    ? undefined
+    : new MsgExecuteContract(user.address, assertLimitOrderContract, {
+        assert_limit_order: {
+          offer_coin: { denom: from, amount },
+          ask_denom: to,
+          minimum_receive,
+        },
+      })
+
+  const swap = new MsgSwap(user.address, new Coin(from, amount), to)
+
   const terraswap = pair
-    ? getTerraswapURL(terraswapParams, chain.current, user.address)
+    ? getTerraswapURL(terraswapParams, chain.current, user.address, {
+        belief_price: decimal(expectedPrice, 18),
+        max_spread: slippagePercent,
+      })
     : undefined
 
   const getConfirm = (bank: BankData, whitelist: Whitelist): ConfirmProps => ({
     msgs: !mode
       ? undefined
       : {
-          'On-chain': [new MsgSwap(user.address, new Coin(from, amount), to)],
+          'On-chain': assertLimitOrder ? [assertLimitOrder, swap] : [swap],
           Terraswap: terraswap?.msgs,
           Route: [
             new MsgExecuteContract(
@@ -380,6 +424,10 @@ export default (user: User, actives: string[]): PostPage<SwapUI> => {
           format.display({ amount, denom: from }, undefined, whitelist),
         ],
       },
+      {
+        name: 'Slippage Tolerance',
+        text: slippage + '%',
+      },
     ]
       .concat(
         shouldTax
@@ -399,7 +447,7 @@ export default (user: User, actives: string[]): PostPage<SwapUI> => {
           ),
         ],
       }),
-    feeDenom: { list: getFeeDenomList(bank.balance), },
+    feeDenom: { list: getFeeDenomList(bank.balance) },
     validate: (fee: StationCoin) =>
       is.nativeDenom(from)
         ? isAvailable(

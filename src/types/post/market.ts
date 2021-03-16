@@ -1,4 +1,5 @@
 import { DisplayCoin } from '..'
+import { Field } from '../common/form'
 import { BankData } from '../data/bank'
 import { Pairs } from '../data/coin'
 
@@ -26,4 +27,5 @@ export interface SwapUI {
   label: {
     multipleSwap: string
   }
+  slippageField: Field
 }

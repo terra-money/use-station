@@ -17,7 +17,8 @@ export const toTokenInfo = (token: string) =>
 export const getTerraswapURL = (
   { pair, token, offer }: Params,
   { lcd: baseURL }: ChainOptions,
-  address: string
+  address: string,
+  swapOptions?: { belief_price: string; max_spread: string }
 ) => {
   const shouldHook = AccAddress.validate(offer.from)
   const simulatePath = `/wasm/contracts/${pair}/store`
@@ -38,7 +39,7 @@ export const getTerraswapURL = (
           new MsgExecuteContract(
             address,
             pair!,
-            { swap: { offer_asset: asset } },
+            { swap: { ...swapOptions, offer_asset: asset } },
             new Coins([new Coin(offer.from, offer.amount)])
           ),
         ]
@@ -47,7 +48,7 @@ export const getTerraswapURL = (
             send: {
               amount: offer.amount,
               contract: pair,
-              msg: toBase64({ swap: {} }),
+              msg: toBase64({ swap: swapOptions }),
             },
           }),
         ],
