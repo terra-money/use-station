@@ -7,7 +7,7 @@ import { PostPage, SwapUI, ConfirmProps, BankData, Whitelist } from '../types'
 import { User, Coin as StationCoin, Rate, Field, FormUI } from '../types'
 import { find, floor, format, is, isInteger, lte, max, plus } from '../utils'
 import { gt, times, percent, minus, div, isFinite } from '../utils'
-import { toInput, toAmount, decimal } from '../utils/format'
+import { toInput, toAmount, decimalN } from '../utils/format'
 import { useConfig } from '../contexts/ConfigContext'
 import useForm from '../hooks/useForm'
 import useFCD from '../api/useFCD'
@@ -392,7 +392,7 @@ export default (user: User, actives: string[]): PostPage<SwapUI> => {
 
   const terraswap = pair
     ? getTerraswapURL(terraswapParams, chain.current, user.address, {
-        belief_price: decimal(expectedPrice, 18),
+        belief_price: String(decimalN(expectedPrice, 18)),
         max_spread: slippagePercent,
       })
     : undefined
