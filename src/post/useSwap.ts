@@ -475,14 +475,7 @@ export default (user: User, actives: string[]): PostPage<SwapUI> => {
 
       const message = t('Post:Swap:Swapped {{coin}} to {{unit}}', {
         coin: format.coin({ amount, denom: from }, undefined, whitelist),
-        unit:
-          mode === 'Route'
-            ? format.denom(to, whitelist)
-            : format.coin(
-                { amount: received, denom: to },
-                undefined,
-                whitelist
-              ),
+        unit: format.denom(to, whitelist),
       })
 
       const executed_price = div(received, paid)
