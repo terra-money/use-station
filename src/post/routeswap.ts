@@ -50,8 +50,28 @@ export const findRoute = ({ from, to }: SwapParams) => [
   createSwap({ from: 'uusd', to }),
 ]
 
-export const isRouteAvailable = ({ name }: ChainOptions) => {
-  return !!RouteContracts[name]
+export const isRouteAvailable = ({
+  from,
+  to,
+  chain,
+  pairs,
+}: {
+  from: string
+  to: string
+  chain: string
+  pairs?: Pairs
+}) => {
+  const r0 =
+    isOnChainAvailable({ from, to: 'uusd' }) ||
+    findPair({ from, to: 'uusd' }, pairs)
+
+  const r1 =
+    isOnChainAvailable({ from: 'uusd', to }) ||
+    findPair({ from: 'uusd', to }, pairs)
+
+  const routeContract = !!RouteContracts[chain]
+
+  return r0 && r1 && routeContract
 }
 
 export const getRouteMessage = (params: SimulateParams) => {

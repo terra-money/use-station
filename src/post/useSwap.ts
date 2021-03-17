@@ -119,7 +119,7 @@ export default (user: User, actives: string[]): PostPage<SwapUI> => {
       ? 'On-chain'
       : findPair({ from, to }, pairs)
       ? 'Terraswap'
-      : isRouteAvailable(chain.current)
+      : isRouteAvailable({ from, to, chain: chain.current.name, pairs })
       ? 'Route'
       : undefined
 
