@@ -228,7 +228,7 @@ export default (user: User, actives: string[]): PostPage<SwapUI> => {
   }, [from, to])
 
   useEffect(() => {
-    init({ from })
+    init({ from, slippage })
     // eslint-disable-next-line
   }, [from])
 
