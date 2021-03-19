@@ -2,7 +2,8 @@ import { useState, useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Coins, LCDClient, StdFee } from '@terra-money/terra.js'
 import { StdSignMsg, StdTx } from '@terra-money/terra.js'
-import { ConfirmProps, ConfirmPage, Sign, Field, User, GetKey } from '../types'
+import { ConfirmProps, ConfirmPage, Sign, Field } from '../types'
+import { User, GetKey, Bip } from '../types'
 import { PostResult } from '../types'
 import useInfo from '../lang/useInfo'
 import fcd from '../api/fcd'
@@ -12,6 +13,8 @@ import { times, lt, gt } from '../utils/math'
 import { useConfig } from '../contexts/ConfigContext'
 import { getBase, config, useCalcFee } from './txHelpers'
 import { checkError, parseError } from './txHelpers'
+import { localSettings } from '../../../utils/localStorage'
+import { setBip } from '../../../wallet/ledger'
 
 interface SignParams {
   user: User
@@ -221,6 +224,12 @@ export default (
     submit()
   }
 
+  const selectBip = (bip: Bip) => {
+    localSettings.set({ bip })
+    setBip(bip)
+    onSubmit()
+  }
+
   return {
     contents,
 
@@ -277,6 +286,14 @@ export default (
 
     ledger: confirming
       ? {
+          buttons: [
+            { bip: 330, desc: 'For new user', onClick: () => selectBip(330) },
+            {
+              bip: 118,
+              desc: 'For cosmos user',
+              onClick: () => selectBip(118),
+            },
+          ],
           card: {
             title: t('Post:Confirm:Confirm with ledger'),
             content: t('Post:Confirm:Please confirm in your\nLedger Wallet'),
