@@ -14,9 +14,9 @@ export interface TxsPage extends API<TxsData> {
 }
 
 export interface TxsUI {
-  pagination: Pagination
   card?: Card
   list?: TxUI[]
+  more?: () => void
 }
 
 export interface TxUI {
@@ -39,6 +39,7 @@ export interface TxsData extends Pagination {
 }
 
 export interface Tx {
+  id: number
   timestamp: string
   txhash: string
   msgs: Message[]
