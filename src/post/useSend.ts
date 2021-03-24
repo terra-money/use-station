@@ -93,10 +93,9 @@ export default (user: User, denom: string): PostPage<RecentSentUI> => {
   }
 
   const renderRecent = ({
-    totalCnt,
     txs,
   }: TxsData): RecentSentUI | undefined => {
-    const recent = !gt(totalCnt, 0) ? undefined : findRecent(txs, denom)
+    const recent = !gt(txs.length, 0) ? undefined : findRecent(txs, denom)
 
     return !recent?.length
       ? undefined

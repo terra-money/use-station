@@ -17,17 +17,16 @@ export default (id: string, { page }: { page?: number }): DepositorsPage => {
 
   /* render */
   const render = (data: DepositorsData): DepositorsUI => {
-    const { totalCnt, page, limit, deposits } = data
+    const { page, limit, deposits } = data
 
     return Object.assign(
       {
         pagination: {
-          totalCnt: Number(totalCnt),
           page: Number(page),
           limit: Number(limit),
         },
       },
-      !deposits || !gt(totalCnt, 0)
+      !deposits || !gt(deposits.length, 0)
         ? { card: { content: t('Page:Governance:No deposits yet') } }
         : {
             table: {

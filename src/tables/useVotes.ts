@@ -54,16 +54,15 @@ export default ({ id, option, page }: Params): VotesPage => {
   const response = useFCD<VotesData>({ url, params })
 
   /* render */
-  const render = ({ totalCnt, page, limit, votes }: VotesData) =>
+  const render = ({ page, limit, votes }: VotesData) =>
     Object.assign(
       {
         pagination: {
-          totalCnt: Number(totalCnt),
           page: Number(page),
           limit: Number(limit),
         },
       },
-      !gt(totalCnt, 0)
+      !gt(votes.length, 0)
         ? {
             card: {
               content: t('Page:Governance:No votes yet'),

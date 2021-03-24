@@ -14,16 +14,15 @@ export default (address: string, { page }: { page?: number }): ClaimsPage => {
   const response = useFCD<ClaimsData>({ url, params })
 
   /* render */
-  const render = ({ totalCnt, page, limit, claims }: ClaimsData): ClaimsUI =>
+  const render = ({ page, limit, claims }: ClaimsData): ClaimsUI =>
     Object.assign(
       {
         pagination: {
-          totalCnt: Number(totalCnt),
           page: Number(page),
           limit: Number(limit),
         },
       },
-      !claims || !gt(totalCnt, 0)
+      !claims || !gt(claims.length, 0)
         ? {
             card: {
               content: t(

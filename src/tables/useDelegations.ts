@@ -18,16 +18,15 @@ export default (
 
   /* render */
   const render = (data: DelegationsData): DelegationsUI => {
-    const { totalCnt, page, limit, events } = data
+    const { page, limit, events } = data
     return Object.assign(
       {
         pagination: {
-          totalCnt: Number(totalCnt),
           page: Number(page),
           limit: Number(limit),
         },
       },
-      !events || !gt(totalCnt, 0)
+      !events || !gt(events.length, 0)
         ? {
             card: {
               content: t('Page:Staking:No events'),
