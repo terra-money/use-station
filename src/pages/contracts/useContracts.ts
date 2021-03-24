@@ -1,55 +1,63 @@
+import { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { ContractsPage, ContractsData } from '../../types'
-import { gt } from '../../utils'
+import { ContractsPage, Contract } from '../../types'
 import useFCD from '../../api/useFCD'
 import useFinder from '../../hooks/useFinder'
+import { LIMIT } from '../constants'
 import renderContract from './renderContract'
 
 interface Params {
-  page?: number
   owner?: string
   search?: string
 }
 
-export default (params: Params): ContractsPage => {
+export default (props: Params): ContractsPage => {
   const { t } = useTranslation()
   const getLink = useFinder()
 
   /* api */
+  const [contracts, setContracts] = useState<Contract[]>([])
+  const [offset, setOffset] = useState<number>()
+  const [done, setDone] = useState(false)
+
   const url = '/v1/wasm/contracts'
-  const response = useFCD<ContractsData>({ url, params })
+  const params = { ...props, limit: LIMIT, offset }
+  const response = useFCD<{ contracts: Contract[] }>({ url, params })
+  const { data } = response
+
+  useEffect(() => {
+    if (data) {
+      setContracts((contracts) => [...contracts, ...data.contracts])
+      setDone(data.contracts.length < LIMIT)
+    }
+  }, [data])
+
+  const more =
+    contracts.length && !done
+      ? () => setOffset(Number(contracts[contracts.length - 1].id))
+      : undefined
 
   /* render */
-  const render = ({ totalCnt, page, limit, contracts }: ContractsData) =>
-    Object.assign(
-      {
-        pagination: {
-          totalCnt: Number(totalCnt),
-          page: Number(page),
-          limit: Number(limit),
-        },
-      },
-      !gt(totalCnt, 0)
-        ? {
-            card: {
-              title: t('Page:Contracts:No contracts'),
-              content: t('Page:Contracts:No contracts yet'),
-            },
-          }
-        : {
-            search: { placeholder: t('Page:Contracts:Search') },
-            list: contracts.map((contract) =>
-              renderContract(contract, getLink, t)
-            ),
-          }
-    )
+  const ui =
+    !response.loading && !contracts.length
+      ? {
+          card: {
+            title: t('Page:Contracts:No contracts'),
+            content: t('Page:Contracts:No contracts yet'),
+          },
+        }
+      : {
+          more,
+          search: { placeholder: t('Page:Contracts:Search') },
+          list: contracts.map((contract) =>
+            renderContract(contract, getLink, t)
+          ),
+        }
 
-  return Object.assign(
-    {
-      create: { attrs: { children: t('Page:Contracts:Create') } },
-      upload: { attrs: { children: t('Page:Contracts:Upload') } },
-    },
-    response,
-    response.data && { ui: render(response.data) }
-  )
+  return {
+    ...response,
+    ui,
+    create: { attrs: { children: t('Page:Contracts:Create') } },
+    upload: { attrs: { children: t('Page:Contracts:Upload') } },
+  }
 }
