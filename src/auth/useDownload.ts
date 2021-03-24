@@ -9,14 +9,32 @@ export default (): Download => {
     links: [
       {
         key: 'mac',
-        label: t('Auth:Download:For Mac'),
+        label: 'Mac',
         link: 'https://www.terra.dev/station/Terra%20Station-1.1.0.dmg',
+        ext: 'dmg',
       },
       {
         key: 'win',
-        label: t('Auth:Download:For Windows'),
+        label: 'Windows',
         link:
           'https://www.terra.dev/station/Terra%20Station%20Setup%201.1.0.exe',
+        ext: 'exe',
+      },
+      {
+        key: 'linux',
+        label: 'Linux',
+        links: [
+          {
+            link:
+              'https://terra.money/station/station-electron_1.1.1_amd64.deb',
+            ext: 'deb',
+          },
+          {
+            link:
+              'https://terra.money/station/station-electron-1.1.1.x86_64.rpm',
+            ext: 'rpm',
+          },
+        ],
       },
     ],
   }

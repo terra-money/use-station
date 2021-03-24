@@ -119,5 +119,17 @@ export type ChangePassword = FormUI
 /* Download */
 export interface Download {
   title: string
-  links: { key: string; label: string; link: string }[]
+  links: (DownloadLink | DownloadLinks)[]
+}
+
+export interface DownloadLink {
+  key: string
+  label: string
+  link: string
+  ext: string
+}
+export interface DownloadLinks {
+  key: string
+  label: string
+  links: { link: string; ext: string }[]
 }
