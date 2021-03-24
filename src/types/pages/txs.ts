@@ -1,4 +1,4 @@
-import { Pagination, API, Coin, Card } from '..'
+import { API, Coin, Card } from '..'
 
 export type TxType =
   | ''
@@ -34,7 +34,7 @@ export interface MessageUI {
 }
 
 /* data */
-export interface TxsData extends Pagination {
+export interface TxsData {
   txs: Tx[]
 }
 

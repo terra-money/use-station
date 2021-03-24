@@ -1,10 +1,13 @@
+import { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Dictionary } from 'ramda'
 import { VotesPage, VotesData, VoteItem } from '../types'
-import { gt, sum, toNumber } from '../utils'
+import { sum, toNumber } from '../utils'
 import useFinder from '../hooks/useFinder'
 import useFCD from '../api/useFCD'
 import { getVoter } from '../pages/governance/helpers'
+
+const LIMIT = 5
 
 /** tabs */
 export const useVoteOptions = (
@@ -41,50 +44,53 @@ export const useVoteOptions = (
 interface Params {
   id: string
   option: string
-  page: number
 }
 
-export default ({ id, option, page }: Params): VotesPage => {
+export default ({ id, option }: Params): VotesPage => {
   const { t } = useTranslation()
   const getLink = useFinder()
 
   /* api */
+  const [votes, setVotes] = useState<VoteItem[]>([])
+  const [offset, setOffset] = useState<number>()
+  const [next, setNext] = useState<number>()
+  const [done, setDone] = useState(false)
+
   const url = `/v1/gov/proposals/${id}/votes`
-  const params = { option, page }
+  const params = { option, limit: LIMIT, offset }
   const response = useFCD<VotesData>({ url, params })
+  const { data } = response
+
+  useEffect(() => {
+    if (data) {
+      setVotes((votes) => [...votes, ...data.votes])
+      setNext(data.next)
+      setDone(data.votes.length < LIMIT)
+    }
+  }, [data])
+
+  const more = votes.length && !done ? () => setOffset(next) : undefined
 
   /* render */
-  const render = ({ page, limit, votes }: VotesData) =>
-    Object.assign(
-      {
-        pagination: {
-          page: Number(page),
-          limit: Number(limit),
+  const ui = !votes.length
+    ? {
+        card: {
+          content: t('Page:Governance:No votes yet'),
         },
-      },
-      !gt(votes.length, 0)
-        ? {
-            card: {
-              content: t('Page:Governance:No votes yet'),
-            },
-          }
-        : {
-            table: {
-              headings: {
-                voter: t('Page:Governance:Voter'),
-                answer: t('Page:Governance:Answer'),
-              },
-              contents: votes.map(({ voter, answer, txhash }: VoteItem) => ({
-                voter: getVoter(voter, getLink),
-                answer: t('Page:Governance:' + answer),
-              })),
-            },
-          }
-    )
+      }
+    : {
+        more,
+        table: {
+          headings: {
+            voter: t('Page:Governance:Voter'),
+            answer: t('Page:Governance:Answer'),
+          },
+          contents: votes.map(({ voter, answer }: VoteItem) => ({
+            voter: getVoter(voter, getLink),
+            answer: t('Page:Governance:' + answer),
+          })),
+        },
+      }
 
-  return Object.assign(
-    { title: '' },
-    response,
-    response.data && { ui: render(response.data) }
-  )
+  return { ...response, title: '', ui }
 }

@@ -1,6 +1,6 @@
 import { Dictionary } from 'ramda'
 import { API, ProposalItemData, DisplayCoin, VoteOption } from '..'
-import { Pagination, TablePage, TableUI, Coin, Article } from '..'
+import { TablePage, TableUI, Coin, Article } from '..'
 import { ValidatorData } from '..'
 
 export interface ProposalPage extends API<ProposalData> {
@@ -123,8 +123,9 @@ export interface TallyingParameters {
 }
 
 /* data: depositors */
-export interface DepositorsData extends Pagination {
+export interface DepositorsData {
   deposits: Depositor[]
+  next: number
 }
 
 export interface Depositor {
@@ -134,8 +135,9 @@ export interface Depositor {
 }
 
 /* data: votes */
-export interface VotesData extends Pagination {
+export interface VotesData {
   votes: VoteItem[]
+  next: number
 }
 
 export interface VoteItem {

@@ -46,11 +46,6 @@ export interface Point {
 }
 
 /* pagination */
-export interface Pagination {
-  page: number
-  limit: number
-}
-
 export interface TablePage<Data, Table> extends API<Data> {
   title: string
   ui?: TableUI<Table>
