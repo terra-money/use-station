@@ -66,13 +66,15 @@ export default (user: User, actives: string[]): PostPage<SwapUI> => {
     value: denom,
     children: format.denom(denom),
     balance: find(`${denom}:available`, bank.data?.balance) ?? '0',
+    icon: `https://assets.terra.money/icon/60/${format.denom(denom)}.png`,
   }))
 
   const cw20TokensList =
-    cw20Tokens.list?.map(({ token, symbol, balance }) => ({
+    cw20Tokens.list?.map(({ token, symbol, balance, icon }) => ({
       value: token,
       children: symbol,
       balance,
+      icon
     })) ?? []
 
   const tokens = [...nativeTokensOptions, ...cw20TokensList]
