@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Dictionary, last } from 'ramda'
+import _ from 'lodash'
 import { AccAddress, MsgExecuteContract, MsgSend } from '@terra-money/terra.js'
 import { Coin } from '@terra-money/terra.js'
 import { ethers } from 'ethers'
@@ -236,8 +237,9 @@ export default (user: User, denom: string): PostPage<RecentSentUI> => {
       },
     },
   ]
-
-  const disabled = invalid || gt(amount, maxAmount)
+  
+  const isInvalidAmount = gt(amount, maxAmount) || _.isEmpty(amount) || _.toNumber(amount) <= 0
+  const disabled = invalid || isInvalidAmount
 
   const formUI = {
     title: t('Post:Send:Send {{unit}}', { unit }),
