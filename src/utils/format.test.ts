@@ -17,10 +17,10 @@ describe('format', () => {
     expect(format.denom('uusd')).toBe('UST')
     expect(format.denom('ukrw')).toBe('KRT')
     expect(format.denom('umnt')).toBe('MNT')
-    expect(format.denom('ua')).toBe('A')
-    expect(format.denom('uab')).toBe('AB')
-    expect(format.denom('uabc')).toBe('ABC')
-    expect(format.denom('uabcd')).toBe('ABCD')
+    expect(format.denom('ua')).toBe('')
+    expect(format.denom('uab')).toBe('')
+    expect(format.denom('uabc')).toBe('')
+    expect(format.denom('uabcd')).toBe('')
   })
 
   test('display', () => {
