@@ -4,6 +4,7 @@ import { LangConfig, LangKey } from '../types'
 
 export const Languages: { [key in LangKey]: { name: string } } = {
   en: { name: 'English' },
+  es: { name: 'Spanish' },
   zh: { name: 'Chinese' },
   fr: { name: 'French' },
   ko: { name: 'Korean' },
@@ -25,7 +26,7 @@ export default (initial?: LangKey): LangConfig => {
     set(initial ?? 'en')
   }, [initial, set])
 
-  const list: LangKey[] = ['en', 'zh', 'fr', 'ko']
+  const list: LangKey[] = ['en', 'es', 'zh', 'fr', 'ko']
 
   return { current, list, set }
 }
