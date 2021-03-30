@@ -237,7 +237,7 @@ export default (user: User, denom: string): PostPage<RecentSentUI> => {
       },
     },
   ]
-  
+
   const isInvalidAmount = gt(amount, maxAmount) || _.isEmpty(amount) || _.toNumber(amount) <= 0
   const disabled = invalid || isInvalidAmount
 
@@ -330,7 +330,7 @@ export default (user: User, denom: string): PostPage<RecentSentUI> => {
     loading,
     submitted,
     form: formUI,
-    confirm: bank && whitelist ? getConfirm(bank, whitelist) : undefined,
+    confirm: bank ? getConfirm(bank, whitelist ?? {}) : undefined,
     ui: txsResponse.data && renderRecent(txsResponse.data),
   }
 }

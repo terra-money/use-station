@@ -501,8 +501,7 @@ export default (user: User, actives: string[]): PostPage<SwapUI> => {
     loading: loadingUI,
     submitted,
     form: formUI,
-    confirm:
-      bank.data && whitelist ? getConfirm(bank.data, whitelist) : undefined,
+    confirm: bank.data ? getConfirm(bank.data, whitelist ?? {}) : undefined,
   }
 }
 
