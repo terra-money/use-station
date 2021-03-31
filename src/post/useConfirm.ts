@@ -231,7 +231,10 @@ export default (
         options: feeDenom.list.map((denom) => ({
           value: denom,
           children: format.denom(denom),
-          disabled: !validate({ amount: gas, denom }),
+          disabled: !validate({
+            amount: calcFee ? calcFee.feeFromGas(gas, denom) : gas,
+            denom,
+          }),
         })),
         attrs: { id: 'denom', value: denom, disabled: !readyToSubmit },
         setValue: (value: string) => setDenom(value),
