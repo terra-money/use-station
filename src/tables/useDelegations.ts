@@ -1,61 +1,64 @@
+import { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { DelegationsPage, DelegationsUI, DelegationsData } from '../types'
+import { DelegationsPage, DelegationsData, Event } from '../types'
 import { format, gt } from '../utils'
 import useFCD from '../api/useFCD'
 import useFinder from '../hooks/useFinder'
 
-export default (
-  address: string,
-  { page }: { page?: number }
-): DelegationsPage => {
+const LIMIT = 5
+
+export default (address: string): DelegationsPage => {
   const { t } = useTranslation()
   const getLink = useFinder()
 
   /* api */
+  const [events, setEvents] = useState<Event[]>([])
+  const [offset, setOffset] = useState<number>()
+  const [next, setNext] = useState<number>()
+  const [done, setDone] = useState(false)
+
   const url = `/v1/staking/validators/${address}/delegations`
-  const params = { page: page ?? 1 }
+  const params = { limit: LIMIT, offset }
   const response = useFCD<DelegationsData>({ url, params })
+  const { data } = response
+
+  useEffect(() => {
+    if (data) {
+      setEvents((events) => [...events, ...data.events])
+      setNext(data.next)
+      setDone(data.events.length < LIMIT)
+    }
+  }, [data])
+
+  const more = events.length && !done ? () => setOffset(next) : undefined
 
   /* render */
-  const render = (data: DelegationsData): DelegationsUI => {
-    const { page, limit, events } = data
-    return Object.assign(
-      {
-        pagination: {
-          page: Number(page),
-          limit: Number(limit),
-        },
-      },
-      !events || !gt(events.length, 0)
-        ? {
-            card: {
-              content: t('Page:Staking:No events'),
+  const ui =
+    !events || !gt(events.length, 0)
+      ? {
+          card: {
+            content: t('Page:Staking:No events'),
+          },
+        }
+      : {
+          more,
+          table: {
+            headings: {
+              hash: t('Common:Tx:Tx Hash'),
+              type: t('Common:Type'),
+              change: t('Common:Change'),
+              date: t('Common:Time'),
             },
-          }
-        : {
-            table: {
-              headings: {
-                hash: t('Common:Tx:Tx Hash'),
-                type: t('Common:Type'),
-                change: t('Common:Change'),
-                date: t('Common:Time'),
-              },
 
-              contents: events.map(({ txhash, type, amount, timestamp }) => ({
-                link: getLink!({ q: 'tx', v: txhash }),
-                hash: format.truncate(txhash, [6, 6]),
-                type: t('Post:Staking:' + type),
-                display: format.display(amount),
-                date: format.date(timestamp),
-              })),
-            },
-          }
-    )
-  }
+            contents: events.map(({ txhash, type, amount, timestamp }) => ({
+              link: getLink!({ q: 'tx', v: txhash }),
+              hash: format.truncate(txhash, [6, 6]),
+              type: t('Post:Staking:' + type),
+              display: format.display(amount),
+              date: format.date(timestamp),
+            })),
+          },
+        }
 
-  return Object.assign(
-    { title: t('Page:Staking:Event log') },
-    response,
-    response.data && { ui: render(response.data) }
-  )
+  return { ...response, title: t('Page:Staking:Event log'), ui }
 }

@@ -57,7 +57,7 @@ export interface TablePage<Data, Table> extends API<Data> {
 }
 
 export interface TableUI<Table> {
-  pagination: Pagination
   card?: Card
   table?: Table
+  more?: () => void
 }

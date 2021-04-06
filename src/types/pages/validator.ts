@@ -1,4 +1,4 @@
-import { API, DisplayCoin, Pagination, Coin, TablePage, TableUI } from '..'
+import { API, DisplayCoin, Coin, TablePage, TableUI } from '..'
 
 export interface ValidatorPage extends API<ValidatorData> {
   delegations: string
@@ -153,16 +153,19 @@ export interface MyUndelegation {
   validatorAddress: string
 }
 
-export interface ClaimsData extends Pagination {
-  claims?: Claim[]
+export interface ClaimsData {
+  claims: Claim[]
+  next: number
 }
 
-export interface DelegationsData extends Pagination {
-  events?: Event[]
+export interface DelegationsData {
+  events: Event[]
+  next: number
 }
 
-export interface DelegatorsData extends Pagination {
-  delegators?: Delegator[]
+export interface DelegatorsData {
+  delegators: Delegator[]
+  next: number
 }
 
 export interface Claim {
