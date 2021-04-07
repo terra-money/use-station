@@ -22,3 +22,9 @@ export interface Wallet {
   publicKey: string
   terraAddress: string
 }
+
+export interface WalletParams {
+  name: string
+  password: string
+  wallet: Wallet
+}

@@ -6,6 +6,7 @@ export default (keys: AuthMenuKey[] = []): AuthMenu => {
 
   const label: { [key in AuthMenuKey]: string } = {
     recover: t('Auth:Menu:Recover existing wallet'),
+    importKey: 'Import private key',
     signUp: t('Auth:Menu:New wallet'),
     signIn: t('Auth:Menu:Select wallet'),
     signInWithAddress: t('Auth:Menu:Browse with address'),

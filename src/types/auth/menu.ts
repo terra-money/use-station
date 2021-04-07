@@ -7,6 +7,7 @@ export interface AuthMenu {
 
 export type AuthMenuKey =
   | 'recover'
+  | 'importKey'
   | 'signUp'
   | 'signIn'
   | 'signInWithAddress'
@@ -29,6 +30,11 @@ export type Bip = 118 | 330
 export type BipList = [Bip, Bip]
 export type SignUpFn = (bip?: Bip) => Promise<void>
 export type SignUpStep = 'select' | 'confirm'
+
+export interface ImportKey {
+  form: FormUI
+  error?: Error
+}
 
 export interface SignUp {
   form: FormUI
