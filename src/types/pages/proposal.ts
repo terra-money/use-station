@@ -1,7 +1,8 @@
 import { Dictionary } from 'ramda'
 import { API, ProposalItemData, DisplayCoin, VoteOption } from '..'
-import { TablePage, TableUI, Coin, Article } from '..'
+import { Pagination, Coin, Article } from '..'
 import { ValidatorData } from '..'
+import { PaginationTablePage, PaginationTableUI } from '../common/ui'
 
 export interface ProposalPage extends API<ProposalData> {
   ui?: ProposalUI
@@ -71,8 +72,12 @@ export interface NotVoted {
 }
 
 /* depositors */
-export type DepositorsPage = TablePage<DepositorsData, DepositorsTable>
-export type DepositorsUI = TableUI<DepositorsTable>
+export type DepositorsPage = PaginationTablePage<
+  DepositorsData,
+  DepositorsTable
+>
+
+export type DepositorsUI = PaginationTableUI<DepositorsTable>
 
 export interface DepositorsTable {
   headings: { depositor: string; displays: string }
@@ -85,8 +90,8 @@ export interface DepositorContent {
 }
 
 /* Votes */
-export type VotesPage = TablePage<VotesData, VotesTable>
-export type VotesUI = TableUI<VotesTable>
+export type VotesPage = PaginationTablePage<VotesData, VotesTable>
+export type VotesUI = PaginationTableUI<VotesTable>
 
 export interface VotesTable {
   headings: { voter: string; answer: string }
@@ -123,7 +128,7 @@ export interface TallyingParameters {
 }
 
 /* data: depositors */
-export interface DepositorsData {
+export interface DepositorsData extends Pagination {
   deposits: Depositor[]
   next: number
 }
@@ -135,9 +140,8 @@ export interface Depositor {
 }
 
 /* data: votes */
-export interface VotesData {
+export interface VotesData extends Pagination {
   votes: VoteItem[]
-  next: number
 }
 
 export interface VoteItem {

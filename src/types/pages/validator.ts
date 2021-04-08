@@ -1,4 +1,5 @@
-import { API, DisplayCoin, Coin, TablePage, TableUI } from '..'
+import { API, DisplayCoin, Pagination, Coin, TablePage, TableUI } from '..'
+import { PaginationTablePage, PaginationTableUI } from '../common/ui'
 
 export interface ValidatorPage extends API<ValidatorData> {
   delegations: string
@@ -81,8 +82,12 @@ export interface DelegationContent {
   date: string
 }
 
-export type DelegatorsPage = TablePage<DelegatorsData, DelegatorsTable>
-export type DelegatorsUI = TableUI<DelegatorsTable>
+export type DelegatorsPage = PaginationTablePage<
+  DelegatorsData,
+  DelegatorsTable
+>
+
+export type DelegatorsUI = PaginationTableUI<DelegatorsTable>
 
 export interface DelegatorsTable {
   headings: { address: string; display: string; weight: string }
@@ -163,9 +168,8 @@ export interface DelegationsData {
   next: number
 }
 
-export interface DelegatorsData {
-  delegators: Delegator[]
-  next: number
+export interface DelegatorsData extends Pagination {
+  delegators?: Delegator[]
 }
 
 export interface Claim {
