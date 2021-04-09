@@ -2,18 +2,17 @@ import axios from 'axios'
 
 const instance = axios.create()
 
-export const intercept = ({ height }: { height: string }) => {
-  instance.interceptors.request.use((config) => {
-    const BLOCK_HEIGHT = 'block-height'
-    const prev = config.headers[BLOCK_HEIGHT]
+export const intercept = (fn: (height: string) => void) => {
+  instance.interceptors.response.use((response) => {
+    const data = response.data
 
-    // Use current value when possible or use previous value
-    const next =
-      prev || height
-        ? Math.max(Number(prev) || 0, Number(height) || 0)
-        : undefined
+    if (data && !Array.isArray(data) && typeof data === 'object') {
+      if (typeof data.height === 'string') {
+        fn(data.height)
+      }
+    }
 
-    return { ...config, headers: { ...config.headers, [BLOCK_HEIGHT]: next } }
+    return response
   })
 }
 

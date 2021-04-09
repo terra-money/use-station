@@ -47,13 +47,7 @@ export interface ChainConfig {
   set: (options: ChainOptions) => void
 }
 
-/* socket */
-export interface Socket {
-  block?: Block
-  status?: string
-}
-
-export interface Block {
+export interface HeightData {
   formatted: string
   link: string
 }

@@ -39,7 +39,7 @@ export { Trans } from 'react-i18next'
 export * from './contexts/ConfigContext'
 export * from './contexts/AuthContext'
 export { default as createContext } from './contexts/createContext'
-export { default as useSocket } from './contexts/useSocket'
+export { default as useHeight } from './contexts/useHeight'
 export { Languages, getLang } from './contexts/useLang'
 
 /* hooks:api */
