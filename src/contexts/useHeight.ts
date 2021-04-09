@@ -2,46 +2,35 @@ import { useState, useEffect } from 'react'
 import numeral from 'numeral'
 import debounce from 'lodash/fp/debounce'
 import { HeightData } from '../types'
+import fcd from '../api/fcd'
 import { intercept } from '../api/fcd'
 import useFinder from '../hooks/useFinder'
-import fcd from '../api/fcd'
 
-type BlockData = {
-  block: {
-    header: {
-      chain_id: string
-      height: string
-    }
-  }
-}
-
-async function getLatestBlock() {
-  const { data: latest } = await fcd.get<BlockData>('/blocks/latest')
-  return latest
-}
+// getting minting/parameters will trigger axios intercept
+const trigger = () => fcd
+    .get('/minting/parameters')
+    .catch()
 
 export default (): HeightData | undefined => {
   const getLink = useFinder()
   const [height, setHeight] = useState<string>()
-
-  const updateBlockHeight = debounce(1000)(() => {
-    getLatestBlock().then((data) => {
-      setHeight(data.block.header.height)
-    })
+  
+  const updateBlockHeight = debounce(1000)((height: string) => {
+    setHeight(height)
   })
 
   useEffect(() => {
-    // initial call
-    updateBlockHeight()
-
     // intercept request on height change
-    intercept(updateBlockHeight)
+    const interceptId = intercept(updateBlockHeight)
+
+    trigger()
 
     const intervalId = setInterval(() => {
-      updateBlockHeight()
+      trigger()
     }, 3000)
 
     return () => {
+      fcd.interceptors.response.eject(interceptId)
       clearInterval(intervalId)
     }
      // eslint-disable-next-line

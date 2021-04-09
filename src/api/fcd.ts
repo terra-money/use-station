@@ -3,7 +3,7 @@ import axios from 'axios'
 const instance = axios.create()
 
 export const intercept = (fn: (height: string) => void) => {
-  instance.interceptors.response.use((response) => {
+  return instance.interceptors.response.use((response) => {
     const data = response.data
 
     if (data && !Array.isArray(data) && typeof data === 'object') {
