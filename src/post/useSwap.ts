@@ -49,6 +49,9 @@ interface TobinTaxItem {
   tobin_tax: string
 }
 
+// Sequence number of last simulate
+let simulateGeneration = 0;
+
 export default (user: User, actives: string[]): PostPage<SwapUI> => {
   const { t } = useTranslation()
   const v = validateForm(t)
@@ -183,12 +186,16 @@ export default (user: User, actives: string[]): PostPage<SwapUI> => {
   const { execute: executeRoute } = getRouteMessage(routeParams)
 
   useEffect(() => {
+    let gen = ++simulateGeneration
     const simulate = async () => {
       try {
         setSimulating(true)
 
         if (mode === 'Route') {
           const result = await simulateRoute(routeParams)
+          // Response from multiple simulate calls can arrive out of order, skip if stale
+          if (gen < simulateGeneration) return
+
           setSimulated(result)
         } else if (mode === 'Terraswap') {
           const result = await simulateTerraswap(
@@ -196,11 +203,14 @@ export default (user: User, actives: string[]): PostPage<SwapUI> => {
             chain.current,
             user.address
           )
+          if (gen < simulateGeneration) return
 
           result && setSimulated(result.return_amount)
           result && setTradingFeeTerraswap(result.commission_amount)
         } else if (mode === 'On-chain') {
           const { swapped, rate } = await simulateOnchain({ ...values, amount })
+          if (gen < simulateGeneration) return
+
           setPrincipalNative(times(amount, rate!))
           setSimulated(swapped)
         }
