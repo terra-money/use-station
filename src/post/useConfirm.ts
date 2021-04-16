@@ -120,6 +120,18 @@ export default (
     readyToSimulate && simulate()
 
     // eslint-disable-next-line
+  }, [readyToSimulate])
+
+  useEffect(() => {
+    const setFee = () => {
+      const estimatedFee = calcFee!.feeFromGas(gas, denom)
+      setInput(toInput(estimatedFee ?? '0'))
+      setEstimated(estimatedFee)
+    }
+
+    readyToSimulate && setFee()
+
+    // eslint-disable-next-line
   }, [denom, readyToSimulate])
 
   /* submit */
@@ -262,7 +274,7 @@ export default (
       errors: ([] as string[])
         .concat(warning ?? [])
         .concat(
-          !valid
+          simulated && !valid
             ? t(
                 "Post:Confirm:You don't have enough balance. Please adjust either the amount or the fee."
               )
