@@ -106,6 +106,7 @@ export default (
           const feeAmount = calcFee!.feeFromGas(adjusted, denom)
 
           // Set simulated fee
+          setGas(adjusted)
           setInput(toInput(feeAmount))
           setEstimated(feeAmount)
           setSimulated(true)
