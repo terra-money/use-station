@@ -129,7 +129,6 @@ export default (user: User, actives: string[]): PostPage<SwapUI> => {
 
   const init = (values?: Partial<Values>) => {
     setValues({ slippage: '1', from: '', to: '', input: '', ...values })
-    setPrincipalNative('0')
     setTradingFeeTerraswap('0')
   }
 
@@ -148,7 +147,13 @@ export default (user: User, actives: string[]): PostPage<SwapUI> => {
   const minimum_receive = floor(times(simulated, minus(1, slippagePercent)))
 
   // simulate: Native
-  const [principalNative, setPrincipalNative] = useState('0')
+  const [nativePrincipals, setNativePrincipals] = useState<Simulation[]>([])
+
+  const principal =
+    nativePrincipals.find(
+      (params) =>
+        params.from === from && params.to === to && params.amount === amount
+    )?.result ?? '0'
 
   // simulate: Terraswap
   const [tradingFeeTerraswap, setTradingFeeTerraswap] = useState('0')
@@ -212,7 +217,11 @@ export default (user: User, actives: string[]): PostPage<SwapUI> => {
           result && setTradingFeeTerraswap(result.commission_amount)
         } else if (mode === 'On-chain') {
           const { swapped, rate } = await simulateOnchain({ ...values, amount })
-          setPrincipalNative(times(amount, rate!))
+          setNativePrincipals([
+            ...nativePrincipals,
+            { from, to, amount, result: times(amount, rate!) },
+          ])
+
           setSimulations([
             ...simulations,
             { from, to, amount, result: swapped },
@@ -367,7 +376,7 @@ export default (user: User, actives: string[]): PostPage<SwapUI> => {
                   },
                   t
                 ),
-              value: format.amount(minus(principalNative, simulated)),
+              value: format.amount(minus(principal, simulated)),
               unit: format.denom(to),
             },
             Terraswap: {
