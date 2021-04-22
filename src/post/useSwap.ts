@@ -74,7 +74,7 @@ export default (user: User, actives: string[]): PostPage<SwapUI> => {
       value: token,
       children: symbol,
       balance,
-      icon
+      icon,
     })) ?? []
 
   const tokens = [...nativeTokensOptions, ...cw20TokensList]
@@ -130,14 +130,21 @@ export default (user: User, actives: string[]): PostPage<SwapUI> => {
   const init = (values?: Partial<Values>) => {
     setValues({ slippage: '1', from: '', to: '', input: '', ...values })
     setPrincipalNative('0')
-    setSimulated('0')
     setTradingFeeTerraswap('0')
   }
 
   /* simulate */
+  type Simulation = { from: string; to: string; amount: string; result: string }
+  const [simulations, setSimulations] = useState<Simulation[]>([])
   const [simulating, setSimulating] = useState(false)
-  const [simulated, setSimulated] = useState('0')
   const [errorMessage, setErrorMessage] = useState<Error>()
+
+  const simulated =
+    simulations.find(
+      (params) =>
+        params.from === from && params.to === to && params.amount === amount
+    )?.result ?? '0'
+
   const minimum_receive = floor(times(simulated, minus(1, slippagePercent)))
 
   // simulate: Native
@@ -189,7 +196,7 @@ export default (user: User, actives: string[]): PostPage<SwapUI> => {
 
         if (mode === 'Route') {
           const result = await simulateRoute(routeParams)
-          setSimulated(result)
+          setSimulations([...simulations, { from, to, amount, result }])
         } else if (mode === 'Terraswap') {
           const result = await simulateTerraswap(
             terraswapParams,
@@ -197,12 +204,19 @@ export default (user: User, actives: string[]): PostPage<SwapUI> => {
             user.address
           )
 
-          result && setSimulated(result.return_amount)
+          result &&
+            setSimulations([
+              ...simulations,
+              { from, to, amount, result: result.return_amount },
+            ])
           result && setTradingFeeTerraswap(result.commission_amount)
         } else if (mode === 'On-chain') {
           const { swapped, rate } = await simulateOnchain({ ...values, amount })
           setPrincipalNative(times(amount, rate!))
-          setSimulated(swapped)
+          setSimulations([
+            ...simulations,
+            { from, to, amount, result: swapped },
+          ])
         }
       } catch (error) {
         setErrorMessage(error.message)
@@ -281,7 +295,7 @@ export default (user: User, actives: string[]): PostPage<SwapUI> => {
       element: 'input',
       attrs: {
         id: 'receive',
-        value: format.amount(simulated),
+        value: gt(simulated, 0) ? format.amount(simulated) : '',
         readOnly: true,
       },
     },
@@ -322,11 +336,13 @@ export default (user: User, actives: string[]): PostPage<SwapUI> => {
             onClick: () => setValue('input', toInput(maxAmount)),
           },
         },
-    expectedPrice: !(isFinite(expectedPrice) && gt(expectedPrice, 0))
+    expectedPrice: !gt(simulated, 0)
       ? undefined
       : {
           title: 'Expected price',
-          text: gt(expectedPrice, 1)
+          text: !(isFinite(expectedPrice) && gt(expectedPrice, 0))
+            ? 'Simulating...'
+            : gt(expectedPrice, 1)
             ? `1 ${format.denom(to, whitelist)} = ${format.decimal(
                 expectedPrice
               )} ${format.denom(from, whitelist)}`
@@ -334,39 +350,40 @@ export default (user: User, actives: string[]): PostPage<SwapUI> => {
                 div(1, expectedPrice)
               )} ${format.denom(to, whitelist)}`,
         },
-    spread: !mode
-      ? undefined
-      : {
-          'On-chain': {
-            title: t('Post:Swap:Spread'),
-            tooltip:
-              params &&
-              oracle &&
-              getContent(
-                {
-                  result: params.result,
-                  whitelist: oracle.result.whitelist,
-                  denom: to,
-                },
-                t
-              ),
-            value: format.amount(minus(principalNative, simulated)),
-            unit: format.denom(to),
-          },
-          Terraswap: {
-            title: 'Trading Fee',
-            value: format.amount(tradingFeeTerraswap),
-            unit: format.denom(to),
-          },
-          Route: {
-            title: 'Route',
-            text: [
-              format.denom(from, whitelist),
-              'UST',
-              format.denom(to, whitelist),
-            ].join(' > '),
-          },
-        }[mode],
+    spread:
+      !gt(simulated, 0) || !mode
+        ? undefined
+        : {
+            'On-chain': {
+              title: t('Post:Swap:Spread'),
+              tooltip:
+                params &&
+                oracle &&
+                getContent(
+                  {
+                    result: params.result,
+                    whitelist: oracle.result.whitelist,
+                    denom: to,
+                  },
+                  t
+                ),
+              value: format.amount(minus(principalNative, simulated)),
+              unit: format.denom(to),
+            },
+            Terraswap: {
+              title: 'Trading Fee',
+              value: format.amount(tradingFeeTerraswap),
+              unit: format.denom(to),
+            },
+            Route: {
+              title: 'Route',
+              text: [
+                format.denom(from, whitelist),
+                'UST',
+                format.denom(to, whitelist),
+              ].join(' > '),
+            },
+          }[mode],
     label: { multipleSwap: t('Post:Swap:Swap multiple coins') },
     slippageField,
   }
