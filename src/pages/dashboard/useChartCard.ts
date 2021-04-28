@@ -83,8 +83,7 @@ export default <T extends { denom?: string }>(props: Props): ChartCard => {
   /* api */
   type Response = T[] | ({ [key in CumulativeType]: T[] } & { total?: number })
   const getURL = () => (typeof url === 'string' ? url : url(filter))
-  const params = duration > 0 ? { count: duration === 1 ? 3 : duration } : {}
-  const { data } = useFCD<Response>({ url: getURL(), params })
+  const { data } = useFCD<Response>({ url: getURL() })
   const results = Array.isArray(data) ? data : data?.[type]
 
   /* render */
@@ -128,7 +127,7 @@ export default <T extends { denom?: string }>(props: Props): ChartCard => {
         children:
           value === 0
             ? t('Page:Chart:From genesis')
-            : value === 1
+            : value === 3
             ? t('Page:Chart:Last day')
             : t('Page:Chart:{{d}} days', { d: value }),
       })),

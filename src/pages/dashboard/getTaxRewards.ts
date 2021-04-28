@@ -19,7 +19,8 @@ export default (
     desc: t('Page:Chart:Tax rewards distributed over the selected time period'),
     url: '/v1/dashboard/block_rewards',
     filterConfig: { type: { initial: CumulativeType.C } },
-    getValue: (results, { type }) => {
+    getValue: (data, { type, duration }) => {
+      const results = data.slice(duration ? -1 * duration : undefined)
       const { blockReward: head } = results.length
         ? results[0]
         : { blockReward: '0' }
@@ -33,20 +34,22 @@ export default (
 
       return format.display({ amount, denom })
     },
-    getChart: (results) => ({
-      data:
+    getChart: (results, { duration }) => ({
+      data: (
         results?.map(({ datetime, blockReward }) => ({
           t: new Date(datetime),
           y: format.amountN(exchange(blockReward)),
-        })) ?? [],
-      tooltips:
+        })) ?? []
+      ).slice(duration ? -1 * duration : undefined),
+      tooltips: (
         results?.map(({ datetime, blockReward }) => ({
           title: format.coin(
             { amount: exchange(blockReward), denom },
             { integer: true }
           ),
           label: new Date(datetime).toUTCString(),
-        })) ?? [],
+        })) ?? []
+      ).slice(duration ? -1 * duration : undefined),
     }),
   }
 }

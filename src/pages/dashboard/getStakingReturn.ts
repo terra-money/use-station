@@ -30,19 +30,21 @@ export default (t: TFunction): Props<Result> => ({
       unit,
     ]
   },
-  getChart: (results, { type }) => {
+  getChart: (results, { type, duration }) => {
     const key = type === CumulativeType.C ? 'annualizedReturn' : 'dailyReturn'
     return {
-      data:
+      data: (
         results?.map(({ datetime, ...rest }) => ({
           t: new Date(datetime),
           y: toNumber(times(rest[key], 100)),
-        })) ?? [],
-      tooltips:
+        })) ?? []
+      ).slice(duration ? -1 * duration : undefined),
+      tooltips: (
         results?.map(({ datetime, ...rest }) => ({
           title: percent(rest[key]),
           label: new Date(datetime).toUTCString(),
-        })) ?? [],
+        })) ?? []
+      ).slice(duration ? -1 * duration : undefined),
     }
   },
 })

@@ -25,16 +25,18 @@ export default (t: TFunction): Props<Result> => ({
     account: { initial: AccountType.T },
   },
   getValue: (_, __, total) => ({ value: format.decimal(total, 0), unit }),
-  getChart: (results) => ({
-    data:
+  getChart: (results, { duration }) => ({
+    data: (
       results?.map(({ datetime, value }) => ({
         t: new Date(datetime),
         y: value,
-      })) ?? [],
-    tooltips:
+      })) ?? []
+    ).slice(duration ? -1 * duration : undefined),
+    tooltips: (
       results?.map(({ datetime, value }) => ({
         title: format.decimal(String(value), 0),
         label: new Date(datetime).toUTCString(),
-      })) ?? [],
+      })) ?? []
+    ).slice(duration ? -1 * duration : undefined),
   }),
 })
