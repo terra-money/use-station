@@ -39,7 +39,6 @@ export interface ChainOptions {
   chainID: string
   lcd: string
   fcd: string
-  ws: string
 }
 
 export interface ChainConfig {
