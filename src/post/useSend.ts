@@ -152,7 +152,7 @@ export default (user: User, denom: string): PostPage<RecentSentUI> => {
   const maxAmount =
     bank?.balance.length === 1 && calcFee
       ? max([
-          minus(calculatedMaxAmount, calcFee.feeFromGas('100000', denom)),
+          minus(calculatedMaxAmount, calcFee.feeFromGas('150000', denom)),
           0,
         ])
       : calculatedMaxAmount

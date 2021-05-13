@@ -172,7 +172,7 @@ export default (user: User, actives: string[]): PostPage<SwapUI> => {
   const calculatedMaxAmount = shouldTax ? getMax(balance) : balance
   const maxAmount =
     bank.data?.balance.length === 1 && calcFee
-      ? max([minus(calculatedMaxAmount, calcFee.feeFromGas('100000', from)), 0])
+      ? max([minus(calculatedMaxAmount, calcFee.feeFromGas('800000', from)), 0])
       : calculatedMaxAmount
 
   // simulate
