@@ -11,7 +11,7 @@ export interface InitialConfigState {
 }
 
 /* lang */
-export type LangKey = 'en' | 'es' | 'zh' | 'fr' | 'ko'
+export type LangKey = 'en' | 'es' | 'zh' | 'fr' | 'ko' | 'pl'
 
 export interface LangConfig {
   current?: LangKey
