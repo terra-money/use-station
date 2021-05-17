@@ -8,6 +8,7 @@ export const Languages: { [key in LangKey]: { name: string } } = {
   zh: { name: 'Chinese' },
   fr: { name: 'French' },
   ko: { name: 'Korean' },
+  ru: { name: 'Русский' },
 }
 
 export default (initial?: LangKey): LangConfig => {
@@ -26,7 +27,7 @@ export default (initial?: LangKey): LangConfig => {
     set(initial ?? 'en')
   }, [initial, set])
 
-  const list: LangKey[] = ['en', 'es', 'zh', 'fr', 'ko']
+  const list: LangKey[] = ['en', 'es', 'zh', 'fr', 'ko', 'ru']
 
   return { current, list, set }
 }

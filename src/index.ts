@@ -6,6 +6,7 @@ import es from './lang/es.json'
 import zh from './lang/zh.json'
 import fr from './lang/fr.json'
 import ko from './lang/ko.json'
+import ru from './lang/ru.json'
 
 i18n
   .use(LanguageDetector)
@@ -17,6 +18,7 @@ i18n
       zh: { translation: zh },
       fr: { translation: fr },
       ko: { translation: ko },
+      ru: { translation: ru },
     },
     lng: 'en',
     keySeparator: ':',
