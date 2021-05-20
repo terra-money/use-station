@@ -176,12 +176,8 @@ export default (user: User, actives: string[]): PostPage<SwapUI> => {
       : calculatedMaxAmount
 
   // simulate
-  const isTerraswap =
-    (from === 'uusd' && AccAddress.validate(to)) ||
-    (to === 'uusd' && AccAddress.validate(from))
-  const token = isTerraswap
-    ? cw20Tokens.whitelist?.[from === 'uusd' ? to : from]?.token
-    : undefined
+  const isTerraswap = !!pair
+  const token = isTerraswap ? from : undefined
   const terraswapParams = { pair, token, offer: { amount, from } }
 
   const routeParams = {

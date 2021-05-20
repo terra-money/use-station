@@ -60,7 +60,7 @@ export default (user: User, denom: string): PostPage<RecentSentUI> => {
 
   /* recent txs */
   const url = '/v1/msgs'
-  const params = { account: user.address, action: 'send', page: 1 }
+  const params = { account: user.address, action: 'send' }
   const txsResponse = useFCD<TxsData>({ url, params })
 
   const renderRecentItem = ({
@@ -93,9 +93,7 @@ export default (user: User, denom: string): PostPage<RecentSentUI> => {
     }
   }
 
-  const renderRecent = ({
-    txs,
-  }: TxsData): RecentSentUI | undefined => {
+  const renderRecent = ({ txs }: TxsData): RecentSentUI | undefined => {
     const recent = !gt(txs.length, 0) ? undefined : findRecent(txs, denom)
 
     return !recent?.length
@@ -238,7 +236,8 @@ export default (user: User, denom: string): PostPage<RecentSentUI> => {
     },
   ]
 
-  const isInvalidAmount = gt(amount, maxAmount) || _.isEmpty(amount) || _.toNumber(amount) <= 0
+  const isInvalidAmount =
+    gt(amount, maxAmount) || _.isEmpty(amount) || _.toNumber(amount) <= 0
   const disabled = invalid || isInvalidAmount
 
   const formUI = {
@@ -298,7 +297,7 @@ export default (user: User, denom: string): PostPage<RecentSentUI> => {
     tax: shouldTax ? new Coin(denom, taxAmount) : undefined,
     memo,
     contents,
-    feeDenom: { list: getFeeDenomList(bank.balance), },
+    feeDenom: { list: getFeeDenomList(bank.balance) },
     validate: (fee: StationCoin) =>
       is.nativeDenom(denom)
         ? isAvailable(
@@ -338,9 +337,9 @@ export default (user: User, denom: string): PostPage<RecentSentUI> => {
 /* helper */
 type RecentSentItem = { date: string; values: Omit<Values, 'network'> }
 const findRecent = (txs: Tx[], denom: string): RecentSentItem[] | undefined => {
-  try {
-    const reduced = txs.reduce<Dictionary<RecentSentItem>>(
-      (acc, { msgs: [{ text, out }], memo, timestamp }) => {
+  const reduced = txs.reduce<Dictionary<RecentSentItem>>(
+    (acc, { msgs: [{ text, out }], memo, timestamp }) => {
+      try {
         const to = last(text.split(' to '))
         const coin = out![0]
 
@@ -353,14 +352,14 @@ const findRecent = (txs: Tx[], denom: string): RecentSentItem[] | undefined => {
               },
             }
           : acc
-      },
-      {}
-    )
+      } catch {
+        return acc
+      }
+    },
+    {}
+  )
 
-    return Object.values(reduced)
-  } catch {
-    return undefined
-  }
+  return Object.values(reduced)
 }
 
 const useRate = (denom: string) => {
