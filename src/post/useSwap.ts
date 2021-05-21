@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
 import { TFunction } from 'i18next'
-import { AccAddress, MsgExecuteContract, MsgSwap } from '@terra-money/terra.js'
+import { MsgExecuteContract, MsgSwap } from '@terra-money/terra.js'
 import { Coin } from '@terra-money/terra.js'
 import { PostPage, SwapUI, ConfirmProps, BankData, Whitelist } from '../types'
 import { User, Coin as StationCoin, Rate, Field, FormUI } from '../types'
