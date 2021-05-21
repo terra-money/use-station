@@ -1,13 +1,15 @@
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
+import { Coin, Coins, MsgExecuteContract } from '@terra-money/terra.js'
 import { BankData, CoinFields } from '../types'
-import { PostPage, Coin, User, Field } from '../types'
+import { PostPage, Coin as TerraCoin, User, Field } from '../types'
 import { ConfirmProps } from '../types'
-import { is, format } from '../utils'
+import { is } from '../utils'
 import useBank from '../api/useBank'
 import useForm from '../hooks/useForm'
 import { getFeeDenomList, isFeeAvailable } from './validateConfirm'
 import { useCoinsFields } from './txHooks'
+import useCalcTaxes from './useCalcTaxes'
 
 interface Values {
   address: string
@@ -37,6 +39,10 @@ export default (
 
   /* render */
   const coinsFields = useCoinsFields(denoms)
+  const coinsDenoms = coinsFields.coins
+    .map(({ denom }) => denom)
+    .filter((denom) => denom !== 'uluna')
+  const { getTax } = useCalcTaxes(coinsDenoms, t)
 
   const fields: Field[] = [
     {
@@ -63,11 +69,22 @@ export default (
   }
 
   const getConfirm = (bank: BankData): ConfirmProps => ({
-    url: `/wasm/contracts/${address}`,
-    payload: { exec_msg: format.sanitizeJSON(values.json) },
+    msgs: [
+      new MsgExecuteContract(
+        user.address,
+        address,
+        parse(values.json),
+        Coins.fromData(coinsFields.coins)
+      ),
+    ],
+    tax: new Coins(
+      coinsFields.coins.map(
+        ({ amount, denom }) => new Coin(denom, getTax(amount, denom))
+      )
+    ),
     contents: [],
     feeDenom: { list: getFeeDenomList(bank.balance) },
-    validate: (fee: Coin) => isFeeAvailable(fee, bank.balance),
+    validate: (fee: TerraCoin) => isFeeAvailable(fee, bank.balance),
     submitLabels: [
       t('Post:Contracts:Interact'),
       t('Post:Contracts:Interacting...'),
@@ -83,5 +100,14 @@ export default (
     form: formUI,
     confirm: bank && getConfirm(bank),
     ui: coinsFields,
+  }
+}
+
+/* helpers */
+const parse = (input: string) => {
+  try {
+    return JSON.parse(input)
+  } catch {
+    return {}
   }
 }
