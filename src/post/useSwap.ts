@@ -174,7 +174,7 @@ export default (user: User, actives: string[]): PostPage<SwapUI> => {
 
   const findSimulations = (mode: Mode) =>
     ({
-      'Market': simulationsMarket,
+      Market: simulationsMarket,
       Terraswap: simulationsTerraswap,
       Route: simulationsRoute,
     }[mode])
@@ -365,7 +365,7 @@ export default (user: User, actives: string[]): PostPage<SwapUI> => {
         },
         ...tokens
           .filter(({ value }) => value !== from)
-          .filter(({ value }) => getAvailableModes({ from, to: value })),
+          .filter(({ value }) => getAvailableModes({ from, to: value }).length),
       ],
     },
     {
@@ -381,11 +381,8 @@ export default (user: User, actives: string[]): PostPage<SwapUI> => {
       label: '',
       ...getDefaultProps('mode'),
       element: 'select',
-      attrs: {
-        ...getDefaultAttrs('mode'),
-        hidden: !pair,
-      },
-      options: ['Market', 'Terraswap'].map((value) => ({
+      attrs: getDefaultAttrs('mode'),
+      options: availableModes.map((value) => ({
         value,
         children: value,
       })),
@@ -445,7 +442,7 @@ export default (user: User, actives: string[]): PostPage<SwapUI> => {
       !gt(simulated, 0) || !mode
         ? undefined
         : {
-            'Market': {
+            Market: {
               title: t('Post:Swap:Spread'),
               tooltip:
                 params &&
@@ -511,7 +508,7 @@ export default (user: User, actives: string[]): PostPage<SwapUI> => {
     msgs: !mode
       ? undefined
       : {
-          'Market': assertLimitOrder ? [assertLimitOrder, swap] : [swap],
+          Market: assertLimitOrder ? [assertLimitOrder, swap] : [swap],
           Terraswap: terraswap?.msgs,
           Route: [
             new MsgExecuteContract(
