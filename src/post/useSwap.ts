@@ -238,8 +238,13 @@ export default (user: User, actives: string[]): PostPage<SwapUI> => {
       try {
         setSimulating(true)
 
+        let resultMarket = '0'
+        let resultTerraswap = '0'
+
         if (availableModes.includes('Market')) {
           const { swapped, rate } = await simulateMarket({ ...values, amount })
+
+          resultMarket = swapped
 
           setNativePrincipals([
             ...nativePrincipals,
@@ -259,12 +264,16 @@ export default (user: User, actives: string[]): PostPage<SwapUI> => {
             user.address
           )
 
-          result &&
+          if (result) {
+            resultTerraswap = result.return_amount
+
             setSimulationsTerraswap([
               ...simulationsTerraswap,
-              { from, to, amount, result: result.return_amount },
+              { from, to, amount, result: resultTerraswap },
             ])
-          result && setTradingFeeTerraswap(result.commission_amount)
+
+            setTradingFeeTerraswap(result.commission_amount)
+          }
         }
 
         if (availableModes.includes('Route')) {
@@ -273,6 +282,20 @@ export default (user: User, actives: string[]): PostPage<SwapUI> => {
             ...simulationsRoute,
             { from, to, amount, result },
           ])
+        }
+
+        // Set mode after simulation
+        const valid = gt(resultMarket, 0) && gt(resultTerraswap, 0)
+        const isBothAvailable = ['Market', 'Terraswap'].every((mode) =>
+          availableModes.includes(mode as Mode)
+        )
+
+        if (valid && isBothAvailable) {
+          const isMarketGreater = gte(simulatedMarket, simulatedTerraswap)
+          const mode = isMarketGreater ? 'Market' : 'Terraswap'
+          setValues({ ...values, mode })
+        } else if (availableModes.length === 1) {
+          setValues({ ...values, mode: availableModes[0] })
         }
       } catch (error) {
         setErrorMessage(error.message)
@@ -288,27 +311,8 @@ export default (user: User, actives: string[]): PostPage<SwapUI> => {
     // eslint-disable-next-line
   }, [amount, from, to])
 
-  /* Set mode after simulation */
   const simulatedMarket = findSimulated({ from, to, amount }, 'Market')
   const simulatedTerraswap = findSimulated({ from, to, amount }, 'Terraswap')
-  const isMarketGreater = gte(simulatedMarket, simulatedTerraswap)
-
-  useEffect(() => {
-    const isBothAvailable = ['Market', 'Terraswap'].every((mode) =>
-      availableModes.includes(mode as Mode)
-    )
-
-    const valid = gt(simulatedMarket, 0) && gt(simulatedTerraswap, 0)
-
-    if (isBothAvailable && valid) {
-      const mode = isMarketGreater ? 'Market' : 'Terraswap'
-      setValues({ ...values, mode })
-    } else if (availableModes.length === 1) {
-      setValues({ ...values, mode: availableModes[0] })
-    }
-
-    // eslint-disable-next-line
-  }, [simulatedMarket, simulatedTerraswap, availableModes, isMarketGreater])
 
   useEffect(() => {
     const fetchPrice = async () => {
