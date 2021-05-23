@@ -293,9 +293,9 @@ export default (user: User, actives: string[]): PostPage<SwapUI> => {
         if (valid && isBothAvailable) {
           const isMarketGreater = gte(simulatedMarket, simulatedTerraswap)
           const mode = isMarketGreater ? 'Market' : 'Terraswap'
-          setValues({ ...values, mode })
+          setValues((values) => ({ ...values, mode }))
         } else if (availableModes.length === 1) {
-          setValues({ ...values, mode: availableModes[0] })
+          setValues((values) => ({ ...values, mode: availableModes[0] }))
         }
       } catch (error) {
         setErrorMessage(error.message)
