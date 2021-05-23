@@ -1,12 +1,13 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useMemo, useCallback } from 'react'
 import { useTranslation } from 'react-i18next'
 import { TFunction } from 'i18next'
 import { MsgExecuteContract, MsgSwap } from '@terra-money/terra.js'
 import { Coin } from '@terra-money/terra.js'
 import { PostPage, SwapUI, ConfirmProps, BankData, Whitelist } from '../types'
 import { User, Coin as StationCoin, Rate, Field, FormUI } from '../types'
-import { find, floor, format, is, isInteger, lte, max, plus } from '../utils'
-import { gt, times, percent, minus, div, isFinite } from '../utils'
+import { find, format, is } from '../utils'
+import { gt, gte, lte, times, percent, plus, minus, div } from '../utils'
+import { max, floor, isFinite, isInteger } from '../utils'
 import { toInput, toAmount, decimalN } from '../utils/format'
 import { useConfig } from '../contexts/ConfigContext'
 import useForm from '../hooks/useForm'
@@ -32,6 +33,7 @@ const assertLimitOrderContracts: Dictionary = {
 
 type Mode = 'On-chain' | 'Terraswap' | 'Route'
 interface Values {
+  mode?: Mode
   slippage: string
   from: string
   to: string
@@ -102,47 +104,88 @@ export default (user: User, actives: string[]): PostPage<SwapUI> => {
     input: v.input(input),
   })
 
-  const initial = { slippage: '1', from: '', to: '', input: '' }
+  const initial = {
+    mode: undefined,
+    slippage: '1',
+    from: '',
+    to: '',
+    input: '',
+  }
+
   const [submitted, setSubmitted] = useState(false)
   const form = useForm<Values>(initial, validate)
   const { values, setValue, setValues, invalid } = form
   const { getDefaultProps, getDefaultAttrs } = form
-  const { slippage, from, to, input } = values
+  const { mode, slippage, from, to, input } = values
   const amount = toAmount(input)
   const slippagePercent = isFinite(slippage) ? div(slippage, 100) : '0.01'
 
   const pair = findPair({ from, to }, pairs)
 
   type PairParams = { from: string; to: string }
-  const getMode = ({ from, to }: PairParams): Mode | undefined =>
-    !(from && to)
-      ? undefined
-      : isOnChainAvailable({ from, to })
-      ? 'On-chain'
-      : findPair({ from, to }, pairs)
-      ? 'Terraswap'
-      : isRouteAvailable({ from, to, chain: chain.current.name, pairs })
-      ? 'Route'
-      : undefined
+  const getAvailableModes = useCallback(
+    ({ from, to }: PairParams): Mode[] => {
+      if (from && to) {
+        const available = ([] as Mode[])
+          .concat(isOnChainAvailable({ from, to }) ? 'On-chain' : [])
+          .concat(findPair({ from, to }, pairs) ? 'Terraswap' : [])
 
-  const mode = getMode({ from, to })
+        return available.length
+          ? available
+          : isRouteAvailable({ from, to, chain: chain.current.name, pairs })
+          ? ['Route']
+          : []
+      }
+
+      return []
+    },
+    [chain, pairs]
+  )
+
+  const availableModes = useMemo(() => getAvailableModes({ from, to }), [
+    getAvailableModes,
+    from,
+    to,
+  ])
 
   const init = (values?: Partial<Values>) => {
-    setValues({ slippage: '1', from: '', to: '', input: '', ...values })
+    const defaultValues = {
+      mode: undefined,
+      slippage: '1',
+      from: '',
+      to: '',
+      input: '',
+    }
+
+    setValues({ ...defaultValues, ...values })
     setTradingFeeTerraswap('0')
   }
 
   /* simulate */
-  type Simulation = { from: string; to: string; amount: string; result: string }
-  const [simulations, setSimulations] = useState<Simulation[]>([])
+  type SwapParams = { from: string; to: string; amount: string }
+  type Simulation = SwapParams & { result: string }
+  const [simulationsOnchain, setSimulationsOnchain] = useState<Simulation[]>([])
+  const [simulationsTerraswap, setSimulationsTerraswap] = useState<
+    Simulation[]
+  >([])
+  const [simulationsRoute, setSimulationsRoute] = useState<Simulation[]>([])
   const [simulating, setSimulating] = useState(false)
   const [errorMessage, setErrorMessage] = useState<Error>()
 
-  const simulated =
-    simulations.find(
+  const findSimulations = (mode: Mode) =>
+    ({
+      'On-chain': simulationsOnchain,
+      Terraswap: simulationsTerraswap,
+      Route: simulationsRoute,
+    }[mode])
+
+  const findSimulated = ({ from, to, amount }: SwapParams, mode: Mode) =>
+    findSimulations(mode)?.find(
       (params) =>
         params.from === from && params.to === to && params.amount === amount
     )?.result ?? '0'
+
+  const simulated = mode ? findSimulated({ from, to, amount }, mode) : '0'
 
   const minimum_receive = floor(times(simulated, minus(1, slippagePercent)))
 
@@ -195,10 +238,21 @@ export default (user: User, actives: string[]): PostPage<SwapUI> => {
       try {
         setSimulating(true)
 
-        if (mode === 'Route') {
-          const result = await simulateRoute(routeParams)
-          setSimulations([...simulations, { from, to, amount, result }])
-        } else if (mode === 'Terraswap') {
+        if (availableModes.includes('On-chain')) {
+          const { swapped, rate } = await simulateOnchain({ ...values, amount })
+
+          setNativePrincipals([
+            ...nativePrincipals,
+            { from, to, amount, result: times(amount, rate!) },
+          ])
+
+          setSimulationsOnchain([
+            ...simulationsOnchain,
+            { from, to, amount, result: swapped },
+          ])
+        }
+
+        if (availableModes.includes('Terraswap')) {
           const result = await simulateTerraswap(
             terraswapParams,
             chain.current,
@@ -206,28 +260,25 @@ export default (user: User, actives: string[]): PostPage<SwapUI> => {
           )
 
           result &&
-            setSimulations([
-              ...simulations,
+            setSimulationsTerraswap([
+              ...simulationsTerraswap,
               { from, to, amount, result: result.return_amount },
             ])
           result && setTradingFeeTerraswap(result.commission_amount)
-        } else if (mode === 'On-chain') {
-          const { swapped, rate } = await simulateOnchain({ ...values, amount })
-          setNativePrincipals([
-            ...nativePrincipals,
-            { from, to, amount, result: times(amount, rate!) },
-          ])
+        }
 
-          setSimulations([
-            ...simulations,
-            { from, to, amount, result: swapped },
+        if (availableModes.includes('Route')) {
+          const result = await simulateRoute(routeParams)
+          setSimulationsRoute([
+            ...simulationsRoute,
+            { from, to, amount, result },
           ])
         }
       } catch (error) {
         setErrorMessage(error.message)
-      } finally {
-        setSimulating(false)
       }
+
+      setSimulating(false)
     }
 
     if (from && to) {
@@ -236,6 +287,28 @@ export default (user: User, actives: string[]): PostPage<SwapUI> => {
 
     // eslint-disable-next-line
   }, [amount, from, to])
+
+  /* Set mode after simulation */
+  const simulatedOnchain = findSimulated({ from, to, amount }, 'On-chain')
+  const simulatedTerraswap = findSimulated({ from, to, amount }, 'Terraswap')
+  const isOnchainGreater = gte(simulatedOnchain, simulatedTerraswap)
+
+  useEffect(() => {
+    const isBothAvailable = ['On-chain', 'Terraswap'].every((mode) =>
+      availableModes.includes(mode as Mode)
+    )
+
+    const valid = gt(simulatedOnchain, 0) && gt(simulatedTerraswap, 0)
+
+    if (isBothAvailable && valid) {
+      const mode = isOnchainGreater ? 'On-chain' : 'Terraswap'
+      setValues({ ...values, mode })
+    } else if (availableModes.length === 1) {
+      setValues({ ...values, mode: availableModes[0] })
+    }
+
+    // eslint-disable-next-line
+  }, [simulatedOnchain, simulatedTerraswap, availableModes, isOnchainGreater])
 
   useEffect(() => {
     const fetchPrice = async () => {
@@ -292,7 +365,7 @@ export default (user: User, actives: string[]): PostPage<SwapUI> => {
         },
         ...tokens
           .filter(({ value }) => value !== from)
-          .filter(({ value }) => getMode({ from, to: value })),
+          .filter(({ value }) => getAvailableModes({ from, to: value })),
       ],
     },
     {
@@ -303,6 +376,19 @@ export default (user: User, actives: string[]): PostPage<SwapUI> => {
         value: gt(simulated, 0) ? format.amount(simulated) : '',
         readOnly: true,
       },
+    },
+    {
+      label: '',
+      ...getDefaultProps('mode'),
+      element: 'select',
+      attrs: {
+        ...getDefaultAttrs('mode'),
+        hidden: !pair,
+      },
+      options: ['On-chain', 'Terraswap'].map((value) => ({
+        value,
+        children: value,
+      })),
     },
   ]
 

@@ -22,7 +22,7 @@ interface SimulateParams extends SwapParams {
 }
 
 export const isOnChainAvailable = ({ from, to }: SwapParams) =>
-  is.nativeDenom(from) && is.nativeTerra(to)
+  is.nativeDenom(from) && is.nativeDenom(to)
 
 export const findPair = ({ from, to }: SwapParams, pairs?: Pairs) => {
   if (!pairs) return
