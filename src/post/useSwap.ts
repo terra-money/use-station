@@ -24,14 +24,14 @@ import useCalcTax from './useCalcTax'
 import { useCalcFee } from './txHelpers'
 
 const { findPair, getRouteMessage } = routeswap
-const { isRouteAvailable, isOnChainAvailable, simulateRoute } = routeswap
+const { isRouteAvailable, isMarketAvailable, simulateRoute } = routeswap
 
 const assertLimitOrderContracts: Dictionary = {
   mainnet: 'terra1vs9jr7pxuqwct3j29lez3pfetuu8xmq7tk3lzk',
   testnet: 'terra1z3sf42ywpuhxdh78rr5vyqxpaxa0dx657x5trs',
 }
 
-type Mode = 'On-chain' | 'Terraswap' | 'Route'
+type Mode = 'Market' | 'Terraswap' | 'Route'
 interface Values {
   mode?: Mode
   slippage: string
@@ -127,7 +127,7 @@ export default (user: User, actives: string[]): PostPage<SwapUI> => {
     ({ from, to }: PairParams): Mode[] => {
       if (from && to) {
         const available = ([] as Mode[])
-          .concat(isOnChainAvailable({ from, to }) ? 'On-chain' : [])
+          .concat(isMarketAvailable({ from, to }) ? 'Market' : [])
           .concat(findPair({ from, to }, pairs) ? 'Terraswap' : [])
 
         return available.length
@@ -164,7 +164,7 @@ export default (user: User, actives: string[]): PostPage<SwapUI> => {
   /* simulate */
   type SwapParams = { from: string; to: string; amount: string }
   type Simulation = SwapParams & { result: string }
-  const [simulationsOnchain, setSimulationsOnchain] = useState<Simulation[]>([])
+  const [simulationsMarket, setSimulationsMarket] = useState<Simulation[]>([])
   const [simulationsTerraswap, setSimulationsTerraswap] = useState<
     Simulation[]
   >([])
@@ -174,7 +174,7 @@ export default (user: User, actives: string[]): PostPage<SwapUI> => {
 
   const findSimulations = (mode: Mode) =>
     ({
-      'On-chain': simulationsOnchain,
+      'Market': simulationsMarket,
       Terraswap: simulationsTerraswap,
       Route: simulationsRoute,
     }[mode])
@@ -206,7 +206,7 @@ export default (user: User, actives: string[]): PostPage<SwapUI> => {
   const expectedPrice = div(amount, simulated)
 
   // simulate: Max & Tax
-  const shouldTax = is.nativeTerra(from) && mode !== 'On-chain'
+  const shouldTax = is.nativeTerra(from) && mode !== 'Market'
   const calcTax = useCalcTax(from, t)
   const calcFee = useCalcFee()
   const { getMax, getTax, label: taxLabel, loading: loadingTax } = calcTax
@@ -238,16 +238,16 @@ export default (user: User, actives: string[]): PostPage<SwapUI> => {
       try {
         setSimulating(true)
 
-        if (availableModes.includes('On-chain')) {
-          const { swapped, rate } = await simulateOnchain({ ...values, amount })
+        if (availableModes.includes('Market')) {
+          const { swapped, rate } = await simulateMarket({ ...values, amount })
 
           setNativePrincipals([
             ...nativePrincipals,
             { from, to, amount, result: times(amount, rate!) },
           ])
 
-          setSimulationsOnchain([
-            ...simulationsOnchain,
+          setSimulationsMarket([
+            ...simulationsMarket,
             { from, to, amount, result: swapped },
           ])
         }
@@ -289,26 +289,26 @@ export default (user: User, actives: string[]): PostPage<SwapUI> => {
   }, [amount, from, to])
 
   /* Set mode after simulation */
-  const simulatedOnchain = findSimulated({ from, to, amount }, 'On-chain')
+  const simulatedMarket = findSimulated({ from, to, amount }, 'Market')
   const simulatedTerraswap = findSimulated({ from, to, amount }, 'Terraswap')
-  const isOnchainGreater = gte(simulatedOnchain, simulatedTerraswap)
+  const isMarketGreater = gte(simulatedMarket, simulatedTerraswap)
 
   useEffect(() => {
-    const isBothAvailable = ['On-chain', 'Terraswap'].every((mode) =>
+    const isBothAvailable = ['Market', 'Terraswap'].every((mode) =>
       availableModes.includes(mode as Mode)
     )
 
-    const valid = gt(simulatedOnchain, 0) && gt(simulatedTerraswap, 0)
+    const valid = gt(simulatedMarket, 0) && gt(simulatedTerraswap, 0)
 
     if (isBothAvailable && valid) {
-      const mode = isOnchainGreater ? 'On-chain' : 'Terraswap'
+      const mode = isMarketGreater ? 'Market' : 'Terraswap'
       setValues({ ...values, mode })
     } else if (availableModes.length === 1) {
       setValues({ ...values, mode: availableModes[0] })
     }
 
     // eslint-disable-next-line
-  }, [simulatedOnchain, simulatedTerraswap, availableModes, isOnchainGreater])
+  }, [simulatedMarket, simulatedTerraswap, availableModes, isMarketGreater])
 
   useEffect(() => {
     const fetchPrice = async () => {
@@ -385,7 +385,7 @@ export default (user: User, actives: string[]): PostPage<SwapUI> => {
         ...getDefaultAttrs('mode'),
         hidden: !pair,
       },
-      options: ['On-chain', 'Terraswap'].map((value) => ({
+      options: ['Market', 'Terraswap'].map((value) => ({
         value,
         children: value,
       })),
@@ -445,7 +445,7 @@ export default (user: User, actives: string[]): PostPage<SwapUI> => {
       !gt(simulated, 0) || !mode
         ? undefined
         : {
-            'On-chain': {
+            'Market': {
               title: t('Post:Swap:Spread'),
               tooltip:
                 params &&
@@ -511,7 +511,7 @@ export default (user: User, actives: string[]): PostPage<SwapUI> => {
     msgs: !mode
       ? undefined
       : {
-          'On-chain': assertLimitOrder ? [assertLimitOrder, swap] : [swap],
+          'Market': assertLimitOrder ? [assertLimitOrder, swap] : [swap],
           Terraswap: terraswap?.msgs,
           Route: [
             new MsgExecuteContract(
@@ -625,7 +625,7 @@ interface SimulateResult {
   rate?: string
 }
 
-export const simulateOnchain = async (
+export const simulateMarket = async (
   simulateParams: SimulateParams,
   fetchRate = true
 ): Promise<SimulateResult> => {

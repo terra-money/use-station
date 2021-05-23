@@ -21,7 +21,7 @@ interface SimulateParams extends SwapParams {
   chain: ChainOptions
 }
 
-export const isOnChainAvailable = ({ from, to }: SwapParams) =>
+export const isMarketAvailable = ({ from, to }: SwapParams) =>
   is.nativeDenom(from) && is.nativeDenom(to)
 
 export const findPair = ({ from, to }: SwapParams, pairs?: Pairs) => {
@@ -36,7 +36,7 @@ export const findPair = ({ from, to }: SwapParams, pairs?: Pairs) => {
 }
 
 export const createSwap = ({ from, to }: SwapParams) =>
-  isOnChainAvailable({ from, to })
+  isMarketAvailable({ from, to })
     ? { native_swap: { offer_denom: from, ask_denom: to } }
     : {
         terra_swap: {
@@ -62,11 +62,11 @@ export const isRouteAvailable = ({
   pairs?: Pairs
 }) => {
   const r0 =
-    isOnChainAvailable({ from, to: 'uusd' }) ||
+    isMarketAvailable({ from, to: 'uusd' }) ||
     findPair({ from, to: 'uusd' }, pairs)
 
   const r1 =
-    isOnChainAvailable({ from: 'uusd', to }) ||
+    isMarketAvailable({ from: 'uusd', to }) ||
     findPair({ from: 'uusd', to }, pairs)
 
   const routeContract = !!RouteContracts[chain]

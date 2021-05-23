@@ -11,7 +11,7 @@ import { useConfig } from '../contexts/ConfigContext'
 import { getFeeDenomList, isFeeAvailable } from './validateConfirm'
 import { useActiveDenoms, useForm } from '../index'
 import useCalcTaxes from './useCalcTaxes'
-import { simulateOnchain } from './useSwap'
+import { simulateMarket } from './useSwap'
 import { getTerraswapURL, simulateTerraswap } from './terraswap'
 import { findPair, getRouteMessage, simulateRoute } from './routeswap'
 
@@ -120,7 +120,7 @@ export default (user: User, { bank, pairs }: Params): PostPage => {
         setSimulatedList({ ...simulatedTerraswap, ...simulatedRouteswap })
       } else {
         const simulateList = balanceDenomsWithoutTo.map((from) =>
-          simulateOnchain(
+          simulateMarket(
             { from, to, amount: availableList[from] ?? '0' },
             false
           )
@@ -174,13 +174,13 @@ export default (user: User, { bank, pairs }: Params): PostPage => {
     return new MsgExecuteContract(user.address, contract, msg, coins)
   })
 
-  const msgsOnchain = checked.map(
+  const msgsMarket = checked.map(
     (from) =>
       new MsgSwap(user.address, new Coin(from, availableList[from] ?? '0'), to)
   )
 
   const msgs =
-    to === 'uluna' ? [...msgsTerraswap, ...msgsRouteswap] : msgsOnchain
+    to === 'uluna' ? [...msgsTerraswap, ...msgsRouteswap] : msgsMarket
 
   /* render */
   interface FieldUI {
