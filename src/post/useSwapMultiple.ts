@@ -106,13 +106,15 @@ export default (user: User, { bank, pairs }: Params): PostPage => {
           return simulateRoute({ from, to, amount, chain: chain.current })
         })
 
-        const responsesRouteswap = await Promise.all(simulateRouteswapList)
+        const responsesRouteswap = await Promise.allSettled(
+          simulateRouteswapList
+        )
 
         const simulatedRouteswap = routeswapList.reduce(
-          (acc, denom, index) => ({
-            ...acc,
-            [denom]: responsesRouteswap[index],
-          }),
+          (acc, denom, index) =>
+            typeof responsesRouteswap[index] === 'string'
+              ? { ...acc, [denom]: responsesRouteswap[index] }
+              : acc,
           {}
         )
 
