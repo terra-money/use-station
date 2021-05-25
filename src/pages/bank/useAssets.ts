@@ -68,7 +68,7 @@ export default (user: User, config?: Config): AssetsPage => {
       : {
           title: 'Tokens',
           list: tokenList
-            .filter(({ balance }) => !hideSmallTokens || gt(balance, 0))
+            .filter(({ balance }) => !hideSmallTokens || gt(balance, SMALL))
             .map(({ token, symbol, icon, balance }) => ({
               icon,
               token,
