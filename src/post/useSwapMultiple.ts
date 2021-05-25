@@ -101,14 +101,18 @@ export default (user: User, { bank, pairs }: Params): PostPage => {
         )
 
         // routeswap
-        const simulateRouteswapList = routeswapList.map((from) => {
-          const amount = getAmountAfterTax(from)
-          return simulateRoute({ from, to, amount, chain: chain.current })
+        const simulateRouteswapList = routeswapList.map(async (from) => {
+          try {
+            const amount = getAmountAfterTax(from)
+            const params = { from, to, amount, chain: chain.current }
+            const result = await simulateRoute(params)
+            return result
+          } catch {
+            return '0'
+          }
         })
 
-        const responsesRouteswap = await Promise.allSettled(
-          simulateRouteswapList
-        )
+        const responsesRouteswap = await Promise.all(simulateRouteswapList)
 
         const simulatedRouteswap = routeswapList.reduce(
           (acc, denom, index) =>
