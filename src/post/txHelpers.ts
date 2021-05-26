@@ -54,7 +54,10 @@ export const getBase = async (from: string): Promise<Base> => {
 
 type AccountValue = { account_number: string; sequence: string }
 const getValue = ({ result: { value } }: Account): AccountValue =>
-  'BaseVestingAccount' in value ? value.BaseVestingAccount.BaseAccount : value
+  Object.assign(
+    { account_number: '0', sequence: '0' },
+    'BaseVestingAccount' in value ? value.BaseVestingAccount.BaseAccount : value
+  )
 
 /* error */
 export const parseError = (
