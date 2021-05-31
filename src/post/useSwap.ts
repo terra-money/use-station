@@ -311,9 +311,6 @@ export default (user: User, actives: string[]): PostPage<SwapUI> => {
     // eslint-disable-next-line
   }, [amount, from, to])
 
-  const simulatedMarket = findSimulated({ from, to, amount }, 'Market')
-  const simulatedTerraswap = findSimulated({ from, to, amount }, 'Terraswap')
-
   useEffect(() => {
     const fetchPrice = async () => {
       const { data } = await fcd.get<Rate[]>(`/v1/market/swaprate/${from}`)
