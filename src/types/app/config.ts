@@ -39,6 +39,7 @@ export interface ChainOptions {
   chainID: string
   lcd: string
   fcd: string
+  localterra?: boolean
 }
 
 export interface ChainConfig {
