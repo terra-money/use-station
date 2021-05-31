@@ -48,6 +48,7 @@ export default (): DashboardPage => {
         small: t('Page:Dashboard:{{staked}} staked', {
           staked: format.coin(
             { amount: stakingPool.bondedTokens, denom: 'uluna' },
+            undefined,
             { integer: true }
           ),
         }),
@@ -83,10 +84,9 @@ const getSelector = (
   displays: Object.entries(data).reduce(
     (acc, [denom, amount]) => ({
       ...acc,
-      [format.denom(denom)]: format.display(
-        { denom, amount },
-        { integer: true }
-      ),
+      [format.denom(denom)]: format.display({ denom, amount }, undefined, {
+        integer: true,
+      }),
     }),
     {}
   ),

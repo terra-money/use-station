@@ -13,7 +13,7 @@ import { is, format, find } from '../utils'
 import { div, gt, max as mathMax, max, minus, times } from '../utils/math'
 import { toAmount, toInput } from '../utils/format'
 import { useConfig } from '../contexts/ConfigContext'
-import useTokenBalance from '../cw20/useTokenBalance'
+import { TokenBalanceQuery } from '../cw20/useTokenBalance'
 import useFCD from '../api/useFCD'
 import useBank from '../api/useBank'
 import useForm from '../hooks/useForm'
@@ -49,10 +49,13 @@ interface Values {
   network: RecipientNetwork
 }
 
-export default (user: User, denom: string): PostPage<RecentSentUI> => {
+export default (
+  user: User,
+  denom: string,
+  tokenBalance: TokenBalanceQuery
+): PostPage<RecentSentUI> => {
   const { t } = useTranslation()
   const { data: bank, loading: bankLoading, error } = useBank(user)
-  const tokenBalance = useTokenBalance(user.address)
   const { list: tokens, loading: tokenLoading, whitelist } = tokenBalance
   const loading = bankLoading || tokenLoading
   const { chain } = useConfig()
@@ -107,7 +110,7 @@ export default (user: User, denom: string): PostPage<RecentSentUI> => {
   /* form */
   const validate = ({ input, to, memo, network }: Values) => ({
     to: v.address(to, true),
-    input: v.input(input),
+    input: v.input(input, undefined, whitelist?.[denom]?.decimals),
     memo:
       v.length(memo, { max: 256, label: t('Common:Tx:Memo') }) ||
       v.includes(memo, '<') ||
@@ -130,7 +133,7 @@ export default (user: User, denom: string): PostPage<RecentSentUI> => {
   const { values, setValue, setValues, invalid } = form
   const { getDefaultProps, getDefaultAttrs } = form
   const { to, input, memo: $memo, network } = values
-  const amount = toAmount(input)
+  const amount = toAmount(input, whitelist?.[denom]?.decimals)
   const toEthereum = ethers.utils.isAddress(to)
   const toTerra = AccAddress.validate(to)
   const shuttles = SHUTTLES[chain.current.name]
@@ -215,8 +218,14 @@ export default (user: User, denom: string): PostPage<RecentSentUI> => {
       label: t('Common:Tx:Amount'),
       button: {
         label: t('Common:Account:Available'),
-        display: format.display({ amount: maxAmount, denom }),
-        attrs: { onClick: () => setValue('input', toInput(maxAmount)) },
+        display: format.display(
+          { amount: maxAmount, denom },
+          whitelist?.[denom]?.decimals
+        ),
+        attrs: {
+          onClick: () =>
+            setValue('input', toInput(maxAmount, whitelist?.[denom]?.decimals)),
+        },
       },
       attrs: {
         ...getDefaultAttrs('input'),
@@ -271,7 +280,10 @@ export default (user: User, denom: string): PostPage<RecentSentUI> => {
         ? {
             name: 'Amount after Shuttle fee',
             displays: [
-              format.display({ amount: amountAfterShuttleFee, denom }),
+              format.display(
+                { amount: amountAfterShuttleFee, denom },
+                whitelist?.[denom]?.decimals
+              ),
             ],
           }
         : []
@@ -307,7 +319,12 @@ export default (user: User, denom: string): PostPage<RecentSentUI> => {
         : isFeeAvailable(fee, bank.balance),
     submitLabels: [t('Post:Send:Send'), t('Post:Send:Sending...')],
     message: t('Post:Send:Sent {{coin}} to {{address}}', {
-      coin: format.coin({ amount, denom }, undefined, whitelist),
+      coin: format.coin(
+        { amount, denom },
+        whitelist?.[denom]?.decimals,
+        undefined,
+        whitelist
+      ),
       address: to,
     }),
     warning: [

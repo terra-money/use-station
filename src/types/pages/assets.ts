@@ -54,6 +54,7 @@ export interface Token {
   symbol: string
   icon?: string
   token: string
+  decimals?: number
 }
 
 export interface TokenBalance extends Token {

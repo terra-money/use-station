@@ -8,7 +8,7 @@ describe('format', () => {
 
   test('amount', () => {
     expect(format.amount('1')).toBe('0.000001')
-    expect(format.amount('1234567', { integer: true })).toBe('1')
+    expect(format.amount('1234567', 6, { integer: true })).toBe('1')
   })
 
   test('denom', () => {
@@ -31,7 +31,7 @@ describe('format', () => {
   test('coin', () => {
     const coin = { amount: '1234567890', denom: 'uluna' }
     const config = { integer: true }
-    expect(format.coin(coin, config)).toBe('1,234 Luna')
+    expect(format.coin(coin, 6, config)).toBe('1,234 Luna')
   })
 
   test('input/amount', () => {

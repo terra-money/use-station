@@ -1,4 +1,5 @@
 import { Dictionary } from 'ramda'
+import { Token } from '../pages/assets'
 
 export type Denom = 'ukrw' | 'umnt' | 'usdr' | 'uusd'
 
@@ -13,14 +14,6 @@ export interface DisplayCoin {
 }
 
 export type DisplayCoinDictionary = Dictionary<DisplayCoin>
-
-export interface ListedItem {
-  symbol: string
-  token: string
-  icon?: string
-}
-
-export type Whitelist = Dictionary<ListedItem>
-
+export type Whitelist = Dictionary<Token>
 export type Pair = [string, string]
 export type Pairs = Dictionary<Pair>

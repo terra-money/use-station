@@ -65,7 +65,7 @@
       "{{label}} must be between {{min}} and {{max}}": "{{label}} doit être compris entre {{min}} et {{max}}",
       "{{label}} must be between {{min}} and {{max}} characters": "{{label}} doit être compris entre {{min}} et {{max}} caractères",
       "{{label}} must be longer than {{min}} characters": "{{label}} doit être plus long que {{min}} caractères",
-      "{{label}} must be within 6 decimal points": "{{label}} doit être compris entre 6 points décimaux",
+      "{{label}} must be within {{decimals}} decimal points": "{{label}} doit être compris entre {{decimals}} points décimaux",
       "{{label}} cannot include angle brackets": "{{label}} ne peut pas inclure le caractère",
       "Password does not match": "Le mot de passe ne correspond pas",
       "Insufficient balance": "Solde insuffisant",

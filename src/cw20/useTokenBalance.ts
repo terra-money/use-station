@@ -7,7 +7,7 @@ import useWhitelist from './useWhitelist'
 import mantleURL from './mantle.json'
 import alias from './alias'
 
-interface TokenBalanceQuery {
+export interface TokenBalanceQuery {
   loading: boolean
   whitelist?: Tokens
   list?: TokenBalance[]

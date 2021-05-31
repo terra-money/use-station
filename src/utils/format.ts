@@ -9,20 +9,30 @@ interface Config {
   integer?: boolean
 }
 
-export const decimal = (number: string = '0', p: number = 6): string =>
-  new BigNumber(number).decimalPlaces(p, BigNumber.ROUND_DOWN).toFormat(p)
+export const decimal = (number: string = '0', decimals: number = 6): string =>
+  new BigNumber(number)
+    .decimalPlaces(decimals, BigNumber.ROUND_DOWN)
+    .toFormat(decimals)
 
-export const decimalN = (number: string = '0', p: number = 6): number =>
-  new BigNumber(number).decimalPlaces(p, BigNumber.ROUND_DOWN).toNumber()
+export const decimalN = (number: string = '0', decimals: number = 6): number =>
+  new BigNumber(number).decimalPlaces(decimals, BigNumber.ROUND_DOWN).toNumber()
 
-export const amount = (amount: string, config?: Config): string => {
-  const number = new BigNumber(amount || 0).div(1e6) // amount can be ''
-  return decimal(number.toString(), config?.integer ? 0 : 6)
+export const amount = (
+  amount: string,
+  decimals = 6,
+  config?: Config
+): string => {
+  const number = new BigNumber(amount || 0).div(new BigNumber(10).pow(decimals))
+  return decimal(number.toString(), config?.integer ? 0 : decimals)
 }
 
-export const amountN = (amount: string, config?: Config): number => {
-  const number = new BigNumber(amount || 0).div(1e6) // amount can be ''
-  return decimalN(number.toString(), config?.integer ? 0 : 6)
+export const amountN = (
+  amount: string,
+  decimals = 6,
+  config?: Config
+): number => {
+  const number = new BigNumber(amount || 0).div(new BigNumber(10).pow(decimals))
+  return decimalN(number.toString(), config?.integer ? 0 : decimals)
 }
 
 export const denom = (denom = '', whitelist?: Whitelist): string => {
@@ -38,30 +48,35 @@ export const denom = (denom = '', whitelist?: Whitelist): string => {
 
 export const display = (
   coin: Coin,
+  decimals = 6,
   config?: Config,
   whitelist?: Whitelist
 ): DisplayCoin => {
-  const value = amount(coin.amount, config)
+  const value = amount(coin.amount, decimals, config)
   const unit = denom(coin.denom, whitelist)
   return { value, unit }
 }
 
 export const coin = (
   coin: Coin,
+  decimals = 6,
   config?: Config,
   whitelist?: Whitelist
 ): string => {
-  const { value, unit } = display(coin, config, whitelist)
+  const { value, unit } = display(coin, decimals, config, whitelist)
   return [value, unit].join(' ')
 }
 
-export const toAmount = (input: string): string => {
-  const number = new BigNumber(input ?? 0).times(1e6)
+export const toAmount = (input: string, decimals = 6): string => {
+  const number = new BigNumber(input ?? 0).times(
+    new BigNumber(10).pow(decimals)
+  )
+
   return input ? number.decimalPlaces(0, BigNumber.ROUND_DOWN).toString() : '0'
 }
 
-export const toInput = (amount: string): string => {
-  const number = new BigNumber(amount ?? 0).div(1e6)
+export const toInput = (amount: string, decimals = 6): string => {
+  const number = new BigNumber(amount ?? 0).div(new BigNumber(10).pow(decimals))
   return amount ? number.decimalPlaces(6, BigNumber.ROUND_DOWN).toString() : '0'
 }
 

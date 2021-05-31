@@ -67,7 +67,7 @@
         "{{label}} must be between {{etiqueta}} and {{max}}": "{{etiqueta}} должен быть между {{min}} и {{max}}",
         "{{label}} must be between {{min}} and {{max}} characters": "{{etiqueta}} должен быть между {{min}} и {{max}} символов",
         "{{label}} must be longer than {{min}} characters": "{{etiqueta}} должен быть длиннее, чем {{min}} символов",
-        "{{label}} must be within 6 decimal points": "{{etiqueta}} должнен быть в пределах 6 десятичных знаков",
+        "{{label}} must be within {{decimals}} decimal points": "{{etiqueta}} должнен быть в пределах {{decimals}} десятичных знаков",
         "{{label}} cannot include angle brackets": "{{etiqueta}} не может включать угловые скобки",
         "Password does not match": "Пароль не подходит",
         "Insufficient balance": "Недостаточный баланс",

@@ -95,13 +95,13 @@ export default (user: User, actives: string[]): PostPage<SwapUI> => {
   }
 
   /* form */
-  const validate = ({ input, slippage }: Values) => ({
+  const validate = ({ input, from, slippage }: Values) => ({
     slippage: !isInteger(times(slippage, 100))
       ? 'Slippage must be within 2 decimal points'
       : '',
     from: '',
     to: '',
-    input: v.input(input),
+    input: v.input(input, undefined, whitelist?.[from]?.decimals),
   })
 
   const initial = {
@@ -117,7 +117,7 @@ export default (user: User, actives: string[]): PostPage<SwapUI> => {
   const { values, setValue, setValues, invalid } = form
   const { getDefaultProps, getDefaultAttrs } = form
   const { mode, slippage, from, to, input } = values
-  const amount = toAmount(input)
+  const amount = toAmount(input, whitelist?.[from]?.decimals)
   const slippagePercent = isFinite(slippage) ? div(slippage, 100) : '0.01'
 
   const pair = findPair({ from, to }, pairs)
@@ -374,7 +374,9 @@ export default (user: User, actives: string[]): PostPage<SwapUI> => {
       element: 'input',
       attrs: {
         id: 'receive',
-        value: gt(simulated, 0) ? format.amount(simulated) : '',
+        value: gt(simulated, 0)
+          ? format.amount(simulated, whitelist?.[to]?.decimals)
+          : '',
         readOnly: true,
       },
     },
@@ -418,11 +420,13 @@ export default (user: User, actives: string[]): PostPage<SwapUI> => {
           title: t('Post:Swap:Available balance'),
           display: format.display(
             { amount: maxAmount, denom: from },
+            whitelist?.[to]?.decimals,
             undefined,
             whitelist
           ),
           attrs: {
-            onClick: () => setValue('input', toInput(maxAmount)),
+            onClick: () =>
+              setValue('input', toInput(maxAmount, whitelist?.[to]?.decimals)),
           },
         },
     expectedPrice: !gt(simulated, 0)
@@ -461,7 +465,10 @@ export default (user: User, actives: string[]): PostPage<SwapUI> => {
             },
             Terraswap: {
               title: 'Trading Fee',
-              value: format.amount(tradingFeeTerraswap),
+              value: format.amount(
+                tradingFeeTerraswap,
+                whitelist?.[to]?.decimals
+              ),
               unit: format.denom(to),
             },
             Route: {
@@ -529,7 +536,12 @@ export default (user: User, actives: string[]): PostPage<SwapUI> => {
       {
         name: t('Common:Tx:Amount'),
         displays: [
-          format.display({ amount, denom: from }, undefined, whitelist),
+          format.display(
+            { amount, denom: from },
+            whitelist?.[to]?.decimals,
+            undefined,
+            whitelist
+          ),
         ],
       },
       {
@@ -550,6 +562,7 @@ export default (user: User, actives: string[]): PostPage<SwapUI> => {
         displays: [
           format.display(
             { amount: simulated, denom: to },
+            whitelist?.[to]?.decimals,
             undefined,
             whitelist
           ),
@@ -582,7 +595,12 @@ export default (user: User, actives: string[]): PostPage<SwapUI> => {
       )
 
       const message = t('Post:Swap:Swapped {{coin}} to {{unit}}', {
-        coin: format.coin({ amount, denom: from }, undefined, whitelist),
+        coin: format.coin(
+          { amount, denom: from },
+          whitelist?.[from]?.decimals,
+          undefined,
+          whitelist
+        ),
         unit: format.denom(to, whitelist),
       })
 

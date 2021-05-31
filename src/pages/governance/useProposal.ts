@@ -86,7 +86,9 @@ export default (id: string, user?: User): ProposalPage => {
       percent: percent(calcDepositRatio(deposit)),
       total: [
         contents[0]['title'],
-        format.coin(totalDeposit[0] ?? defaultCoin, { integer: true }),
+        format.coin(totalDeposit[0] ?? defaultCoin, undefined, {
+          integer: true,
+        }),
       ].join(' '),
       contents,
       depositing: DateTime.fromISO(deposit.depositEndTime) > DateTime.local(),

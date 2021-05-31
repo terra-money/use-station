@@ -57,6 +57,7 @@ export default (t: TFunction): Props<Result> => ({
         result?.data.map(({ datetime, txVolume }) => ({
           title: format.coin(
             { amount: txVolume, denom: result.denom },
+            undefined,
             { integer: true }
           ),
           label: new Date(datetime).toUTCString(),

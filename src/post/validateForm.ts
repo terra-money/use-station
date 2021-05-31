@@ -3,6 +3,7 @@ import { ethers } from 'ethers'
 import { is } from '../utils'
 import { gt, lte, isInteger } from '../utils/math'
 import { toAmount } from '../utils/format'
+import BigNumber from 'bignumber.js'
 
 const validateForm = (t: TFunction) => {
   const between = (
@@ -22,19 +23,23 @@ const validateForm = (t: TFunction) => {
   return {
     between,
 
-    input: (input: string, range?: { max: string }): string =>
-      range && !gt(range.max, 0)
+    input: (input: string, range?: { max: string }, decimals = 6): string => {
+      return range && !gt(range.max, 0)
         ? t('Common:Validate:Insufficient balance')
-        : !isInteger(toAmount(input))
-        ? t('Common:Validate:{{label}} must be within 6 decimal points', {
-            label: t('Common:Tx:Amount'),
-          })
+        : !isInteger(
+            new BigNumber(input ?? 0).times(new BigNumber(10).pow(decimals))
+          )
+        ? t(
+            'Common:Validate:{{label}} must be within {{decimals}} decimal points',
+            { label: t('Common:Tx:Amount'), decimals }
+          )
         : range
         ? between(input, {
             range: [0, range.max],
             label: t('Common:Tx:Amount'),
           })
-        : '',
+        : ''
+    },
 
     address: (to: string, eth = false) =>
       !to

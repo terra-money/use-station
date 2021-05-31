@@ -45,6 +45,7 @@ export default (
         results?.map(({ datetime, blockReward }) => ({
           title: format.coin(
             { amount: exchange(blockReward), denom },
+            undefined,
             { integer: true }
           ),
           label: new Date(datetime).toUTCString(),

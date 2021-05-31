@@ -69,10 +69,13 @@ export default (user: User, config?: Config): AssetsPage => {
           title: 'Tokens',
           list: tokenList
             .filter(({ balance }) => !hideSmallTokens || gt(balance, SMALL))
-            .map(({ token, symbol, icon, balance }) => ({
+            .map(({ token, symbol, icon, balance, decimals }) => ({
               icon,
               token,
-              display: { value: format.amount(balance), unit: symbol },
+              display: {
+                value: format.amount(balance, decimals),
+                unit: symbol,
+              },
             })),
           hideSmall: {
             label: t('Page:Bank:Hide small balances'),
