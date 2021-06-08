@@ -189,11 +189,13 @@ export default (
         errorMessage ? setErrorMessage(errorMessage) : setSubmitted(true)
       }
     } catch (error) {
-      error.message === 'Incorrect password'
-        ? setPasswordError(t('Auth:Form:Incorrect password'))
-        : error.message.includes('Signing failed: ')
-        ? setLedgerError(error.message)
-        : setErrorMessage(parseError(error, defaultErrorMessage))
+      if (error.message === 'Incorrect password') {
+        setPasswordError(t('Auth:Form:Incorrect password'))
+      } else if (error.name === 'LedgerError') {
+        setLedgerError(error.message)
+      } else {
+        setErrorMessage(parseError(error, defaultErrorMessage))
+      }
     } finally {
       setSubmitting(false)
     }

@@ -2,7 +2,6 @@ import { TFunction } from 'i18next'
 import { ethers } from 'ethers'
 import { is } from '../utils'
 import { gt, lte, isInteger } from '../utils/math'
-import { toAmount } from '../utils/format'
 import BigNumber from 'bignumber.js'
 
 const validateForm = (t: TFunction) => {
