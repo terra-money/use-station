@@ -235,6 +235,7 @@ export default (user: User, actives: string[]): PostPage<SwapUI> => {
 
   useEffect(() => {
     const simulate = async () => {
+      setErrorMessage(undefined)
       try {
         setSimulating(true)
 
