@@ -80,6 +80,8 @@ export default (user: User, actives: string[]): PostPage<SwapUI> => {
     })) ?? []
 
   const tokens = [...nativeTokensOptions, ...cw20TokensList]
+  const getBalance = (from: string) =>
+    tokens.find(({ value }) => value === from)?.balance ?? '0'
 
   /* ready: tooltip */
   const paramsResponse = useFCD<MarketData>({ url: '/market/parameters' })
@@ -101,7 +103,11 @@ export default (user: User, actives: string[]): PostPage<SwapUI> => {
       : '',
     from: '',
     to: '',
-    input: v.input(input, undefined, whitelist?.[from]?.decimals),
+    input: v.input(
+      input,
+      { max: toInput(getBalance(from), whitelist?.[from]?.decimals) },
+      whitelist?.[from]?.decimals
+    ),
   })
 
   const initial = {
@@ -142,11 +148,10 @@ export default (user: User, actives: string[]): PostPage<SwapUI> => {
     [chain, pairs]
   )
 
-  const availableModes = useMemo(() => getAvailableModes({ from, to }), [
-    getAvailableModes,
-    from,
-    to,
-  ])
+  const availableModes = useMemo(
+    () => getAvailableModes({ from, to }),
+    [getAvailableModes, from, to]
+  )
 
   const init = (values?: Partial<Values>) => {
     const defaultValues = {
@@ -211,7 +216,7 @@ export default (user: User, actives: string[]): PostPage<SwapUI> => {
   const calcFee = useCalcFee()
   const { getMax, getTax, label: taxLabel, loading: loadingTax } = calcTax
   const tax = shouldTax ? getTax(amount) : '0'
-  const balance = tokens.find(({ value }) => value === from)?.balance ?? '0'
+  const balance = getBalance(from)
   const calculatedMaxAmount = shouldTax ? getMax(balance) : balance
   const maxAmount =
     bank.data?.balance.length === 1 && calcFee

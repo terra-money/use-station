@@ -108,9 +108,18 @@ export default (
   }
 
   /* form */
+  const getBalance = () =>
+    (is.nativeDenom(denom)
+      ? find(`${denom}:available`, bank?.balance)
+      : tokens?.find(({ token }) => token === denom)?.balance) ?? '0'
+
   const validate = ({ input, to, memo, network }: Values) => ({
     to: v.address(to, true),
-    input: v.input(input, undefined, whitelist?.[denom]?.decimals),
+    input: v.input(
+      input,
+      { max: toInput(getBalance(), whitelist?.[denom]?.decimals) },
+      whitelist?.[denom]?.decimals
+    ),
     memo:
       v.length(memo, { max: 256, label: t('Common:Tx:Memo') }) ||
       v.includes(memo, '<') ||
@@ -144,11 +153,8 @@ export default (
   const shouldTax = is.nativeTerra(denom)
   const calcTax = useCalcTax(denom, t)
   const calcFee = useCalcFee()
+  const balance = getBalance()
 
-  const balance =
-    (is.nativeDenom(denom)
-      ? find(`${denom}:available`, bank?.balance)
-      : tokens?.find(({ token }) => token === denom)?.balance) ?? '0'
   const calculatedMaxAmount = calcTax.getMax(balance)
   const maxAmount =
     bank?.balance.length === 1 && calcFee
