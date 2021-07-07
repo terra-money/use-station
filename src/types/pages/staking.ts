@@ -82,7 +82,6 @@ export interface ValidatorListHeadings {
   votingPower: ValidatorListHeading
   selfDelegation: ValidatorListHeading
   commission: ValidatorListHeading
-  delegationReturn: ValidatorListHeading
   uptime: ValidatorListHeading
   myDelegation: ValidatorListHeading
 }

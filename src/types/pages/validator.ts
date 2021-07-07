@@ -25,7 +25,6 @@ export interface ValidatorUI {
   maxRate: { title: string; percent: string }
   maxChangeRate: { title: string; percent: string }
   updateTime: { title: string; date: string }
-  delegationReturn: { title: string; percent: string }
   uptime: { title: string; desc: string; percent: string }
 
   myDelegations: { title: string; display?: DisplayCoin; percent?: string }

@@ -184,10 +184,6 @@ export default (
       title: t('Page:Staking:Validator commission'),
       sorter: { prop: 'commissionInfo.rate' },
     },
-    delegationReturn: {
-      title: t('Page:Staking:Delegation return'),
-      sorter: { prop: 'stakingReturn' },
-    },
     uptime: {
       title: t('Page:Staking:Uptime'),
       sorter: { prop: 'upTime' },
@@ -205,7 +201,7 @@ export default (
     return sorter ? { prop: by, isString } : undefined
   }
 
-  const DefaultSorter: ValidatorSorter = { prop: 'stakingReturn' }
+  const DefaultSorter: ValidatorSorter = { prop: 'upTime' }
   const initialSorter =
     (initialSort?.['by'] && getInitialSorter(initialSort['by'])) ||
     DefaultSorter
@@ -227,6 +223,9 @@ export default (
           (v.status === 'jailed' && !delegated) || v.status === 'inactive'
         return !hidden
       })
+      .sort(({ votingPower: a }, { votingPower: b }) =>
+        toNumber(minus(b.weight, a.weight))
+      )
       .sort((validatorA, validatorB) => {
         const a: string = String(path(prop.split('.'), validatorA) || 0)
         const b: string = String(path(prop.split('.'), validatorB) || 0)
@@ -239,9 +238,11 @@ export default (
     const grouped = [
       ...sorted
         .filter(({ isNewValidator }) => isNewValidator)
-        .map((
-          validator // New validators (No rank)
-        ) => renderValidatorItem(validator, { index: -1, total })),
+        .map(
+          (
+            validator // New validators (No rank)
+          ) => renderValidatorItem(validator, { index: -1, total })
+        ),
       ...sorted
         .filter(({ isNewValidator }) => !isNewValidator)
         .map((validator, index) =>
@@ -272,7 +273,6 @@ export default (
 
 /* helpers */
 type SortKey = keyof StakingDelegation
-const compareWith = (key: SortKey) => (
-  a: StakingDelegation,
-  b: StakingDelegation
-) => toNumber(minus(b[key] ?? '0', a[key] ?? '0'))
+const compareWith =
+  (key: SortKey) => (a: StakingDelegation, b: StakingDelegation) =>
+    toNumber(minus(b[key] ?? '0', a[key] ?? '0'))

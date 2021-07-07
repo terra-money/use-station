@@ -18,7 +18,7 @@ export default (): ((v: ValidatorData, params?: Params) => ValidatorUI) => {
 
     const { description, status, operatorAddress, accountAddress } = v
     const { votingPower, selfDelegation } = v
-    const { commissionInfo, stakingReturn, upTime } = v
+    const { commissionInfo, upTime } = v
     const { myDelegation, myUndelegation: myUndelegations, myRewards } = v
 
     const myUndelegation = myUndelegations?.length
@@ -71,10 +71,6 @@ export default (): ((v: ValidatorData, params?: Params) => ValidatorUI) => {
       updateTime: {
         title: t('Page:Staking:Last commission change'),
         date: format.date(commissionInfo.updateTime),
-      },
-      delegationReturn: {
-        title: t('Page:Staking:Delegation return'),
-        percent: percent(stakingReturn),
       },
       uptime: {
         title: t('Page:Staking:Uptime'),
