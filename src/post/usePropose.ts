@@ -282,6 +282,11 @@ export default (user: User): PostPage => {
           },
         ]
       : [],
+    warning: [
+      'It is recommended to get community feedback on https://agora.terra.money before uploading any proposal',
+      'Do not use text proposals to suggest Parameter changes',
+      'LUNA proposal deposits are not refunded if the quorum is not reached or the poll result is NoWithVeto',
+    ],
     feeDenom: { list: getFeeDenomList(bank.balance) },
     validate: (fee: Coin) => isAvailable({ amount, denom, fee }, bank.balance),
     submitLabels: [
