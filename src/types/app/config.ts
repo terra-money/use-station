@@ -34,10 +34,13 @@ export interface CurrencyConfig {
 }
 
 /* chain */
-export interface ChainOptions {
+export interface DefaultChainOptions {
   name: string
   chainID: string
   lcd: string
+}
+
+export interface ChainOptions extends DefaultChainOptions {
   fcd: string
   localterra?: boolean
 }
