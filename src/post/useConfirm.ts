@@ -80,10 +80,12 @@ export default (
         setEstimated(undefined)
         setErrorMessage(undefined)
 
+        const gasAdjustment = 1.75
+
         if (msgs) {
           const gasPrices = { [denom]: calcFee!.gasPrice(denom) }
           const lcd = new LCDClient({ chainID, URL, gasPrices })
-          const options = { msgs, feeDenoms: [denom], memo }
+          const options = { msgs, feeDenoms: [denom], memo, gasAdjustment }
           const unsignedTx = await lcd.tx.create(user.address, options)
           setUnsignedTx(unsignedTx)
 
@@ -102,7 +104,7 @@ export default (
 
           type Data = { gas_estimate: string }
           const { data } = await fcd.post<Data>(url, body, config)
-          const adjusted = times(data.gas_estimate, 1.75)
+          const adjusted = times(data.gas_estimate, gasAdjustment)
           const feeAmount = calcFee!.feeFromGas(adjusted, denom)
 
           // Set simulated fee
