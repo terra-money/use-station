@@ -100,14 +100,12 @@ export const date = (
     : ''
 }
 
-export const truncate = (address: string = '', [h, t]: number[]) => {
+export const truncate = (address: string, [h, t]: number[]) => {
+  if (!address) return ''
+
   const head = address.slice(0, h)
   const tail = address.slice(-1 * t, address.length)
-  return !address
-    ? ''
-    : address.length > h + t
-    ? [head, tail].join('...')
-    : address
+  return address.length > h + t ? [head, tail].join('...') : address
 }
 
 export const sanitizeJSON = (string: string): string => {
