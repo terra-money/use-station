@@ -5,7 +5,6 @@ import en from './lang/en'
 import es from './lang/es.json'
 import zh from './lang/zh.json'
 import fr from './lang/fr.json'
-import ko from './lang/ko.json'
 import ru from './lang/ru.json'
 import pl from './lang/pl.json'
 
@@ -18,7 +17,6 @@ i18n
       es: { translation: es },
       zh: { translation: zh },
       fr: { translation: fr },
-      ko: { translation: ko },
       ru: { translation: ru },
       pl: { translation: pl },
     },

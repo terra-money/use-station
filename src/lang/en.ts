@@ -1,4 +1,4 @@
-import ko from './ko.json'
+import ko from './fr.json'
 
 type Obj = { [key: string]: Depth1 }
 type Depth1 = { [key: string]: string | Depth2 }
