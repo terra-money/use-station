@@ -7,14 +7,12 @@ import { intercept } from '../api/fcd'
 import useFinder from '../hooks/useFinder'
 
 // getting minting/parameters will trigger axios intercept
-const trigger = () => fcd
-    .get('/minting/parameters')
-    .catch()
+const trigger = () => fcd.get('/minting/parameters').catch()
 
 export default (): HeightData | undefined => {
   const getLink = useFinder()
   const [height, setHeight] = useState<string>()
-  
+
   const updateBlockHeight = debounce(1000)((height: string) => {
     setHeight(height)
   })
@@ -33,7 +31,7 @@ export default (): HeightData | undefined => {
       fcd.interceptors.response.eject(interceptId)
       clearInterval(intervalId)
     }
-     // eslint-disable-next-line
+    // eslint-disable-next-line
   }, [])
 
   /* block */
@@ -44,5 +42,5 @@ export default (): HeightData | undefined => {
       }
     : undefined
 
-  return block;
+  return block
 }

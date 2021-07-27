@@ -1,8 +1,5 @@
 import { useState, useEffect, useCallback, useRef } from 'react'
-import axios, {
-  AxiosError,
-  AxiosRequestConfig as Config,
-} from 'axios'
+import axios, { AxiosError, AxiosRequestConfig as Config } from 'axios'
 import qs from 'qs'
 import { API } from '../types'
 import fcd from './fcd'

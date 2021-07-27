@@ -9,38 +9,36 @@ export default ({ accounts, signUp }: SignUpNext): SelectAccount => {
   const { t } = useTranslation()
   const [selected, setSelected] = useState<Bip>()
 
-  const fields = accounts?.map(
-    ({ bip, address, bank }: Account): Field => {
-      const badges: [string, (Vesting | Delegation | Unbonding)[]][] = [
-        [t('Auth:SignUp:Vested'), bank.vesting],
-        [t('Auth:SignUp:Delegated'), bank.delegations],
-        [t('Auth:SignUp:Undelegated'), bank.unbondings],
-      ]
+  const fields = accounts?.map(({ bip, address, bank }: Account): Field => {
+    const badges: [string, (Vesting | Delegation | Unbonding)[]][] = [
+      [t('Auth:SignUp:Vested'), bank.vesting],
+      [t('Auth:SignUp:Delegated'), bank.delegations],
+      [t('Auth:SignUp:Undelegated'), bank.unbondings],
+    ]
 
-      return {
-        label: address,
-        element: 'input',
-        attrs: {
-          type: 'radio',
-          name: 'account',
-          id: address,
-          checked: selected === bip,
-        },
-        setValue: () => setSelected(bip),
-        ui: {
-          bip,
-          badges: badges
-            .filter(([, value]) => value.length)
-            .map(([label]) => label),
-          balances: bank.balance.length
-            ? bank.balance.map(({ available, denom }) =>
-                format.coin({ amount: available, denom })
-              )
-            : t('Auth:SignUp:No balance'),
-        },
-      }
+    return {
+      label: address,
+      element: 'input',
+      attrs: {
+        type: 'radio',
+        name: 'account',
+        id: address,
+        checked: selected === bip,
+      },
+      setValue: () => setSelected(bip),
+      ui: {
+        bip,
+        badges: badges
+          .filter(([, value]) => value.length)
+          .map(([label]) => label),
+        balances: bank.balance.length
+          ? bank.balance.map(({ available, denom }) =>
+              format.coin({ amount: available, denom })
+            )
+          : t('Auth:SignUp:No balance'),
+      },
     }
-  )
+  })
 
   const [submitted, setSubmitted] = useState(false)
 

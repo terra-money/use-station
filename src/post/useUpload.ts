@@ -77,7 +77,7 @@ export default (user: User): PostPage => {
     payload: { wasm_bytes: wasm },
     memo: stringify({ name, description, url }),
     contents: [],
-    feeDenom: { list: getFeeDenomList(bank.balance), },
+    feeDenom: { list: getFeeDenomList(bank.balance) },
     validate: (fee: Coin) => isFeeAvailable(fee, bank.balance),
     submitLabels: [
       t('Post:Contracts:Upload'),

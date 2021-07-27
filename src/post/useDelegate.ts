@@ -84,8 +84,8 @@ export default (
 
   const isRedelegation = from !== address
   const type = isRedelegation ? TxType.R : isUndelegation ? TxType.U : TxType.D
-  const moniker = findDelegationFromValidators(validatorAddress)?.description
-    .moniker
+  const moniker =
+    findDelegationFromValidators(validatorAddress)?.description.moniker
 
   /* render */
   const unit = format.denom(denom)
