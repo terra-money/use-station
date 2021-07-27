@@ -186,7 +186,7 @@ export default (
 
   const shuttleList = useShuttleList()
   const getIsShuttleAvailable = (network: RecipientNetwork) =>
-    network === RecipientNetwork.Terra || !!shuttleList?.[network]?.[unit]
+    network === RecipientNetwork.Terra || !!shuttleList?.[network]?.[denom]
 
   /* render */
   const fields: Field[] = [
