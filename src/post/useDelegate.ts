@@ -66,7 +66,7 @@ export default (user: User, { validatorAddress, type }: Props): PostPage => {
     input: v.input(input, {
       max: toInput(getMax(isUndelegation ? validatorAddress : from).amount),
     }),
-    from: '',
+    from: type === DelegateType.R && !from ? 'Source is required' : '',
   })
 
   /*
@@ -75,7 +75,7 @@ export default (user: User, { validatorAddress, type }: Props): PostPage => {
   Undelegation: from = address(user) / to = validatorAddress
   */
 
-  const initial = { input: '', from: address }
+  const initial = { input: '', from: isRedelegation ? '' : address }
   const [submitted, setSubmitted] = useState(false)
   const form = useForm<Values>(initial, validate)
   const { values, setValue, invalid, getDefaultProps, getDefaultAttrs } = form
@@ -102,10 +102,13 @@ export default (user: User, { validatorAddress, type }: Props): PostPage => {
     },
     options: !hasSources
       ? undefined
-      : sources!.map(({ validatorName, validatorAddress }) => ({
-          value: validatorAddress,
-          children: validatorName,
-        })),
+      : [
+          { value: '', children: 'Choose a validator', disabled: true },
+          ...sources!.map(({ validatorName, validatorAddress }) => ({
+            value: validatorAddress,
+            children: validatorName,
+          })),
+        ],
   }
 
   const inputField = {
