@@ -18,10 +18,10 @@ interface Values {
 
 interface Props {
   validatorAddress: string
-  isUndelegation: boolean
+  type: DelegateType
 }
 
-enum TxType {
+export enum DelegateType {
   D = 'Delegate',
   R = 'Redelegate',
   U = 'Undelegate',
@@ -29,10 +29,10 @@ enum TxType {
 
 const denom = 'uluna'
 
-export default (
-  user: User,
-  { validatorAddress, isUndelegation }: Props
-): PostPage => {
+export default (user: User, { validatorAddress, type }: Props): PostPage => {
+  const isUndelegation = type === DelegateType.U
+  const isRedelegation = type === DelegateType.R
+
   const { t } = useTranslation()
   const v = validateForm(t)
 
@@ -82,89 +82,58 @@ export default (
   const { input, from } = values
   const amount = toAmount(input)
 
-  const isRedelegation = from !== address
-  const type = isRedelegation ? TxType.R : isUndelegation ? TxType.U : TxType.D
   const moniker =
     findDelegationFromValidators(validatorAddress)?.description.moniker
 
   /* render */
   const unit = format.denom(denom)
   const hasSources = !!sources?.length
-  const sourceLength = hasSources
-    ? sources!.length + 1
-    : t('Page:Bank:My wallet')
+  const sourceLength = hasSources ? sources!.length : t('Page:Bank:My wallet')
 
-  const fields: Field[] = [
-    !isUndelegation
-      ? {
-          ...getDefaultProps('from'),
-          label: t('Post:Staking:Source ({{length}})', {
-            length: sourceLength,
-          }),
-          element: (hasSources ? 'select' : 'input') as FieldElement,
-          attrs: {
-            ...getDefaultAttrs('from'),
-            readOnly: !hasSources,
-          },
-          options: !hasSources
-            ? undefined
-            : [
-                {
-                  value: address,
-                  children: t('Page:Bank:My wallet'),
-                },
-                ...sources!.map(({ validatorName, validatorAddress }) => ({
-                  value: validatorAddress,
-                  children: validatorName,
-                })),
-              ],
-        }
-      : {
-          label: t('Post:Staking:Undelegate from'),
-          element: 'input' as FieldElement,
-          attrs: {
-            id: 'to',
-            defaultValue: validatorAddress,
-            readOnly: true,
-          },
-        },
-    {
-      ...getDefaultProps('input'),
-      label: t('Common:Tx:Amount'),
-      button: {
-        label: t('Common:Account:Available'),
-        display: format.display(
-          getMax(isUndelegation ? validatorAddress : from)
-        ),
-        attrs: {
-          onClick: () =>
-            setValue(
-              'input',
-              toInput(getMax(isUndelegation ? validatorAddress : from).amount)
-            ),
-        },
-      },
-      attrs: {
-        ...getDefaultAttrs('input'),
-        type: 'number' as const,
-        placeholder: '0',
-        autoFocus: true,
-      },
-      unit,
+  const fromField = {
+    ...getDefaultProps('from'),
+    label: t('Post:Staking:Source ({{length}})', {
+      length: sourceLength,
+    }),
+    element: (hasSources ? 'select' : 'input') as FieldElement,
+    attrs: {
+      ...getDefaultAttrs('from'),
+      readOnly: !hasSources,
     },
-  ].concat(
-    !isUndelegation
-      ? {
-          label: t('Post:Staking:Delegate to'),
-          element: 'input' as FieldElement,
-          attrs: {
-            id: 'to',
-            defaultValue: validatorAddress,
-            readOnly: true,
-          },
-        }
-      : []
-  )
+    options: !hasSources
+      ? undefined
+      : sources!.map(({ validatorName, validatorAddress }) => ({
+          value: validatorAddress,
+          children: validatorName,
+        })),
+  }
+
+  const inputField = {
+    ...getDefaultProps('input'),
+    label: t('Common:Tx:Amount'),
+    button: {
+      label: t('Common:Account:Available'),
+      display: format.display(getMax(isUndelegation ? validatorAddress : from)),
+      attrs: {
+        onClick: () =>
+          setValue(
+            'input',
+            toInput(getMax(isUndelegation ? validatorAddress : from).amount)
+          ),
+      },
+    },
+    attrs: {
+      ...getDefaultAttrs('input'),
+      type: 'number' as const,
+      placeholder: '0',
+      autoFocus: true,
+    },
+    unit,
+  }
+
+  const fields: Field[] = isRedelegation
+    ? [fromField, inputField]
+    : [inputField]
 
   const getConfirm = (bank: BankData): ConfirmProps => {
     const coin = format.coin({ amount, denom })
@@ -174,7 +143,7 @@ export default (
     const cancel = () => setSubmitted(false)
 
     return {
-      [TxType.D]: {
+      [DelegateType.D]: {
         contents,
         feeDenom,
         cancel,
@@ -198,7 +167,7 @@ export default (
           'Post:Staking:Remember to leave a small amount of tokens undelegated, as subsequent transactions (e.g. redelegation) require fees to be paid.'
         ),
       },
-      [TxType.R]: {
+      [DelegateType.R]: {
         contents,
         feeDenom,
         cancel,
@@ -222,7 +191,7 @@ export default (
           'Post:Staking:Redelegation to the same validator will be prohibited for 21 days. Please make sure you input the right amount of luna to delegate.'
         ),
       },
-      [TxType.U]: {
+      [DelegateType.U]: {
         contents,
         feeDenom,
         cancel,

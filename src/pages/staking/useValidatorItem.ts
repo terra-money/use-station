@@ -133,6 +133,10 @@ export default (): ((v: ValidatorData, params?: Params) => ValidatorUI) => {
         children: t('Post:Staking:Delegate'),
         disabled: status === 'jailed',
       },
+      redelegate: {
+        children: 'Redelegate',
+        disabled: status === 'jailed',
+      },
       undelegate: {
         children: t('Post:Staking:Undelegate'),
         disabled: !myDelegation,

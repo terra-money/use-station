@@ -34,6 +34,7 @@ export interface ValidatorUI {
 
   /* buttons */
   delegate: { children: string; disabled: boolean }
+  redelegate: { children: string; disabled: boolean }
   undelegate: { children: string; disabled: boolean }
   withdraw: { children: string; disabled: boolean }
 }
