@@ -190,9 +190,8 @@ export default (user: User, { validatorAddress, type }: Props): PostPage => {
           coin,
           moniker,
         }),
-        warning: t(
-          'Post:Staking:Redelegation to the same validator will be prohibited for 21 days. Please make sure you input the right amount of luna to delegate.'
-        ),
+        warning:
+          'Redelegation from the recipient validator will be blocked for 21 days after this transaction.',
       },
       [DelegateType.U]: {
         contents,
