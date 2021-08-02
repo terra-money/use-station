@@ -1,52 +1,29 @@
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Dictionary, last } from 'ramda'
 import _ from 'lodash'
-import { AccAddress, MsgExecuteContract, MsgSend } from '@terra-money/terra.js'
+import { MsgExecuteContract, MsgSend } from '@terra-money/terra.js'
 import { Coin } from '@terra-money/terra.js'
-import { ethers } from 'ethers'
 import { BankData, TxsData, Tx, Whitelist } from '../types'
-import { RecentSentUI, RecentSentItemUI, Rate } from '../types'
+import { RecentSentUI, RecentSentItemUI } from '../types'
 import { PostPage, Coin as StationCoin, User, Field } from '../types'
 import { ConfirmContent, ConfirmProps } from '../types'
 import { is, format, find } from '../utils'
-import { div, gt, max as mathMax, max, minus, times } from '../utils/math'
+import { gt, max, minus } from '../utils/math'
 import { toAmount, toInput } from '../utils/format'
-import { useConfig } from '../contexts/ConfigContext'
 import { TokenBalanceQuery } from '../cw20/useTokenBalance'
 import useFCD from '../api/useFCD'
 import useBank from '../api/useBank'
 import useForm from '../hooks/useForm'
-import useTerraAssets from '../hooks/useTerraAssets'
 import validateForm from './validateForm'
 import { isAvailable, getFeeDenomList, isFeeAvailable } from './validateConfirm'
 import { useCalcFee } from './txHelpers'
 import useCalcTax from './useCalcTax'
 
-enum RecipientNetwork {
-  Terra = 'Terra',
-  Ethereum = 'Ethereum',
-  BSC = 'Binance Smart Chain',
-}
-
-const SHUTTLES: Dictionary<Record<RecipientNetwork, string>> = {
-  mainnet: {
-    [RecipientNetwork.Terra]: '',
-    [RecipientNetwork.Ethereum]: 'terra13yxhrk08qvdf5zdc9ss5mwsg5sf7zva9xrgwgc',
-    [RecipientNetwork.BSC]: 'terra1g6llg3zed35nd3mh9zx6n64tfw3z67w2c48tn2',
-  },
-  testnet: {
-    [RecipientNetwork.Terra]: '',
-    [RecipientNetwork.Ethereum]: 'terra10a29fyas9768pw8mewdrar3kzr07jz8f3n73t3',
-    [RecipientNetwork.BSC]: 'terra1paav7jul3dzwzv78j0k59glmevttnkfgmgzv2r',
-  },
-}
-
 interface Values {
   to: string
   input: string
   memo: string
-  network: RecipientNetwork
 }
 
 export default (
@@ -58,7 +35,6 @@ export default (
   const { data: bank, loading: bankLoading, error } = useBank(user)
   const { list: tokens, loading: tokenLoading, whitelist } = tokenBalance
   const loading = bankLoading || tokenLoading
-  const { chain } = useConfig()
   const v = validateForm(t)
 
   /* recent txs */
@@ -70,29 +46,16 @@ export default (
     date,
     values,
   }: RecentSentItem): RecentSentItemUI => {
-    const { to, input, memo: $memo } = values
-
-    const toEthereum = shuttles && Object.values(shuttles).includes(to)
-    const network =
-      shuttles && toEthereum
-        ? (Object.entries(shuttles).find(
-            ([, address]) => address === to
-          )![0] as RecipientNetwork)
-        : RecipientNetwork.Terra
-
-    const recipient = !toEthereum ? to : $memo
-    const memo = !toEthereum ? $memo : ''
+    const { to, input, memo } = values
 
     return {
       title: date,
       contents: [
-        { title: t('Post:Send:Send to'), content: recipient },
-        { title: t('Post:Send:Network'), content: network },
+        { title: t('Post:Send:Send to'), content: to },
         { title: t('Common:Tx:Amount'), content: `${input} ${unit}` },
         { title: t('Common:Tx:Memo'), content: memo },
       ].filter(({ content }) => content),
-      onClick: () =>
-        form.setValues({ ...values, to: recipient, network, memo }),
+      onClick: () => form.setValues({ ...values, to, memo }),
     }
   }
 
@@ -113,8 +76,8 @@ export default (
       ? find(`${denom}:available`, bank?.balance)
       : tokens?.find(({ token }) => token === denom)?.balance) ?? '0'
 
-  const validate = ({ input, to, memo, network }: Values) => ({
-    to: v.address(to, true),
+  const validate = ({ input, to, memo }: Values) => ({
+    to: v.address(to),
     input: v.input(
       input,
       { max: toInput(getBalance(), whitelist?.[denom]?.decimals) },
@@ -124,29 +87,14 @@ export default (
       v.length(memo, { max: 256, label: t('Common:Tx:Memo') }) ||
       v.includes(memo, '<') ||
       v.includes(memo, '>'),
-    network: !network
-      ? t('Common:Validate:{{label}} is required', {
-          label: t('Post:Send:Network'),
-        })
-      : '',
   })
 
-  const initial = {
-    to: '',
-    input: '',
-    memo: '',
-    network: RecipientNetwork.Terra,
-  }
-
+  const initial = { to: '', input: '', memo: '' }
   const form = useForm<Values>(initial, validate)
-  const { values, setValue, setValues, invalid } = form
+  const { values, setValue, invalid } = form
   const { getDefaultProps, getDefaultAttrs } = form
-  const { to, input, memo: $memo, network } = values
+  const { to, input, memo } = values
   const amount = toAmount(input, whitelist?.[denom]?.decimals)
-  const toEthereum = ethers.utils.isAddress(to)
-  const toTerra = AccAddress.validate(to)
-  const shuttles = SHUTTLES[chain.current.name]
-  const shuttle = shuttles?.[network]
 
   /* tax */
   const [submitted, setSubmitted] = useState(false)
@@ -165,57 +113,16 @@ export default (
       : calculatedMaxAmount
   const taxAmount = calcTax.getTax(amount)
 
-  /* set network on address change */
-  useEffect(() => {
-    toEthereum &&
-      network === RecipientNetwork.Terra &&
-      setValues((values) => ({ ...values, network: RecipientNetwork.Ethereum }))
-
-    toTerra &&
-      network !== RecipientNetwork.Terra &&
-      setValues((values) => ({ ...values, network: RecipientNetwork.Terra }))
-  }, [toTerra, toEthereum, network, setValues])
-
-  /* shuttle fee */
-  const rate = useRate(denom)
-  const shuttleFee = mathMax([times(amount, 0.001), div(1e6, rate)])
-  const amountAfterShuttleFee = mathMax([minus(amount, shuttleFee), String(0)])
-
-  /* shuttle available */
   const unit = format.denom(denom, whitelist)
-
-  const shuttleList = useShuttleList()
-  const getIsShuttleAvailable = (network: RecipientNetwork) =>
-    network === RecipientNetwork.Terra || !!shuttleList?.[network]?.[denom]
 
   /* render */
   const fields: Field[] = [
-    {
-      ...getDefaultProps('network'),
-      element: 'select',
-      label: t('Post:Send:Network'),
-      attrs: { ...getDefaultAttrs('network') },
-      options: Object.values(RecipientNetwork).map((value) => {
-        const isShuttleAvailable = getIsShuttleAvailable(value)
-        const disabled = {
-          [RecipientNetwork.Terra]: toEthereum,
-          [RecipientNetwork.Ethereum]: toTerra,
-          [RecipientNetwork.BSC]: toTerra,
-        }[value]
-
-        return {
-          value,
-          children: value,
-          disabled: disabled || !isShuttleAvailable,
-        }
-      }),
-    },
     {
       ...getDefaultProps('to'),
       label: t('Post:Send:Send to'),
       attrs: {
         ...getDefaultAttrs('to'),
-        placeholder: `${network} address`,
+        placeholder: `Terra address`,
         autoFocus: true,
       },
     },
@@ -246,7 +153,6 @@ export default (
       attrs: {
         ...getDefaultAttrs('memo'),
         placeholder: t('Post:Send:Input memo'),
-        hidden: toEthereum,
       },
     },
   ]
@@ -262,9 +168,6 @@ export default (
     submitLabel: t('Common:Form:Next'),
     onSubmit: disabled ? undefined : () => setSubmitted(true),
   }
-
-  const recipient = !toEthereum ? to : shuttle
-  const memo = !toEthereum ? $memo : to
 
   const contents: ConfirmContent[] = ([] as ConfirmContent[])
     .concat([
@@ -282,19 +185,6 @@ export default (
       },
     ])
     .concat(
-      network !== RecipientNetwork.Terra && is.nativeDenom(denom)
-        ? {
-            name: 'Amount after Shuttle fee',
-            displays: [
-              format.display(
-                { amount: amountAfterShuttleFee, denom },
-                whitelist?.[denom]?.decimals
-              ),
-            ],
-          }
-        : []
-    )
-    .concat(
       shouldTax
         ? {
             name: calcTax.label,
@@ -302,14 +192,14 @@ export default (
           }
         : []
     )
-    .concat($memo ? { name: t('Common:Tx:Memo'), text: $memo } : [])
+    .concat(memo ? { name: t('Common:Tx:Memo'), text: memo } : [])
 
   const getConfirm = (bank: BankData, whitelist: Whitelist): ConfirmProps => ({
     msgs: is.nativeDenom(denom)
-      ? [new MsgSend(user.address, recipient, amount + denom)]
+      ? [new MsgSend(user.address, to, amount + denom)]
       : [
           new MsgExecuteContract(user.address, denom, {
-            transfer: { recipient, amount },
+            transfer: { recipient: to, amount },
           }),
         ],
     tax: shouldTax ? new Coin(denom, taxAmount) : undefined,
@@ -337,13 +227,7 @@ export default (
       t(
         'Post:Send:Please double check if the above transaction requires a memo'
       ),
-    ].concat(
-      toEthereum
-        ? t(
-            'Post:Send:A fee of 1 UST or 0.1% of the transfer amount (whichever is greater) will be charged for transferring assets from Terra to Ethereum through Shuttle'
-          )
-        : []
-    ),
+    ],
     cancel: () => setSubmitted(false),
   })
 
@@ -383,28 +267,4 @@ const findRecent = (txs: Tx[], denom: string): RecentSentItem[] | undefined => {
   )
 
   return Object.values(reduced)
-}
-
-const useRate = (denom: string) => {
-  const swapRateURL = `/v1/market/swaprate/${denom}`
-  const response = useFCD<Rate[]>({ url: swapRateURL }, is.nativeDenom(denom))
-  const rate = find('uusd:swaprate', response.data) ?? '1'
-  return rate
-}
-
-const useShuttleList = ():
-  | Record<RecipientNetwork, Dictionary<string>>
-  | undefined => {
-  const { data: ethereum } = useTerraAssets('/shuttle/eth.json')
-  const { data: bsc } = useTerraAssets('/shuttle/bsc.json')
-  const { chain } = useConfig()
-  const { name } = chain.current
-
-  return (
-    ethereum &&
-    bsc && {
-      [RecipientNetwork.Ethereum]: ethereum[name],
-      [RecipientNetwork.BSC]: bsc[name],
-    }
-  )
 }
