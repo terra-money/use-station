@@ -157,7 +157,8 @@ export default (user: User, { validatorAddress, type }: Props): PostPage => {
           amount: { amount, denom },
         },
         validate: (fee: Coin) =>
-          isDelegatable({ amount, denom, fee }, bank.balance),
+          isDelegatable({ amount, denom, fee }, bank.balance) &&
+          isFeeAvailable(fee, bank.balance),
         submitLabels: [
           t('Post:Staking:Delegate'),
           t('Post:Staking:Delegating...'),
