@@ -62,3 +62,10 @@ export interface TokenBalance extends Token {
 }
 
 export type Tokens = Dictionary<Token>
+
+/* contracts */
+export interface ContractInfo {
+  protocol: string
+  name: string
+  icon?: string
+}
