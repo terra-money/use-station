@@ -1,9 +1,12 @@
 import { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { TxsPage, TxType, User, Tx } from '../../types'
-import useFCD from '../../api/useFCD'
 import { format } from '../../utils'
+import useFCD from '../../api/useFCD'
+import useWhitelist from '../../cw20/useWhitelist'
+import { useConfig } from '../../contexts/ConfigContext'
 import useFinder from '../../hooks/useFinder'
+import useContracts from '../../hooks/useContracts'
 import { LIMIT } from '../constants'
 
 /** tabs */
@@ -21,12 +24,18 @@ export const useTxTypes = (): { key: TxType; label: string }[] => {
   ]
 }
 
+const TERRA_ADDRESS_REGEX = /(terra1[a-z0-9]{38})/g
+
 export default (
   { address }: User,
   { type }: { type?: TxType; offset?: number }
 ): TxsPage => {
   const { t } = useTranslation()
   const getLink = useFinder()
+  const { chain } = useConfig()
+  const { name: currentChain } = chain.current
+  const { whitelist } = useWhitelist(currentChain)
+  const { contracts } = useContracts(currentChain)
 
   /* api */
   const [txs, setTxs] = useState<Tx[]>([])
@@ -67,11 +76,24 @@ export default (
               link: getLink!({ network: chainId, q: 'tx', v: txhash }),
               hash: txhash,
               date: format.date(timestamp, { toLocale: true }),
-              messages: msgs.map(({ tag, text }) => ({
-                tag: t('Page:Txs:' + tag),
-                text,
-                success,
-              })),
+              messages: msgs.map(({ tag, text }) => {
+                const replacer = (addr: string) => {
+                  const token = whitelist?.[addr]
+                  const contract = contracts?.[addr]
+
+                  return contract
+                    ? [contract.protocol, contract.name].join(' ')
+                    : token
+                    ? token.symbol
+                    : addr
+                }
+
+                return {
+                  tag: t('Page:Txs:' + tag),
+                  text: text.replace(TERRA_ADDRESS_REGEX, replacer),
+                  success,
+                }
+              }),
               details: [
                 {
                   title: t('Common:Tx:Tx fee'),
