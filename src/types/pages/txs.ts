@@ -1,14 +1,5 @@
 import { API, Coin, Card } from '..'
 
-export type TxType =
-  | ''
-  | 'send'
-  | 'receive'
-  | 'staking'
-  | 'market'
-  | 'governance'
-  | 'contract'
-
 export interface TxsPage extends API<TxsData> {
   ui?: TxsUI
 }

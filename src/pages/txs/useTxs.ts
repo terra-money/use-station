@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { TxsPage, TxType, User, Tx } from '../../types'
+import { TxsPage, User, Tx } from '../../types'
 import { format } from '../../utils'
 import useFCD from '../../api/useFCD'
 import useWhitelist from '../../cw20/useWhitelist'
@@ -9,27 +9,9 @@ import useFinder from '../../hooks/useFinder'
 import useContracts from '../../hooks/useContracts'
 import { LIMIT } from '../constants'
 
-/** tabs */
-export const useTxTypes = (): { key: TxType; label: string }[] => {
-  const { t } = useTranslation()
-
-  return [
-    { key: '', label: t('Common:All') },
-    { key: 'send', label: t('Page:Txs:Send') },
-    { key: 'receive', label: t('Page:Txs:Receive') },
-    { key: 'staking', label: t('Page:Txs:Staking') },
-    { key: 'market', label: t('Page:Txs:Swap') },
-    { key: 'governance', label: t('Page:Txs:Governance') },
-    { key: 'contract', label: t('Page:Txs:Contract') },
-  ]
-}
-
 const TERRA_ADDRESS_REGEX = /(terra1[a-z0-9]{38})/g
 
-export default (
-  { address }: User,
-  { type }: { type?: TxType; offset?: number }
-): TxsPage => {
+export default ({ address }: User): TxsPage => {
   const { t } = useTranslation()
   const getLink = useFinder()
   const { chain } = useConfig()
@@ -43,7 +25,7 @@ export default (
   const [done, setDone] = useState(false)
 
   const url = '/v1/msgs'
-  const params = { account: address, action: type, limit: LIMIT, offset }
+  const params = { account: address, limit: LIMIT, offset }
   const response = useFCD<{ txs: Tx[] }>({ url, params })
   const { data } = response
 
